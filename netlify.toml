@@ -1,0 +1,16 @@
+# netlify.toml
+# Netlify 构建配置文件 for MkDocs + Material
+
+[build]
+  # 构建命令：生成 MkDocs 静态站点
+  command = "pip install -r requirements.txt && mkdocs build"
+  
+  # 发布目录：MkDocs 默认输出 site/
+  publish = "site/"
+
+  # 指定 Netlify 构建环境使用的 Python 版本
+  environment = { PYTHON_VERSION = "3.10" }
+
+# 可选：如果你希望部署成功后 Netlify 自动刷新缓存，可添加如下配置
+[context.production.environment]
+  PYTHON_VERSION = "3.10"
