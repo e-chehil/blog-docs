@@ -1,13 +1,15 @@
-site_name: 我的文档
-site_url: https://example.com  # 以后部署时可改
+site_name: 毕业要求对照站点
+site_description: 12 点体系 ↔ 9 点体系 映射与课程考核方式
+site_url: https://e-chehil.github.io/blog-docs/  # 以后部署时可改
 
 theme:
   name: material
-  # 语言可设为中文（按需选择）
   language: zh
   features:
     - navigation.instant
     - navigation.tabs
+    - navigation.sections
+    - navigation.top
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -22,6 +24,11 @@ plugins:
 
 markdown_extensions:
   - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.tabbed:
@@ -31,3 +38,10 @@ markdown_extensions:
       permalink: true
   - pymdownx.tasklist:
       custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra_javascript:
+  - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+  - javascripts/tablesort.js
