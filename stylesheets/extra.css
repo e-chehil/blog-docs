@@ -1,22 +1,14 @@
-@import url("https://fontsapi.zeoseven.com/79/main/result.css");
-@import url("https://fontsapi.zeoseven.com/366/main/result.css");
-@import url("https://fontsapi.zeoseven.com/442/main/result.css");
 @import url("https://chinese-fonts-cdn.deno.dev/packages/sypxzs/dist/思源屏显臻宋/result.css");
 @import url("https://chinese-fonts-cdn.deno.dev/packages/maple-mono-cn/dist/MapleMono-CN-Regular/result.css");
 
 :root {
-    --md-text-font: Georgia, "Source Han Serif CN for Display";
-    --md-code-font: "Maple Mono NF CN";
+    --md-text-font: CharisW, "Source Han Serif CN for Display";
+    --md-code-font: "Maple Mono CN";
 }
 
 .md-nav {
     line-height: normal;
 }
-
-
-
-
-
 
 /*
 This file is from the Charis project (https://software.sil.org/charis/).
@@ -83,11 +75,6 @@ Open Font License, Version 1.1 (https://openfontlicense.org).
     font-weight: 700;
     font-style: italic;
     src: url(../assets/fonts/Charis-BoldItalic.woff2);
-}
-
-@font-face {
-    font-family: DoulosSILW;
-    src: url(../assets/fonts/DoulosSIL-Regular.woff2);
 }
 
 /* set body to use Charis */
