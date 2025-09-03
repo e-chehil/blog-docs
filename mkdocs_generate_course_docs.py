@@ -80,8 +80,8 @@ def generate_course_markdown(course_code, course_name, df_course_rows, out_path:
 
     # Main table header
     md_lines.append("## 详细对照表\n\n")
-    md_lines.append("| ⑫编号 | 表述 | ⑨编号 | 方式 |\n")
-    md_lines.append("|:---:|:---:|:---:|:---:|\n")
+    md_lines.append("| ⑫编号 | ⑫表述 | ⑨编号 | ⑨表述 | 方式 |\n")
+    md_lines.append("|:---:|:---:|:---:|:---:|:---:|\n")
 
     # Deduplicate meaningful rows (保留全部组合)
     rows = df_course_rows[['twelve_id','twelve_text','nine_id','nine_text','assessment_method']]
@@ -98,8 +98,9 @@ def generate_course_markdown(course_code, course_name, df_course_rows, out_path:
             t_id = escape_md(r['twelve_id']) or '—'
             t_text = escape_md(r.get('twelve_text','')) or '未提供'
             n_id = escape_md(r.get('nine_id','')) or '—'
+            n_text = escape_md(r.get('nine_text','')) or '未提供'
             assess = escape_md(r.get('assessment_method','')) or '未提供'
-            md_lines.append(f"| {t_id} | {t_text} | {n_id} | {assess} |\n")
+            md_lines.append(f"| {t_id} | {t_text} | {n_id} | {n_text} | {assess} |\n")
     md_lines.append("\n---\n\n")
     md_lines.append("注：若某列显示“未提供”，说明对应的原始 CSV 中没有相关条目。检查`data/`目录下的文件是否完整。\n")
 
