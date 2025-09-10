@@ -122,7 +122,127 @@ Pumas are large, cat-like[^2] animals which are found in America.[^3] When repor
 
     > As the cases began to accumulate, specialists felt obliged to investigate, for the symptoms of people who had caught the disease were extraordinarily similar.<br>随着病例开始慢慢增多，医学专家们觉得必须要调查了，因为得了这种病的人的症状特别地相似。
 
-The hunt for the puma began in a small village where a woman picking blackberries saw ‘a large cat’ only five yards away from her. It immediately ran away when she saw it, and experts confirmed that a puma will not attack a human being unless it is cornered. The search proved difficult, for the puma was often observed at one place in the morning and at another place twenty miles away in the evening. Wherever it went, it left behind it a trail of dead deer and small animals like rabbits. Paw prints were seen in a number of places and puma fur was found clinging to bushes. Several people complained of ‘cat-like noises’ at night and a businessman on a fishing trip saw the puma up a tree. The experts were now fully convinced that the animal *was* a puma, but where had it come from? As no pumas had been reported missing from any zoo in the country, this one must have been in the possession of a private collector and somehow managed to escape. The hunt went on for several weeks, but the puma was not caught. It is disturbing to think that a dangerous wild animal is still at large in the quiet countryside.
+The hunt[^12] for the puma began in a small village where a woman picking blackberries saw ‘a large cat’ only five yards away from her. It immediately ran away when she saw it, and experts confirmed that a puma will not attack a human being unless it is cornered. The search proved[^13] difficult, for the puma was often observed at one place in the morning and at another place twenty miles away in the evening. Wherever[^14] it went, it left ==behind it== a trail of[^15] dead ==deer== and small animals like rabbits. Paw prints[^16] were seen in a number of places and puma fur[^17] was found clinging[^18] to bushes. Several people complained[^19] of ‘cat-like noises’ at night and a businessman on[^20] a fishing trip saw the puma up a tree. The experts were now fully convinced[^21] that the animal *was* a puma, but where had it come from? As no pumas had been reported missing from any zoo in the country, this one must[^22] have been in the possession[^23] of a private collector and somehow managed[^24] to escape. The hunt went on for several weeks, but the puma was not caught. It[^25] is disturbing to think that a dangerous wild animal is still at large in the quiet countryside.
+
+[^12]:
+    - hunt for …<br>搜寻，寻找
+    - I'm **hunting for** a job now.<br>现在我正在找工作。
+    - The **hunt for** a job will begin tomorrow.<br>我明天就要开始找工作了。
+
+    介词搭配
+
+    - the winter **in** America 
+    - the entrance **to** the parking lot
+    - a witness **to** the accident
+    - a longing **for** love
+    - the reason **for** the disaster
+
+[^13]:
+    - **prove (to be) + adj./n.<br>被证明是⋯⋯**
+    - His injury **proved (to be)** fatal.<br>他的伤势被证明是致命的。
+    - The operation **proved (to be)** a success.
+    - **turn out to be + adj./n.<br>原来是⋯⋯**
+    - (NCE3-3) When the archaeologists reconstructed the fragmerits, they were amazed to find that the goddess **turned out to be** a very modern-looking woman.
+
+[^14]:
+    **疑问词 + ever** (whenever, wherever, whoever, whichever, whatever …) **有两个含义：**
+
+    1.  **表示“无论⋯⋯”引导让步状语从句。<br>= no matter +疑问词**
+        - **No matter where** it went, …
+        - (NCE3-29) **No matter where** you live, you would find it difficult not to laugh at, say, Charlie Chaplin's early films.
+    2.  表示“到底⋯⋯”用于疑问句中。
+        - (NCE3-2) '**Whatever** are you doing up here Bill?' asked the vicar in surprise.
+        - **Wherever** did you go yesterday?
+        - **When ever** am I going to see you again?
+        - **When** wil you **ever** learn?<br>你什么时候才能长记性？
+
+[^15]:
+    - a trail of<br>一连串的
+    - **Wherever he went, he left a trail of … behind him.**
+    - **Wherever he went, he left a trail of** unpaid bills **behind him**.
+    - **Wherever he went, he left a trail of** broken hearts **behind him**.
+
+[^16]:
+    - People have paid more and more attention to the condition of the laid-off workers.
+    - **Increasing attention has been paid to the condition of the laid-off workers.**<br>人们对下岗工人的生活状况越来越关注了。
+
+[^17]:
+    - **fur**<br>皮毛
+    - a fur coat<br>裘皮大衣
+    - **feather**
+    - fur and feather<br>飞禽走兽
+    - fin, fur and feather<br>鱼鸟兽（泛指所有的动物）
+
+    > The crown should not yield to the cross.<br>王权不应屈服于神权。
+
+[^18]:
+    非谓语动词充当主语补足语。
+
+    - As no pumas had been reported **missing** from any zoo in the country, …
+    - The fire was reported **controlled**.
+    - It is reported that the fire was controlled.
+
+[^19]:
+    - **complain of / about sth.(1)**
+        {.annotate}
+
+        1.  complain 是不及物动词
+
+    - **complain (that)**
+    - She **complained that** no one had been at the airport to meet her.
+    - that 引导的句子一般不用在介词后。
+
+[^20]:
+    - **on** a business/honeymoon trip
+    - on a journey/voyage/expedition/tour …
+
+[^21]:
+    - be convinced that …
+    - **convince sb. of sth.**
+    - in that …
+    - except/but that …
+
+[^22]:
+    - **must have done**
+    - You **must have been** il yesterday. You looked so pale.
+    - **must do**
+    - She knew that it **must be** the baker.
+    - **may / might have done**
+    - **can not / could not have done**
+    - You **can't have been** il yesterday. I saw you going shopping with your wife.
+    - (NCE3-60) The girl asked to see a timetable, feeling sure that her father **could not have made** such a mistake.
+    - **should / ought to have done**<br>本该（表责备）
+    - **should not / ought not to have done**<br>本不该（表责备）
+    - You **should have finished** your work yesterday.
+    - I **shouldn't have shouted** at you yesterday.
+
+[^23]
+    - in the possession of sb. / in one's possession
+    - in possession of sth.
+    - The book is in my possession .
+    - I'm in possession of the book.
+    - in the charge of sb. / in one's charge
+    - **in charge of …**
+    - The bookstore is in my charge .
+    - I'm in charge of the bookstore.
+
+[^24]:
+    - manage to do<br>设法完成了某事(1)
+        {.annotate}
+
+        1.  try to do 是设法去做某
+
+    - (NCE3-2) Our vicar is always raising money for one cause or another, but he has never **managed to get** enough money to have the church clock repaired.
+    - fail to do没能完成事
+    - (NCE3-5) When the journalist again **failed to reply**, the editor reluctantly published the article as it had originally been written.
+
+[^25]:
+    - **It is … to think that …**<br>一想到某事就令人觉得如何
+    - It is worrying to think that …
+    - It is exciting to think that …
+    - It is comforting to think that …
+    - It is amusing to think that …
+    - It is irritating to think that …
 
 ## 单词讲解
 
