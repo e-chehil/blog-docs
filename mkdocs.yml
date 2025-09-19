@@ -16,6 +16,9 @@ theme:
     - toc.integrate
     - header.autohide
 
+nav:
+  - 首页: index.md
+  - 课表: class_schedule.html
 
 plugins:
   - search

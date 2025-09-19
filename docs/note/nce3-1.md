@@ -252,7 +252,7 @@ The hunt[^12] for the puma began in a small village where a woman picking blackb
     - I'm **in charge of** the bookstore.
 
 [^24]:
-    - **manage to do**<br>设法完成了某事(1)
+    - **manage to do**(1)<br>设法完成了某事
         {.annotate}
 
         1.  设法去做某事是“try to do”
