@@ -16,7 +16,7 @@
             background-color: #f4f7f9;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
@@ -25,7 +25,7 @@
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             color: #333;
             text-align: center;
             margin-bottom: 20px;
@@ -45,7 +45,7 @@
         }
 
         .input-section h2 {
-            font-size: 20px;
+            font-size: 18px;
             margin-top: 0;
             margin-bottom: 15px;
             color: #4a90e2;
@@ -55,6 +55,7 @@
             color: #666;
             font-size: 14px;
             line-height: 1.6;
+            margin-top: 0;
         }
 
         .input-section textarea {
@@ -127,8 +128,17 @@
             cursor: pointer;
         }
 
+        /* [优化] 为表格容器增加横向滚动 */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            /* 增强在iOS上的滑动体验 */
+        }
+
         .schedule-table {
             width: 100%;
+            min-width: 800px;
+            /* [优化] 设定最小宽度，确保在窄屏上可以横向滚动 */
             border-collapse: collapse;
             table-layout: fixed;
         }
@@ -151,11 +161,13 @@
             height: auto;
         }
 
+        /* [优化] 调整第一列（时间/节次）的宽度 */
         .schedule-table td:first-child,
         .schedule-table th:first-child {
             font-weight: bold;
             background-color: #f9fafb;
-            width: 60px;
+            width: 40px;
+            /* [优化] 减小宽度 */
             font-size: 0.9em;
             color: #4a90e2;
         }
@@ -169,11 +181,12 @@
             background-color: #f0f8ff;
         }
 
+        /* [优化] 调整课程卡片内文字大小，适应小屏幕 */
         .course-item {
             border-radius: 8px;
-            padding: 8px;
+            padding: 6px;
             color: white;
-            font-size: 0.8em;
+            font-size: 12px;
             overflow: hidden;
             position: absolute;
             top: 2px;
@@ -189,12 +202,12 @@
 
         .course-name {
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .course-location,
         .course-teacher {
-            font-size: 0.9em;
+            font-size: 0.95em;
             opacity: 0.9;
         }
 
@@ -322,13 +335,7 @@
         <div class="card">
             <div class="input-section">
                 <h2>步骤 1: 粘贴课表文本</h2>
-                <p>从教务系统或 Excel 复制包含表头的完整课程信息（通常以制表符分隔），然后粘贴到下方文本框中。</p>
-                <p>
-                    <a href="https://yjsfw.zjut.edu.cn/gsapp/sys/wdkbapp/*default/index.do?EMAP_LANG=zh#/xskcb"
-                        target="_blank" rel="noopener noreferrer">
-                        https://yjsfw.zjut.edu.cn/gsapp/sys/wdkbapp/*default/index.do?EMAP_LANG=zh#/xskcb
-                    </a>
-                </p>
+                <p>从教务系统或 Excel 复制包含表头的完整课程表，然后粘贴到下方文本框中。</p>
                 <textarea id="input-textarea" placeholder="在此粘贴表格文本..."></textarea>
                 <br>
                 <button id="btn-generate">生成课表</button>
@@ -343,11 +350,11 @@
                     <label for="week-selector">选择周数:</label>
                     <select id="week-selector"></select>
                 </div>
-                <div style="overflow-x: auto;">
+                <div class="table-wrapper">
                     <table class="schedule-table">
                         <thead>
                             <tr>
-                                <th>节次</th>
+                                <th>时间</th>
                                 <th>星期一</th>
                                 <th>星期二</th>
                                 <th>星期三</th>
@@ -386,43 +393,29 @@
     <script>
         (() => {
             // --- 全局变量和配置 ---
-            let structuredCourseData = []; // 存储最终处理好的课程数据
-
-            // --- 配置区 ---
-            const MAX_WEEKS = 20; // 可根据学期长度调整
+            let structuredCourseData = [];
+            const MAX_WEEKS = 20;
             const MAX_PERIODS = 12;
             const COLORS = ['#1abc9c', '#3498db', '#9b59b6', '#e74c3c', '#f1c40f', '#2ecc71', '#e67e22', '#34495e', '#16a085', '#2980b9', '#8e44ad', '#c0392b'];
             const courseColors = {};
             let colorIndex = 0;
-            let allMemos = {}; // 用于存储所有备忘录
+            let allMemos = {};
 
             //================================================================
-            //  模块1: 文本解析 (来自 1. 结构生成.html)
+            //  模块1: 文本解析
             //================================================================
-
-            const wantedCols = [
-                "课程代码", "课程名称", "班级名称", "课程学时", "学分",
-                "校区", "开课单位", "上课方式", "授课形式", "任课教师",
-                "上课人数", "首次上课日期", "上课时间地点",
-                "选课备注", "线上教学二维码", "课表备注"
-            ];
-
+            const wantedCols = ["课程代码", "课程名称", "班级名称", "课程学时", "学分", "校区", "开课单位", "上课方式", "授课形式", "任课教师", "上课人数", "首次上课日期", "上课时间地点", "选课备注", "线上教学二维码", "课表备注"];
             function parseTable(text) {
                 const lines = text.replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
                 if (lines.length < 2) throw new Error('输入内容过少，请确保包含表头和至少一行课程数据。');
-
                 const header = lines[0].split('\t');
                 const idxMap = {};
                 wantedCols.forEach(k => idxMap[k] = header.indexOf(k));
-
                 if (idxMap["课程代码"] === -1) throw new Error('首行未检测到“课程代码”列，请确认已包含表头行。');
-
                 const list = [];
                 let cur = null;
-
                 for (let i = 1; i < lines.length; i++) {
                     const cells = lines[i].split('\t');
-
                     if (/^Y\d{6}/.test(cells[idxMap["课程代码"]])) {
                         if (cur) finalize(cur), list.push(cur);
                         cur = {};
@@ -433,7 +426,6 @@
                         const firstLoc = cur["上课时间地点"];
                         cur["上课时间地点"] = firstLoc ? [firstLoc] : [];
                     } else {
-                        // 将非课程开头的行视为上一门课的“上课时间地点”的续行
                         if (cur) {
                             const continuationText = lines[i].trim();
                             if (continuationText) cur["上课时间地点"].push(continuationText);
@@ -443,7 +435,6 @@
                 if (cur) finalize(cur), list.push(cur);
                 return list;
             }
-
             function finalize(obj) {
                 obj["课程学时"] = Number(obj["课程学时"]) || 0;
                 obj["学分"] = Number(obj["学分"]) || 0;
@@ -454,11 +445,9 @@
             }
 
             //================================================================
-            //  模块2: 结构转换 (来自 2. 课表转换.html)
+            //  模块2: 结构转换
             //================================================================
-
             const DAY_MAP = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '日': 7 };
-
             function parseWeeks(weekStr) {
                 const weeks = new Set();
                 if (!weekStr) return [];
@@ -472,14 +461,12 @@
                 });
                 return Array.from(weeks).sort((a, b) => a - b);
             }
-
             function processCourse(course) {
                 const { 上课时间地点, ...restOfCourse } = course;
                 const newCourse = { ...restOfCourse, schedule: [] };
                 const scheduleStrings = 上课时间地点 || [];
                 const scheduleMap = {};
                 const notes = [];
-
                 for (const s of scheduleStrings) {
                     const match = s.match(/([\d,-]+)周(?:\s*星期([一二三四五六日]))?\[(\d+)-(\d+)节\](.*)/);
                     if (match) {
@@ -490,9 +477,7 @@
                         const endPeriod = Number(endP);
                         const cleanLocation = location.trim();
                         const key = `${weekday}_${cleanLocation}`;
-
                         if (!scheduleMap[key]) scheduleMap[key] = {};
-
                         for (const week of weeks) {
                             if (!scheduleMap[key][week]) scheduleMap[key][week] = new Set();
                             for (let period = startPeriod; period <= endPeriod; period++) {
@@ -503,16 +488,10 @@
                         const noteMatch = s.match(/([\d,-]+)周/);
                         if (noteMatch) {
                             const weekStr = noteMatch[1];
-                            notes.push({
-                                type: "note",
-                                weeks_str: weekStr,
-                                weeks: parseWeeks(weekStr),
-                                description: `线上课程或活动: ${s}`
-                            });
+                            notes.push({ type: "note", weeks_str: weekStr, weeks: parseWeeks(weekStr), description: `线上课程或活动: ${s}` });
                         }
                     }
                 }
-
                 for (const key in scheduleMap) {
                     const [weekday, location] = key.split('_');
                     const weekToPeriods = scheduleMap[key];
@@ -523,51 +502,27 @@
                         if (!periodsToWeeks[periodsKey]) periodsToWeeks[periodsKey] = [];
                         periodsToWeeks[periodsKey].push(Number(week));
                     }
-
                     for (const periodsKey in periodsToWeeks) {
                         const periods = JSON.parse(periodsKey);
                         const weeks = periodsToWeeks[periodsKey].sort((a, b) => a - b);
                         if (periods.length > 0) {
-                            newCourse.schedule.push({
-                                weeks: weeks,
-                                weekday: Number(weekday),
-                                start_period: Math.min(...periods),
-                                end_period: Math.max(...periods),
-                                location: location
-                            });
+                            newCourse.schedule.push({ weeks: weeks, weekday: Number(weekday), start_period: Math.min(...periods), end_period: Math.max(...periods), location: location });
                         }
                     }
                 }
-
                 newCourse.schedule.push(...notes);
                 return newCourse;
             }
 
             //================================================================
-            //  模块3: 课表渲染与交互 (来自 3. 时间规划.html)
+            //  模块3: 课表渲染与交互
             //================================================================
-
-            // --- 备忘录管理 ---
             const memoManager = {
-                load: () => {
-                    const memos = localStorage.getItem('courseMemos');
-                    return memos ? JSON.parse(memos) : {};
-                },
-                save: (memos) => {
-                    localStorage.setItem('courseMemos', JSON.stringify(memos));
-                },
-                get: (key) => allMemos[key] || '',
-                set: (key, text) => {
-                    if (text && text.trim() !== '') {
-                        allMemos[key] = text.trim();
-                    } else {
-                        delete allMemos[key];
-                    }
-                    memoManager.save(allMemos);
-                }
+                load: () => { const m = localStorage.getItem('courseMemos'); return m ? JSON.parse(m) : {}; },
+                save: (m) => { localStorage.setItem('courseMemos', JSON.stringify(m)); },
+                get: (k) => allMemos[k] || '',
+                set: (k, t) => { if (t && t.trim() !== '') { allMemos[k] = t.trim(); } else { delete allMemos[k]; } memoManager.save(allMemos); }
             };
-
-            // --- 渲染逻辑 ---
             function getCourseColor(courseCode) {
                 if (!courseColors[courseCode]) {
                     courseColors[courseCode] = COLORS[colorIndex % COLORS.length];
@@ -575,16 +530,13 @@
                 }
                 return courseColors[courseCode];
             }
-
             function renderSchedule(weekNumber) {
                 const scheduleBody = document.getElementById('schedule-body');
                 const notesContent = document.getElementById('notes-content');
                 scheduleBody.innerHTML = '';
                 notesContent.innerHTML = '无';
-
                 const grid = Array(MAX_PERIODS + 1).fill(null).map(() => Array(8).fill(null));
                 const weeklyNotes = [];
-
                 structuredCourseData.forEach(course => {
                     const color = getCourseColor(course.课程代码);
                     (course.schedule || []).forEach(item => {
@@ -601,21 +553,20 @@
                         }
                     });
                 });
-
                 for (let period = 1; period <= MAX_PERIODS; period++) {
                     const row = document.createElement('tr');
-                    row.appendChild(document.createElement('td')).innerHTML = `<b>第${period}节</b>`;
+                    // [优化] 简化节次显示为数字
+                    const periodCell = document.createElement('td');
+                    periodCell.innerHTML = `<b>${period}</b>`;
+                    row.appendChild(periodCell);
 
                     for (let day = 1; day <= 7; day++) {
                         if (grid[period][day] === 'occupied') continue;
-
                         const cell = document.createElement('td');
                         const cellData = grid[period][day];
                         const startPeriod = cellData ? cellData.start_period : period;
                         const endPeriod = cellData ? cellData.end_period : period;
-
                         cell.addEventListener('click', () => openMemoModal(weekNumber, day, startPeriod, endPeriod));
-
                         if (cellData) {
                             cell.rowSpan = cellData.span;
                             cell.innerHTML = `
@@ -625,26 +576,20 @@
                             <div class="course-teacher">${cellData.任课教师}</div>
                         </div>`;
                         }
-
                         const memoKey = `w${weekNumber}_d${day}_p${startPeriod}`;
                         if (memoManager.get(memoKey)) {
                             cell.innerHTML += `<div class="memo-indicator">📝</div>`;
                         }
-
                         row.appendChild(cell);
                     }
                     scheduleBody.appendChild(row);
                 }
-
                 if (weeklyNotes.length > 0) {
                     notesContent.innerHTML = weeklyNotes.map(note => `<div class="note-item">• ${note}</div>`).join('');
                 }
             }
-
-            // --- 模态窗口逻辑 ---
             const modal = document.getElementById('memo-modal');
             const overlay = document.getElementById('modal-overlay');
-
             function openMemoModal(week, day, startPeriod, endPeriod) {
                 const memoKey = `w${week}_d${day}_p${startPeriod}`;
                 modal.dataset.memoKey = memoKey;
@@ -655,12 +600,10 @@
                 modal.style.display = 'block';
                 overlay.style.display = 'block';
             }
-
             function closeMemoModal() {
                 modal.style.display = 'none';
                 overlay.style.display = 'none';
             }
-
             function setupModalListeners() {
                 document.getElementById('btn-save').addEventListener('click', () => {
                     const key = modal.dataset.memoKey;
@@ -676,13 +619,9 @@
                 document.getElementById('btn-cancel').addEventListener('click', closeMemoModal);
                 overlay.addEventListener('click', closeMemoModal);
             }
-
-            // --- 课表视图初始化 ---
             function initializeScheduleView() {
                 const weekSelector = document.getElementById('week-selector');
-                weekSelector.innerHTML = ''; // 清空旧选项
-
-                // 智能计算最大周数
+                weekSelector.innerHTML = '';
                 let maxWeekInCourses = 0;
                 structuredCourseData.forEach(c => c.schedule.forEach(s => {
                     if (s.weeks && s.weeks.length > 0) {
@@ -691,22 +630,17 @@
                     }
                 }));
                 const totalWeeks = Math.max(MAX_WEEKS, maxWeekInCourses);
-
                 for (let i = 1; i <= totalWeeks; i++) {
                     const option = document.createElement('option');
                     option.value = i;
                     option.textContent = `第 ${i} 周`;
                     weekSelector.appendChild(option);
                 }
-
                 weekSelector.addEventListener('change', (e) => {
                     renderSchedule(parseInt(e.target.value, 10));
                 });
-
-                renderSchedule(1); // 默认渲染第一周
+                renderSchedule(1);
             }
-
-            // --- 下载文件工具 ---
             function download(text, filename) {
                 const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
@@ -723,55 +657,31 @@
             //  主控制器: 绑定页面事件
             //================================================================
             document.addEventListener('DOMContentLoaded', () => {
-                allMemos = memoManager.load(); // 页面加载时载入所有备忘录
+                allMemos = memoManager.load();
                 setupModalListeners();
-
-                // 核心功能：生成课表
                 document.getElementById('btn-generate').addEventListener('click', () => {
                     const rawText = document.getElementById('input-textarea').value.trim();
-                    if (!rawText) {
-                        alert('请先粘贴表格文本！');
-                        return;
-                    }
-
+                    if (!rawText) { alert('请先粘贴表格文本！'); return; }
                     try {
-                        // 步骤1: 文本 -> 初始JSON
                         const initialJson = parseTable(rawText);
-
-                        // 步骤2: 初始JSON -> 结构化JSON
                         structuredCourseData = initialJson.map(processCourse);
-
-                        // 步骤3: 使用结构化JSON渲染课表
                         initializeScheduleView();
-
-                        // 显示课表区域
-                        document.getElementById('schedule-section').style.display = 'block';
-                        // 平滑滚动到课表位置
-                        document.getElementById('schedule-section').scrollIntoView({ behavior: 'smooth' });
-
+                        const scheduleSection = document.getElementById('schedule-section');
+                        scheduleSection.style.display = 'block';
+                        scheduleSection.scrollIntoView({ behavior: 'smooth' });
                     } catch (err) {
                         alert('解析失败：' + err.message);
                     }
                 });
-
-                // 辅助功能：复制JSON
                 document.getElementById('btn-copy').addEventListener('click', () => {
-                    if (structuredCourseData.length === 0) {
-                        alert('请先生成课表，才有JSON数据可复制！');
-                        return;
-                    }
+                    if (structuredCourseData.length === 0) { alert('请先生成课表，才有JSON数据可复制！'); return; }
                     const jsonStr = JSON.stringify(structuredCourseData, null, 2);
                     navigator.clipboard.writeText(jsonStr)
                         .then(() => alert('已将结构化JSON复制到剪贴板！'))
                         .catch(() => alert('复制失败，您的浏览器可能不支持或未授权。'));
                 });
-
-                // 辅助功能：下载JSON
                 document.getElementById('btn-download').addEventListener('click', () => {
-                    if (structuredCourseData.length === 0) {
-                        alert('请先生成课表，才有JSON数据可下载！');
-                        return;
-                    }
+                    if (structuredCourseData.length === 0) { alert('请先生成课表，才有JSON数据可下载！'); return; }
                     const jsonStr = JSON.stringify(structuredCourseData, null, 2);
                     download(jsonStr, 'structured-courses.json');
                 });
