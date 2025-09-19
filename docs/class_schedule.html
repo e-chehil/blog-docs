@@ -4,242 +4,384 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一站式课表生成与规划工具</title>
+    <title>课表</title>
     <style>
         /* --- 基础与布局 --- */
         * {
-            box-sizing: border-box
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background-color: #f4f7f9;
             color: #333;
-            margin: 0;
-            padding: 10px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 22px;
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        /* --- 步骤1: 输入区域 --- */
-        .input-section {
-            padding: 20px 25px;
-        }
-
-        .input-section h2 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #4a90e2;
-        }
-
-        .input-section p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-top: 0;
-        }
-
-        .input-section textarea {
-            width: 100%;
-            height: 250px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            padding: 10px;
-            font-size: 14px;
-            resize: vertical;
-            margin-bottom: 10px;
-        }
-
-        .input-section button {
-            margin-top: 10px;
-            margin-right: 10px;
-            padding: 10px 18px;
-            font-size: 15px;
-            border: none;
-            border-radius: 6px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .input-section button:hover {
-            background-color: #43a047;
-        }
-
-        .input-section button.secondary {
-            background-color: #008CBA;
-        }
-
-        .input-section button.secondary:hover {
-            background-color: #007b9a;
-        }
-
-        /* --- 步骤2: 课表展示 --- */
-        .schedule-section {
-            display: none;
-        }
-
-        /* 默认隐藏 */
+        /* --- 课表展示 --- */
         .schedule-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
             background-color: #fff;
         }
 
         .toolbar {
-            padding: 15px 20px;
+            padding: 10px 15px;
             background-color: #4a90e2;
             color: white;
             display: flex;
             align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
         }
 
         .toolbar label {
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 14px;
         }
 
         .toolbar select {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 6px;
             border: 1px solid #ddd;
-            font-size: 1em;
+            font-size: 14px;
             background-color: #fff;
             cursor: pointer;
         }
 
-        /* [优化] 为表格容器增加横向滚动 */
+        .week-nav-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .week-nav-buttons button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .week-nav-buttons button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .current-week-info {
+            margin-left: auto;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* 表格容器样式 */
         .table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            /* 增强在iOS上的滑动体验 */
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: white;
         }
 
         .schedule-table {
             width: 100%;
-            min-width: 800px;
-            /* [优化] 设定最小宽度，确保在窄屏上可以横向滚动 */
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             table-layout: fixed;
+        }
+
+        /* 固定表头和第一列 */
+        .schedule-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f9fafb;
+            border: 1px solid #e0e0e0;
+            font-weight: normal;
+            color: #555;
+            padding: 6px 2px;
+            font-size: 13px;
+            height: 32px;
+        }
+
+        .schedule-table tbody td:first-child,
+        .schedule-table thead th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background-color: #f9fafb;
+            font-weight: bold;
+            width: 35px;
+            min-width: 35px;
+            font-size: 12px;
+            color: #4a90e2;
+            text-align: center;
+        }
+
+        .schedule-table thead th:first-child {
+            z-index: 11;
+        }
+
+        /* 当前日期高亮 */
+        .schedule-table th.current-day {
+            background-color: #e3f2fd !important;
+            color: #1976d2 !important;
+            font-weight: bold !important;
         }
 
         .schedule-table th,
         .schedule-table td {
             border: 1px solid #e0e0e0;
             text-align: center;
-            padding: 4px;
-            height: 100px;
+            padding: 1px;
             vertical-align: top;
             position: relative;
-        }
-
-        .schedule-table th {
-            background-color: #f9fafb;
-            font-weight: normal;
-            color: #555;
-            padding: 10px 4px;
-            height: auto;
-        }
-
-        /* [优化] 调整第一列（时间/节次）的宽度 */
-        .schedule-table td:first-child,
-        .schedule-table th:first-child {
-            font-weight: bold;
-            background-color: #f9fafb;
-            width: 40px;
-            /* [优化] 减小宽度 */
-            font-size: 0.9em;
-            color: #4a90e2;
+            width: 100px;
+            min-width: 100px;
         }
 
         .schedule-table td {
             cursor: pointer;
             transition: background-color 0.2s;
+            height: calc((100vh - 160px) / 12);
+            /* 动态计算高度 */
+            min-height: 35px;
+            max-height: 60px;
         }
 
         .schedule-table td:hover {
             background-color: #f0f8ff;
         }
 
-        /* [优化] 调整课程卡片内文字大小，适应小屏幕 */
+        /* 优化课程卡片样式 */
         .course-item {
-            border-radius: 8px;
-            padding: 6px;
+            border-radius: 4px;
+            padding: 2px;
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             overflow: hidden;
             position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
+            top: 1px;
+            left: 1px;
+            right: 1px;
+            bottom: 1px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             pointer-events: none;
+            text-align: center;
         }
 
         .course-name {
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 1px;
+            font-size: 10px;
+            line-height: 1.2;
         }
 
         .course-location,
         .course-teacher {
-            font-size: 0.95em;
+            font-size: 9px;
             opacity: 0.9;
+            line-height: 1.1;
         }
 
+        /* 特殊事项区域 */
         .notes-container {
-            padding: 15px 20px;
+            padding: 10px 15px;
             border-top: 1px solid #e0e0e0;
             background-color: #f9fafb;
+            flex-shrink: 0;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
 
         .notes-title {
             font-weight: bold;
-            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .edit-notes-btn {
+            padding: 4px 8px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4a90e2;
+            color: white;
+            cursor: pointer;
+        }
+
+        .edit-notes-btn:hover {
+            background-color: #3a7bc8;
+        }
+
+        #notes-content {
+            font-size: 13px;
+            color: #666;
+            white-space: pre-wrap;
         }
 
         .note-item {
-            font-size: 0.9em;
-            color: #666;
+            margin-bottom: 4px;
+        }
+
+        /* --- 悬浮按钮组 --- */
+        .floating-buttons {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .float-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .float-btn.primary {
+            background-color: #4CAF50;
+        }
+
+        .float-btn.info {
+            background-color: #2196F3;
+        }
+
+        .float-btn.danger {
+            background-color: #f44336;
+        }
+
+        /* --- 粘贴模态窗口 --- */
+        .paste-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            z-index: 1100;
+        }
+
+        .paste-modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .paste-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .paste-modal-body {
+            padding: 15px;
+            max-height: calc(80vh - 120px);
+            overflow-y: auto;
+        }
+
+        .paste-modal-body textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .paste-modal-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+
+        .paste-modal-footer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        /* --- 编辑特殊事项模态窗口 --- */
+        .notes-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            z-index: 1100;
+        }
+
+        .notes-modal textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
         }
 
         /* --- 备忘录模态窗口 --- */
         .memo-indicator {
             position: absolute;
-            top: 4px;
-            right: 4px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
+            top: 1px;
+            right: 1px;
+            width: 14px;
+            height: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            content: '📝';
+            font-size: 10px;
+            z-index: 2;
         }
 
         .modal-overlay {
@@ -250,7 +392,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
-            z-index: 999;
+            z-index: 1050;
         }
 
         .memo-modal {
@@ -264,7 +406,7 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             width: 90%;
             max-width: 400px;
-            z-index: 1000;
+            z-index: 1100;
         }
 
         .modal-header {
@@ -274,7 +416,7 @@
 
         .modal-header h3 {
             margin: 0;
-            font-size: 1.2em;
+            font-size: 16px;
             color: #333;
         }
 
@@ -284,14 +426,13 @@
 
         .modal-body textarea {
             width: 100%;
-            height: 150px;
+            height: 120px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 1em;
+            font-size: 14px;
             line-height: 1.5;
             resize: vertical;
-            box-sizing: border-box;
         }
 
         .modal-footer {
@@ -305,7 +446,7 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 14px;
             font-weight: bold;
             margin-left: 10px;
         }
@@ -324,90 +465,118 @@
             background-color: #6c757d;
             color: white;
         }
+
+        /* 响应式优化 - 移动端 */
+        @media (max-width: 768px) {
+            .schedule-table {
+                /* 移动端默认只显示周一到周五 */
+            }
+
+            .schedule-table th[data-day="6"],
+            .schedule-table th[data-day="7"],
+            .schedule-table td:nth-child(7),
+            .schedule-table td:nth-child(8) {
+                /* 周六日在移动端可通过横向滚动查看 */
+            }
+
+            .schedule-table th,
+            .schedule-table td {
+                width: calc((100vw - 35px) / 5);
+                /* 默认显示5天 */
+                min-width: 60px;
+            }
+
+            .floating-buttons {
+                left: 10px;
+                bottom: 10px;
+            }
+
+            .float-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 
 <body>
-
-    <div class="container">
-        <h1>一站式课表生成与规划工具</h1>
-
-        <div class="card">
-            <div class="input-section">
-                <h2>步骤 1: 粘贴课表文本</h2>
-                <p>
-                    从研究生教务系统复制<strong>完整的课业信息表（在个人课表的下面）</strong>，然后粘贴到这个文本框中。<br>访问浙工大教务系统的个人课表页面：
-                    <a href="https://yjsfw.zjut.edu.cn/gsapp/sys/wdkbapp/*default/index.do?EMAP_LANG=zh#/xskcb" target="_blank" rel="noopener noreferrer">
-                        点击这里打开
-                    </a>
-                </p>
-                <textarea id="input-textarea" placeholder="在此粘贴表格文本...">课程代码	课程名称	班级名称	授课计划	课程学时	学分	校区	开课单位	上课方式	授课形式	任课教师	上课人数	首次上课日期	上课时间地点	选课备注	线上教学二维码	课表备注
-Y204017	商业伦理与会计职业道德	2025级MPAcc屏峰班	查看授课计划	32	2	屏峰校区	管理学院	讲授, 实验/实践, 研讨		安维东,毛建荣,施秀珍	25	2025-09-24	1-2,4-11周 星期三[10-11节]健B104
-1-2,4-10周 星期三[12-12节]健B104
-3周 星期六[10-10节]健B104
-3周 星期六[10-12节]健B104
-3周 星期六[10-10节]健B104			
-Y204064	公司战略与风险管理	2025级MPAcc屏峰班	查看授课计划	32	2	屏峰校区	管理学院	讲授, 实验/实践, 研讨		马笑芳,廖科智	24	2025-09-23	1-2,4-8周 星期二[6-7节]博易C104
-1周 星期日[6-7节]博易C104
-9-16周 星期二[6-7节]博易C104			
-Y204091	创新创业型中小企业投融资管理	2025级MPAcc屏峰班	查看授课计划	32	2	屏峰校区	管理学院	讲授, 实验/实践, 研讨		安维东,金鑫	24	2025-09-22	1-8周 星期一[2-4节]博易C406
-9-11周 星期一[10-11节]博易C104
-9-10周 星期一[12-12节]博易C104			
-Y204107	高级管理会计理论与实务	2025级MPAcc屏峰班	查看授课计划	48	3	屏峰校区	管理学院	讲授, 实验/实践, 研讨		徐攀,金鑫	24	2025-09-25	1-16周 星期四[10-12节]博易C104			
-Y204121	高级财务管理理论与实务	2025级MPAcc屏峰班	查看授课计划	48	3	屏峰校区	管理学院	讲授, 实验/实践, 研讨		雷新途,虞晓芬	24	2025-09-24	1-2,4-16周 星期三[2-4节]博易C406
-3周 星期六[2-2节]博易C406
-3周 星期六[2-4节]博易C406
-3周 星期六[2-2节]博易C406
-3周 星期六[4-4节]博易C406			
-Y204147	高级审计理论与实务	2025级MPAcc屏峰班	查看授课计划	48	3	屏峰校区	管理学院	讲授, 实验/实践, 研讨		林素燕,王飞绒	24	2025-09-24	1-2,4-16周 星期三[6-8节]博易C403
-3周 星期六[6-8节]博易C403			
-Y204150	大数据与财务决策	2025级MPAcc屏峰班	查看授课计划	32	2	屏峰校区	管理学院	讲授, 实验/实践, 研讨		王治皓,廖科智	24	2025-09-23	1-2,4-11周 星期二[10-11节]博易C104
-1-2,4-10周 星期二[12-12节]博易C104
-1周 星期日[10-12节]博易C104			
-Y204189	管理经济学（MPAcc）	2025级MPAcc屏峰班	查看授课计划	32	2	屏峰校区	管理学院	讲授, 实验/实践, 研讨		李正卫,郭元源	24	2025-09-22	1-11周 星期一[6-7节]博易C403
-1-10周 星期一[8-8节]博易C403					
-Y228002	新时代中国特色社会主义理论与实践	新时代中国特色社会主义理论与实践19 管理学院75+经济学院46	查看授课计划	36	2	屏峰校区	马克思主义学院	讲授, 实验/实践, 研讨	纯线下	倪娜	120	2025-09-26	1-12周 星期五[3-5节]法学B309			
-Y228003	自然辩证法概论	自然辩证法概论18 管理学院75+经济学院46	查看授课计划	18	1	屏峰校区	马克思主义学院	讲授		郑辉荣	119	2025-09-26	1-6周 星期五[6-8节]法学B309			
-Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研究生院	讲授	纯线上	线上课程	4745		1-8周			</textarea>
-                <br>
-                <button id="btn-generate">生成课表</button>
-                <button id="btn-copy" class="secondary">复制结构化JSON</button>
-                <button id="btn-download" class="secondary">下载结构化JSON</button>
+    <div class="schedule-container">
+        <div class="toolbar">
+            <label for="week-selector">周数:</label>
+            <select id="week-selector"></select>
+            <div class="week-nav-buttons">
+                <button id="prev-week">◀</button>
+                <button id="next-week">▶</button>
             </div>
+            <span class="current-week-info" id="current-week-info"></span>
         </div>
-
-        <div class="card schedule-section" id="schedule-section">
-            <div class="schedule-container">
-                <div class="toolbar">
-                    <label for="week-selector">选择周数:</label>
-                    <select id="week-selector"></select>
-                </div>
-                <div class="table-wrapper">
-                    <table class="schedule-table">
-                        <thead>
-                            <tr>
-                                <th>时间</th>
-                                <th>星期一</th>
-                                <th>星期二</th>
-                                <th>星期三</th>
-                                <th>星期四</th>
-                                <th>星期五</th>
-                                <th>星期六</th>
-                                <th>星期日</th>
-                            </tr>
-                        </thead>
-                        <tbody id="schedule-body"></tbody>
-                    </table>
-                </div>
-                <div class="notes-container" id="notes-container">
-                    <div class="notes-title">本周特殊事项</div>
-                    <div id="notes-content">无</div>
-                </div>
+        <div class="table-wrapper">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>节</th>
+                        <th data-day="1">周一</th>
+                        <th data-day="2">周二</th>
+                        <th data-day="3">周三</th>
+                        <th data-day="4">周四</th>
+                        <th data-day="5">周五</th>
+                        <th data-day="6">周六</th>
+                        <th data-day="7">周日</th>
+                    </tr>
+                </thead>
+                <tbody id="schedule-body"></tbody>
+            </table>
+        </div>
+        <div class="notes-container" id="notes-container">
+            <div class="notes-header">
+                <div class="notes-title">本周特殊事项</div>
+                <button class="edit-notes-btn" onclick="openNotesModal()">编辑</button>
             </div>
+            <div id="notes-content">无</div>
         </div>
     </div>
 
+    <!-- 悬浮按钮组 -->
+    <div class="floating-buttons">
+        <button class="float-btn primary" id="btn-paste" title="粘贴课表">📋</button>
+        <button class="float-btn info" id="btn-current-week" title="返回当前周">📅</button>
+        <button class="float-btn danger" id="btn-reset" title="清空数据">🗑️</button>
+    </div>
+
+    <!-- 粘贴课表模态窗口 -->
     <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="paste-modal" id="paste-modal">
+        <div class="paste-modal-header">
+            <h3>粘贴课表文本</h3>
+        </div>
+        <div class="paste-modal-body">
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                从研究生教务系统复制完整的课业信息表，然后粘贴到下方文本框中。
+            </p>
+            <textarea id="input-textarea" placeholder="在此粘贴表格文本..."></textarea>
+        </div>
+        <div class="paste-modal-footer">
+            <button class="btn-cancel" onclick="closePasteModal()">取消</button>
+            <button class="btn-save" onclick="generateSchedule()">生成课表</button>
+        </div>
+    </div>
+
+    <!-- 编辑特殊事项模态窗口 -->
+    <div class="notes-modal" id="notes-modal">
+        <div class="modal-header">
+            <h3>编辑本周特殊事项</h3>
+        </div>
+        <div class="modal-body">
+            <textarea id="notes-textarea" placeholder="输入本周的特殊事项..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeNotesModal()">取消</button>
+            <button class="btn-save" onclick="saveNotes()">保存</button>
+        </div>
+    </div>
+
+    <!-- 备忘录模态窗口 -->
     <div class="memo-modal" id="memo-modal">
         <div class="modal-header">
             <h3 id="modal-title">添加/编辑备忘录</h3>
@@ -432,6 +601,117 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
             const courseColors = {};
             let colorIndex = 0;
             let allMemos = {};
+            let weeklyNotes = {};
+            const SEMESTER_START_DATE = new Date('2025-09-19');
+
+            // 模态窗口控制
+            window.openNotesModal = function () {
+                const weekNumber = parseInt(document.getElementById('week-selector').value, 10);
+                document.getElementById('notes-textarea').value = weeklyNotes[weekNumber] || '';
+                document.getElementById('notes-modal').style.display = 'block';
+                document.getElementById('modal-overlay').style.display = 'block';
+            }
+
+            window.closeNotesModal = function () {
+                document.getElementById('notes-modal').style.display = 'none';
+                document.getElementById('modal-overlay').style.display = 'none';
+            }
+
+            window.saveNotes = function () {
+                const weekNumber = parseInt(document.getElementById('week-selector').value, 10);
+                const content = document.getElementById('notes-textarea').value.trim();
+                if (content) {
+                    weeklyNotes[weekNumber] = content;
+                } else {
+                    delete weeklyNotes[weekNumber];
+                }
+                localStorage.setItem('weeklyNotes', JSON.stringify(weeklyNotes));
+                renderSchedule(weekNumber);
+                closeNotesModal();
+            }
+
+            window.closePasteModal = function () {
+                document.getElementById('paste-modal').style.display = 'none';
+                document.getElementById('modal-overlay').style.display = 'none';
+            }
+
+            window.generateSchedule = function () {
+                const rawText = document.getElementById('input-textarea').value.trim();
+                if (!rawText) {
+                    alert('请先粘贴表格文本！');
+                    return;
+                }
+                try {
+                    const initialJson = parseTable(rawText);
+                    structuredCourseData = initialJson.map(processCourse);
+                    dataManager.saveScheduleData(structuredCourseData);
+                    initializeScheduleView(true);
+                    closePasteModal();
+                } catch (err) {
+                    alert('解析失败：' + err.message);
+                }
+            }
+
+            //================================================================
+            //  数据持久化
+            //================================================================
+            const dataManager = {
+                saveScheduleData: (data) => {
+                    localStorage.setItem('scheduleData', JSON.stringify(data));
+                    localStorage.setItem('scheduleDataTimestamp', new Date().getTime());
+                },
+                loadScheduleData: () => {
+                    const data = localStorage.getItem('scheduleData');
+                    return data ? JSON.parse(data) : null;
+                },
+                clearAllData: () => {
+                    if (confirm('确定要清除所有数据吗？这将删除保存的课表、备忘录和特殊事项。')) {
+                        localStorage.removeItem('scheduleData');
+                        localStorage.removeItem('scheduleDataTimestamp');
+                        localStorage.removeItem('courseMemos');
+                        localStorage.removeItem('weeklyNotes');
+                        structuredCourseData = [];
+                        allMemos = {};
+                        weeklyNotes = {};
+                        location.reload();
+                    }
+                }
+            };
+
+            //================================================================
+            //  日期计算功能
+            //================================================================
+            function getCurrentWeekAndDay() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const semesterStart = new Date(SEMESTER_START_DATE);
+                semesterStart.setHours(0, 0, 0, 0);
+
+                const diffTime = today - semesterStart;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                const currentWeek = Math.floor(diffDays / 7) + 1;
+
+                let currentDay = today.getDay();
+                if (currentDay === 0) currentDay = 7;
+
+                return {
+                    week: Math.max(1, Math.min(currentWeek, MAX_WEEKS)),
+                    day: currentDay
+                };
+            }
+
+            function highlightCurrentDay(currentDay) {
+                document.querySelectorAll('.schedule-table th').forEach(th => {
+                    th.classList.remove('current-day');
+                });
+
+                const dayHeader = document.querySelector(`.schedule-table th[data-day="${currentDay}"]`);
+                if (dayHeader) {
+                    dayHeader.classList.add('current-day');
+                }
+            }
 
             //================================================================
             //  模块1: 文本解析
@@ -443,7 +723,7 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                 const header = lines[0].split('\t');
                 const idxMap = {};
                 wantedCols.forEach(k => idxMap[k] = header.indexOf(k));
-                if (idxMap["课程代码"] === -1) throw new Error('首行未检测到“课程代码”列，请确认已包含表头行。');
+                if (idxMap["课程代码"] === -1) throw new Error('首行未检测到"课程代码"列，请确认已包含表头行。');
                 const list = [];
                 let cur = null;
                 for (let i = 1; i < lines.length; i++) {
@@ -566,9 +846,13 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                 const scheduleBody = document.getElementById('schedule-body');
                 const notesContent = document.getElementById('notes-content');
                 scheduleBody.innerHTML = '';
-                notesContent.innerHTML = '无';
+
+                // 显示用户自定义的特殊事项
+                const userNotes = weeklyNotes[weekNumber] || '';
+
                 const grid = Array(MAX_PERIODS + 1).fill(null).map(() => Array(8).fill(null));
-                const weeklyNotes = [];
+                const systemNotes = [];
+
                 structuredCourseData.forEach(course => {
                     const color = getCourseColor(course.课程代码);
                     (course.schedule || []).forEach(item => {
@@ -580,16 +864,16 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                                     grid[item.start_period + i][item.weekday] = 'occupied';
                                 }
                             } else {
-                                weeklyNotes.push(`【${course.课程名称}】: ${item.description} (周数: ${item.weeks_str})`);
+                                systemNotes.push(`【${course.课程名称}】: ${item.description}`);
                             }
                         }
                     });
                 });
+
                 for (let period = 1; period <= MAX_PERIODS; period++) {
                     const row = document.createElement('tr');
-                    // [优化] 简化节次显示为数字
                     const periodCell = document.createElement('td');
-                    periodCell.innerHTML = `<b>${period}</b>`;
+                    periodCell.innerHTML = `${period}`;
                     row.appendChild(periodCell);
 
                     for (let day = 1; day <= 7; day++) {
@@ -601,11 +885,13 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                         cell.addEventListener('click', () => openMemoModal(weekNumber, day, startPeriod, endPeriod));
                         if (cellData) {
                             cell.rowSpan = cellData.span;
+                            const shortName = cellData.课程名称.length > 8 ?
+                                cellData.课程名称.substring(0, 7) + '…' : cellData.课程名称;
                             cell.innerHTML = `
                         <div class="course-item" style="background-color: ${cellData.color};">
-                            <div class="course-name">${cellData.课程名称}</div>
-                            <div class="course-location">@ ${cellData.location}</div>
-                            <div class="course-teacher">${cellData.任课教师}</div>
+                            <div class="course-name">${shortName}</div>
+                            <div class="course-location">${cellData.location}</div>
+                            <div class="course-teacher">${cellData.任课教师.split(',')[0]}</div>
                         </div>`;
                         }
                         const memoKey = `w${weekNumber}_d${day}_p${startPeriod}`;
@@ -616,10 +902,27 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                     }
                     scheduleBody.appendChild(row);
                 }
-                if (weeklyNotes.length > 0) {
-                    notesContent.innerHTML = weeklyNotes.map(note => `<div class="note-item">• ${note}</div>`).join('');
+
+                // 合并显示用户自定义事项和系统事项
+                let allNotes = [];
+                if (userNotes) {
+                    allNotes.push(`<div style="color: #333; margin-bottom: 8px;">${userNotes.replace(/\n/g, '<br>')}</div>`);
+                }
+                if (systemNotes.length > 0) {
+                    allNotes.push(...systemNotes.map(note => `<div class="note-item">• ${note}</div>`));
+                }
+                notesContent.innerHTML = allNotes.length > 0 ? allNotes.join('') : '无';
+
+                // 更新当前周信息
+                const currentInfo = getCurrentWeekAndDay();
+                const infoElement = document.getElementById('current-week-info');
+                if (currentInfo.week === weekNumber) {
+                    infoElement.textContent = '（当前周）';
+                } else {
+                    infoElement.textContent = '';
                 }
             }
+
             const modal = document.getElementById('memo-modal');
             const overlay = document.getElementById('modal-overlay');
             function openMemoModal(week, day, startPeriod, endPeriod) {
@@ -649,9 +952,15 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                     renderSchedule(parseInt(document.getElementById('week-selector').value, 10));
                 });
                 document.getElementById('btn-cancel').addEventListener('click', closeMemoModal);
-                overlay.addEventListener('click', closeMemoModal);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeMemoModal();
+                        closeNotesModal();
+                        closePasteModal();
+                    }
+                });
             }
-            function initializeScheduleView() {
+            function initializeScheduleView(autoJumpToCurrentWeek = false) {
                 const weekSelector = document.getElementById('week-selector');
                 weekSelector.innerHTML = '';
                 let maxWeekInCourses = 0;
@@ -668,21 +977,21 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
                     option.textContent = `第 ${i} 周`;
                     weekSelector.appendChild(option);
                 }
+
+                const currentInfo = getCurrentWeekAndDay();
+
+                if (autoJumpToCurrentWeek) {
+                    weekSelector.value = currentInfo.week;
+                    renderSchedule(currentInfo.week);
+                } else {
+                    renderSchedule(1);
+                }
+
+                highlightCurrentDay(currentInfo.day);
+
                 weekSelector.addEventListener('change', (e) => {
                     renderSchedule(parseInt(e.target.value, 10));
                 });
-                renderSchedule(1);
-            }
-            function download(text, filename) {
-                const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
             }
 
             //================================================================
@@ -690,32 +999,55 @@ Y900003	学术规范教育	学术规范教育01	查看授课计划	16	1	无	研�
             //================================================================
             document.addEventListener('DOMContentLoaded', () => {
                 allMemos = memoManager.load();
+                weeklyNotes = JSON.parse(localStorage.getItem('weeklyNotes') || '{}');
                 setupModalListeners();
-                document.getElementById('btn-generate').addEventListener('click', () => {
-                    const rawText = document.getElementById('input-textarea').value.trim();
-                    if (!rawText) { alert('请先粘贴表格文本！'); return; }
-                    try {
-                        const initialJson = parseTable(rawText);
-                        structuredCourseData = initialJson.map(processCourse);
-                        initializeScheduleView();
-                        const scheduleSection = document.getElementById('schedule-section');
-                        scheduleSection.style.display = 'block';
-                        scheduleSection.scrollIntoView({ behavior: 'smooth' });
-                    } catch (err) {
-                        alert('解析失败：' + err.message);
+
+                // 检查是否有保存的课表数据
+                const savedData = dataManager.loadScheduleData();
+                if (savedData && savedData.length > 0) {
+                    structuredCourseData = savedData;
+                    initializeScheduleView(true);
+                } else {
+                    // 没有数据时提示用户粘贴课表
+                    alert('请点击左下角的粘贴按钮导入课表数据');
+                }
+
+                // 悬浮按钮事件
+                document.getElementById('btn-paste').addEventListener('click', () => {
+                    document.getElementById('paste-modal').style.display = 'block';
+                    document.getElementById('modal-overlay').style.display = 'block';
+                });
+
+                document.getElementById('btn-current-week').addEventListener('click', () => {
+                    const currentInfo = getCurrentWeekAndDay();
+                    const weekSelector = document.getElementById('week-selector');
+                    weekSelector.value = currentInfo.week;
+                    renderSchedule(currentInfo.week);
+                    highlightCurrentDay(currentInfo.day);
+                });
+
+                document.getElementById('btn-reset').addEventListener('click', () => {
+                    dataManager.clearAllData();
+                });
+
+                // 周切换按钮
+                document.getElementById('prev-week').addEventListener('click', () => {
+                    const weekSelector = document.getElementById('week-selector');
+                    const currentWeek = parseInt(weekSelector.value, 10);
+                    if (currentWeek > 1) {
+                        weekSelector.value = currentWeek - 1;
+                        renderSchedule(currentWeek - 1);
                     }
                 });
-                document.getElementById('btn-copy').addEventListener('click', () => {
-                    if (structuredCourseData.length === 0) { alert('请先生成课表，才有JSON数据可复制！'); return; }
-                    const jsonStr = JSON.stringify(structuredCourseData, null, 2);
-                    navigator.clipboard.writeText(jsonStr)
-                        .then(() => alert('已将结构化JSON复制到剪贴板！'))
-                        .catch(() => alert('复制失败，您的浏览器可能不支持或未授权。'));
-                });
-                document.getElementById('btn-download').addEventListener('click', () => {
-                    if (structuredCourseData.length === 0) { alert('请先生成课表，才有JSON数据可下载！'); return; }
-                    const jsonStr = JSON.stringify(structuredCourseData, null, 2);
-                    download(jsonStr, 'structured-courses.json');
+
+                document.getElementById('next-week').addEventListener('click', () => {
+                    const weekSelector = document.getElementById('week-selector');
+                    const currentWeek = parseInt(weekSelector.value, 10);
+                    const maxWeek = weekSelector.options.length;
+                    if (currentWeek < maxWeek) {
+                        weekSelector.value = currentWeek + 1;
+                        renderSchedule(currentWeek + 1);
+                    }
                 });
             });
         })();
