@@ -19,7 +19,6 @@ theme:
 nav:
   - 首页: index.md
   - 课表: class_schedule.html
-  - 课表美化: class_pretify.html
 
 plugins:
   - search
