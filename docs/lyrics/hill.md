@@ -1,12 +1,5 @@
 # 山丘
 
-```
-the quick fox jump over a lazy dog.
-gog qvzvv mmm qevo jihi q pc k fhj?
-借贷应收账款
-  贷：银行促凝
-```
-
 想说却还没说的 还很多  
 There's still so much I want to say but haven't said  
 攒着是因为想写成歌  

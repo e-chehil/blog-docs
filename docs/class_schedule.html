@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的课表</title>
+    <link rel="icon" type="image/svg+xml" href="assets/fonts/images/schedule.svg">
     <style>
         /* --- 1. 全局与主题 --- */
         :root {
@@ -241,6 +242,7 @@
             color: var(--text-secondary);
             padding: 8px 4px;
             height: 40px;
+            vertical-align: middle;
         }
 
         /* 节次列 (第一列) */
@@ -256,6 +258,7 @@
             font-size: 13px;
             color: var(--accent-primary);
             vertical-align: middle;
+            cursor: default;
         }
 
         .schedule-table thead th:first-child {
@@ -708,7 +711,7 @@
             const MAX_WEEKS = 20;
             const MAX_PERIODS = 12;
             // 优化后的课程颜色
-            const COLORS = ['#ee3f4d', '#f59e0b', '#10b981', '#3b82f6', '#6366f1', '#ec4899', '#14b8a6', '#f97316', '#84cc16', '#0ea5e9', '#8b5cf6', '#d946ef', '#06b6d4', '#ef4444', '#9333ea'];
+            const COLORS = ["#66A857", "#578EA8", "#9957A8", "#A87157", "#5766A8", "#A8578F", "#A89957", "#57A871", "#A85766", "#8EA857", "#57A899", "#7157A8"];
             const courseColors = {};
             let colorIndex = 0;
             let allMemos = {};
