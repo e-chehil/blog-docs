@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的课表</title>
+    <link rel="icon" type="image/svg+xml" href="assets/fonts/images/schedule.svg">
+    <style>
+        /* --- 1. 全局与主题 --- */
+        :root {
+            --bg-page: #c3cfe2;
+            --bg-card: #ffffff;
+            --bg-header: #f8f9fa;
+            --bg-sticky: #f8f9fa;
+            /* 固定列/表头的背景 */
+            --bg-hover: #f1f5f9;
+            --bg-current-day: #e7f5ff;
+
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-tertiary: #adb5bd;
+            --text-on-accent: #ffffff;
+
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+
+            --accent-primary: #5e72e4;
+            --accent-primary-light: #dbeafe;
+            --accent-success: #28a745;
+            --accent-danger: #dc3545;
+            --accent-info: #17a2b8;
+
+            --card-border-radius: 12px;
+            --element-border-radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- 2. 页面布局 (PC卡片式, 移动端全屏) --- */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 768px;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 1400px;
+            height: calc(100vh - 40px);
+            /* 视区高度减去padding */
+            background-color: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* PC端卡片样式 */
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .special-notes-container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--bg-card);
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        /* --- 3. 应用头部 --- */
+        .app-header {
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .app-header-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .app-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-group label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .toolbar-group select,
+        .toolbar-group button {
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            border-radius: var(--element-border-radius);
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        .toolbar-group button:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .toolbar-group select:focus,
+        .toolbar-group button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-primary-light);
+        }
+
+        .current-week-info {
+            font-size: 14px;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        /* --- 4. 设置菜单 (齿轮图标) --- */
+        .settings-menu {
+            position: relative;
+        }
+
+        #settings-btn {
+            width: 36px;
+            height: 36px;
+            background: none;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        #settings-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+            transform: rotate(45deg);
+        }
+
+        .settings-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            background-color: var(--bg-card);
+            border-radius: var(--element-border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            width: 160px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .settings-dropdown.active {
+            display: block;
+        }
+
+        .settings-dropdown a {
+            display: block;
+            padding: 10px 15px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .settings-dropdown a:hover {
+            background-color: var(--bg-hover);
+        }
+
+        /* --- 5. 课表核心 --- */
+        .timetable-wrapper {
+            flex-grow: 1;
+            /* 占据剩余所有空间 */
+            overflow-x: auto;
+            /* 移动端横向滚动 */
+            position: relative;
+        }
+
+        .schedule-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid var(--border-color);
+            text-align: center;
+            vertical-align: top;
+            position: relative;
+            padding: 0;
+        }
+
+        /* 表头 */
+        .schedule-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--bg-sticky);
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-secondary);
+            height: 48px;
+            /* 适当增加高度以容纳日期 */
+            vertical-align: middle;
+            line-height: 1.3;
+        }
+
+        /* === 新增/替换开始 : 日期样式 === */
+        .day-date {
+            font-weight: 400;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* === 新增/替换结束 === */
+
+        /* 节次列 (第一列) */
+        .schedule-table th:first-child,
+        .schedule-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background-color: var(--bg-sticky);
+            font-weight: 600;
+            width: 45px;
+            min-width: 45px;
+            font-size: 13px;
+            color: var(--accent-primary);
+            vertical-align: middle;
+            cursor: default;
+        }
+
+        .schedule-table thead th:first-child {
+            z-index: 11;
+        }
+
+        /* 节次号与时间段 */
+        .period-number {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .period-time {
+            font-size: 10px;
+            color: var(--text-secondary);
+            line-height: 1.2;
+        }
+
+        /* 课程格子 */
+        .schedule-table tbody tr {
+            height: calc(100% / 12);
+            /* 核心：12节课均分tbody高度 */
+        }
+
+        .schedule-table tbody td {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .schedule-table tbody td:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .course-item {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border-radius: var(--element-border-radius);
+            padding: 4px;
+            color: var(--text-on-accent);
+            font-size: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            pointer-events: none;
+            /* 让点击穿透到td */
+        }
+
+        .course-name {
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .course-location,
+        .course-teacher {
+            font-size: 11px;
+            opacity: 0.85;
+            line-height: 1.2;
+        }
+
+        /* 高亮当天 */
+        .schedule-table th.current-day {
+            background-color: var(--bg-current-day) !important;
+            color: var(--accent-primary) !important;
+            font-weight: bold !important;
+        }
+
+        /* --- 6. 备忘录图标与动画 --- */
+        .memo-indicator {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            /* 增大图标 */
+            height: 20px;
+            font-size: 16px;
+            /* 增大图标 */
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 脉冲动画 */
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        /* --- 7. 特殊事项 --- */
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .notes-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .edit-notes-btn {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--element-border-radius);
+            background-color: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        #notes-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .note-item {
+            margin-bottom: 5px;
+        }
+
+        /* --- 8. 模态窗口 --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--bg-card);
+            border-radius: var(--card-border-radius);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            z-index: 1100;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--element-border-radius);
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        #paste-modal textarea {
+            height: 300px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-footer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--element-border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-save {
+            background-color: var(--accent-primary);
+            color: var(--text-on-accent);
+        }
+
+        .btn-delete {
+            background-color: var(--accent-danger);
+            color: var(--text-on-accent);
+        }
+
+        .btn-cancel {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* --- 9. 响应式设计 (移动端) --- */
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 0;
+            }
+
+            .main-content {
+                height: 100vh;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .app-header-title {
+                display: none;
+                /* 移动端隐藏标题 */
+            }
+
+            .app-header {
+                padding: 8px 10px;
+                justify-content: flex-end;
+            }
+
+            .toolbar-group label {
+                display: none;
+                /* 移动端隐藏标签 */
+            }
+
+            .special-notes-container {
+                border-radius: 0;
+                margin-top: 0;
+                border-top: 1px solid var(--border-color);
+            }
+
+            /* 关键: 设置表格列宽以触发横向滚动 */
+            .schedule-table th,
+            .schedule-table td {
+                /* (视口宽度 - 固定列宽) / 显示天数 */
+                width: calc((100vw - 45px) / 5);
+                min-width: 80px;
+            }
+        }
+
+        /* === 新增/替换开始 : 全局隐藏垂直滚动条 === */
+        html,
+        body {
+            overflow-y: auto;
+            /* 仍可滚动但不显示滚动条 */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            /* Chrome / Edge / Safari */
+        }
+
+        /* === 新增/替换结束 === */
+
+        /* === 新增/替换开始 : 课表横向滚动条美化 === */
+        .timetable-wrapper {
+            overflow-y: hidden;
+            /* 杜绝内部纵向条 */
+            padding-bottom: 8px;
+            /* 预留空间, 防止thumb遮挡最后一行 */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, .15) transparent;
+        }
+
+        .timetable-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .timetable-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .timetable-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, .15);
+            border-radius: 3px;
+        }
+
+        /* === 新增/替换结束 === */
+
+        /* === 新增/替换开始 : 让 12 节课永远满屏显示 === */
+        :root {
+            --header-h: 52px;
+            /* app-header 实际高度 (必要时调整) */
+        }
+
+        @media (min-width: 0px) {
+
+            /* 所有尺寸都生效 */
+            .schedule-table tbody tr {
+                height: calc((100vh - var(--header-h)) / 12);
+                /* header-h 减去 app-header 与 thead 的总高度后已经在原布局里体现，
+                    这里指定一个近似值即可保证 12 行不溢出 */
+            }
+        }
+
+        /* === 新增/替换结束 === */
+    </style>
+</head>
+
+<body>
+
+    <div class="page-container">
+        <main class="main-content">
+            <header class="app-header">
+                <h1 class="app-header-title">学期课表</h1>
+                <div class="app-header-controls">
+                    <span class="current-week-info" id="current-week-info"></span>
+                    <div class="toolbar-group">
+                        <label for="week-selector">周数:</label>
+                        <select id="week-selector"></select>
+                        <button id="prev-week" title="上一周">◀</button>
+                        <button id="next-week" title="下一周">▶</button>
+                    </div>
+                    <div class="settings-menu">
+                        <button id="settings-btn" title="设置">⚙️</button>
+                        <div class="settings-dropdown" id="settings-dropdown">
+                            <a id="menu-paste">📋 粘贴课表</a>
+                            <a id="menu-current-week">📅 返回当前周</a>
+                            <a id="menu-reset">🗑️ 清空数据</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="timetable-wrapper">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>节</th>
+                            <th data-day="1">周一</th>
+                            <th data-day="2">周二</th>
+                            <th data-day="3">周三</th>
+                            <th data-day="4">周四</th>
+                            <th data-day="5">周五</th>
+                            <th data-day="6">周六</th>
+                            <th data-day="7">周日</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-body">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <section class="special-notes-container" id="notes-container">
+            <div class="notes-header">
+                <div class="notes-title">本周特殊事项</div>
+                <button class="edit-notes-btn" onclick="openNotesModal()">编辑</button>
+            </div>
+            <div id="notes-content">无</div>
+        </section>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay"></div>
+
+    <div class="modal paste-modal" id="paste-modal">
+        <div class="modal-header">
+            <h3>粘贴课表文本</h3>
+        </div>
+        <div class="modal-body">
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                从<a href="https://yjsfw.zjut.edu.cn/gsapp/sys/wdkbapp/*default/index.do" target="_blank"
+                    rel="noopener noreferrer">研究生教务系统</a>复制完整的<strong>课程信息表</strong>（第一列为“课程代码”），然后粘贴到这个文本框中。
+            </p>
+            <textarea id="input-textarea" placeholder="在此粘贴表格文本..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closePasteModal()">取消</button>
+            <button class="btn-save" onclick="generateSchedule()">生成课表</button>
+        </div>
+    </div>
+
+    <div class="modal notes-modal" id="notes-modal">
+        <div class="modal-header">
+            <h3>编辑本周特殊事项</h3>
+        </div>
+        <div class="modal-body">
+            <textarea id="notes-textarea" placeholder="输入本周的特殊事项..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeNotesModal()">取消</button>
+            <button class="btn-save" onclick="saveNotes()">保存</button>
+        </div>
+    </div>
+
+    <div class="modal memo-modal" id="memo-modal">
+        <div class="modal-header">
+            <h3 id="modal-title">添加/编辑备忘录</h3>
+        </div>
+        <div class="modal-body">
+            <textarea id="memo-textarea" placeholder="在此输入备忘录内容..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="btn-cancel">取消</button>
+            <button class="btn-delete" id="btn-delete">删除</button>
+            <button class="btn-save" id="btn-save">保存</button>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            // === 新增/替换开始 : 保证 12 行铺满高度且无纵向滚动 ===
+            function resizeRowHeight() {
+                const wrapper = document.querySelector('.timetable-wrapper');
+                const theadH = wrapper.querySelector('thead').offsetHeight;
+                const rows = wrapper.querySelectorAll('tbody tr');
+                if (rows.length) {
+                    const rowH = Math.floor((wrapper.clientHeight - theadH) / 12);
+                    rows.forEach(r => r.style.height = rowH + 'px');
+                }
+            }
+            window.addEventListener('resize', resizeRowHeight);
+            window.addEventListener('orientationchange', resizeRowHeight);
+            // === 新增/替换结束 ===
+
+            // --- 全局变量和配置 ---
+            let structuredCourseData = [];
+            const MAX_WEEKS = 20;
+            const MAX_PERIODS = 12;
+            // 优化后的课程颜色
+            const COLORS = ["#66A857", "#578EA8", "#9957A8", "#A87157", "#5766A8", "#A8578F", "#A89957", "#57A871", "#A85766", "#8EA857", "#57A899", "#7157A8"];
+            const courseColors = {};
+            let colorIndex = 0;
+            let allMemos = {};
+            let weeklyNotes = {};
+            const SEMESTER_START_DATE = new Date('2025-09-22');
+            const PERIOD_TIMES = {
+                1: ["08:00", "08:45"],
+                2: ["08:55", "09:40"],
+                3: ["09:55", "10:40"],
+                4: ["10:50", "11:35"],
+                5: ["11:45", "12:30"],
+                6: ["13:30", "14:15"],
+                7: ["14:25", "15:10"],
+                8: ["15:25", "16:10"],
+                9: ["16:20", "17:05"],
+                10: ["18:30", "19:15"],
+                11: ["19:25", "20:10"],
+                12: ["20:20", "21:05"]
+            };
+
+            // --- 模态窗口控制 (与原版基本相同) ---
+            window.openNotesModal = function () {
+                const weekNumber = parseInt(document.getElementById('week-selector').value, 10);
+                document.getElementById('notes-textarea').value = weeklyNotes[weekNumber] || '';
+                document.getElementById('notes-modal').style.display = 'block';
+                document.getElementById('modal-overlay').style.display = 'block';
+            }
+            window.closeNotesModal = function () {
+                document.getElementById('notes-modal').style.display = 'none';
+                document.getElementById('modal-overlay').style.display = 'none';
+            }
+            window.saveNotes = function () {
+                const weekNumber = parseInt(document.getElementById('week-selector').value, 10);
+                const content = document.getElementById('notes-textarea').value.trim();
+                if (content) {
+                    weeklyNotes[weekNumber] = content;
+                } else {
+                    delete weeklyNotes[weekNumber];
+                }
+                localStorage.setItem('weeklyNotes', JSON.stringify(weeklyNotes));
+                renderSchedule(weekNumber);
+                closeNotesModal();
+            }
+            function openPasteModal() {
+                document.getElementById('paste-modal').style.display = 'block';
+                document.getElementById('modal-overlay').style.display = 'block';
+            }
+            window.closePasteModal = function () {
+                document.getElementById('paste-modal').style.display = 'none';
+                document.getElementById('modal-overlay').style.display = 'none';
+            }
+            window.generateSchedule = function () {
+                const rawText = document.getElementById('input-textarea').value.trim();
+                if (!rawText) { alert('请先粘贴表格文本！'); return; }
+                try {
+                    const initialJson = parseTable(rawText);
+                    structuredCourseData = initialJson.map(processCourse);
+                    dataManager.saveScheduleData(structuredCourseData);
+                    initializeScheduleView(true);
+                    closePasteModal();
+                } catch (err) {
+                    alert('解析失败：' + err.message);
+                }
+            }
+
+            // --- 数据持久化 (无变化) ---
+            const dataManager = {
+                saveScheduleData: (data) => {
+                    localStorage.setItem('scheduleData', JSON.stringify(data));
+                    localStorage.setItem('scheduleDataTimestamp', new Date().getTime());
+                },
+                loadScheduleData: () => {
+                    const data = localStorage.getItem('scheduleData');
+                    return data ? JSON.parse(data) : null;
+                },
+                clearAllData: () => {
+                    if (confirm('确定要清除所有数据吗？这将删除保存的课表、备忘录和特殊事项。')) {
+                        localStorage.clear();
+                        location.reload();
+                    }
+                }
+            };
+
+            // --- 日期计算 ---
+            function getCurrentWeekAndDay() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const semesterStart = new Date(SEMESTER_START_DATE);
+                semesterStart.setHours(0, 0, 0, 0);
+                const diffTime = today - semesterStart;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const currentWeek = Math.floor(diffDays / 7) + 1;
+                let currentDay = today.getDay();
+                if (currentDay === 0) currentDay = 7;
+                return {
+                    week: Math.max(1, Math.min(currentWeek, MAX_WEEKS)),
+                    day: currentDay
+                };
+            }
+
+            function highlightCurrentDay(currentDay, isCurrentWeek) {
+                document.querySelectorAll('.schedule-table th').forEach(th => th.classList.remove('current-day'));
+                if (isCurrentWeek) {
+                    const dayHeader = document.querySelector(`.schedule-table th[data-day="${currentDay}"]`);
+                    if (dayHeader) dayHeader.classList.add('current-day');
+                }
+            }
+
+            // --- 文本解析与结构转换 (无变化) ---
+            const wantedCols = ["课程代码", "课程名称", "班级名称", "课程学时", "学分", "校区", "开课单位", "上课方式", "授课形式", "任课教师", "上课人数", "首次上课日期", "上课时间地点", "选课备注", "线上教学二维码", "课表备注"];
+            function parseTable(text) {
+                const lines = text.replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
+                if (lines.length < 2) throw new Error('输入内容过少，请确保包含表头和至少一行课程数据。');
+                const header = lines[0].split('\t');
+                const idxMap = {};
+                wantedCols.forEach(k => idxMap[k] = header.indexOf(k));
+                if (idxMap["课程代码"] === -1) throw new Error('首行未检测到"课程代码"列，请确认已包含表头行。');
+                const list = [];
+                let cur = null;
+                for (let i = 1; i < lines.length; i++) {
+                    const cells = lines[i].split('\t');
+                    if (/^Y\d{6}/.test(cells[idxMap["课程代码"]])) {
+                        if (cur) finalize(cur), list.push(cur);
+                        cur = {};
+                        wantedCols.forEach(col => {
+                            const idx = idxMap[col];
+                            cur[col] = (idx > -1 && idx < cells.length) ? cells[idx] : '';
+                        });
+                        const firstLoc = cur["上课时间地点"];
+                        cur["上课时间地点"] = firstLoc ? [firstLoc] : [];
+                    } else {
+                        if (cur) {
+                            const continuationText = lines[i].trim();
+                            if (continuationText) cur["上课时间地点"].push(continuationText);
+                        }
+                    }
+                }
+                if (cur) finalize(cur), list.push(cur);
+                return list;
+            }
+            function finalize(obj) {
+                obj["课程学时"] = Number(obj["课程学时"]) || 0;
+                obj["学分"] = Number(obj["学分"]) || 0;
+                obj["上课人数"] = Number(obj["上课人数"]) || 0;
+                if (obj["上课时间地点"].length === 1 && obj["上课时间地点"][0] === '') {
+                    obj["上课时间地点"] = [];
+                }
+            }
+            const DAY_MAP = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '日': 7 };
+            function parseWeeks(weekStr) {
+                const weeks = new Set();
+                if (!weekStr) return [];
+                weekStr.split(',').forEach(part => {
+                    if (part.includes('-')) {
+                        const [start, end] = part.split('-').map(Number);
+                        for (let i = start; i <= end; i++) weeks.add(i);
+                    } else {
+                        if (!isNaN(Number(part))) weeks.add(Number(part));
+                    }
+                });
+                return Array.from(weeks).sort((a, b) => a - b);
+            }
+            function processCourse(course) {
+                const { 上课时间地点, ...restOfCourse } = course;
+                const newCourse = { ...restOfCourse, schedule: [] };
+                const scheduleStrings = 上课时间地点 || [];
+                const scheduleMap = {};
+                const notes = [];
+                for (const s of scheduleStrings) {
+                    const match = s.match(/([\d,-]+)周(?:\s*星期([一二三四五六日]))?\[(\d+)-(\d+)节\](.*)/);
+                    if (match) {
+                        const [, weekStr, weekdayChar, startP, endP, location] = match;
+                        const weeks = parseWeeks(weekStr);
+                        const weekday = DAY_MAP[weekdayChar];
+                        const startPeriod = Number(startP);
+                        const endPeriod = Number(endP);
+                        const cleanLocation = location.trim();
+                        const key = `${weekday}_${cleanLocation}`;
+                        if (!scheduleMap[key]) scheduleMap[key] = {};
+                        for (const week of weeks) {
+                            if (!scheduleMap[key][week]) scheduleMap[key][week] = new Set();
+                            for (let period = startPeriod; period <= endPeriod; period++) {
+                                scheduleMap[key][week].add(period);
+                            }
+                        }
+                    } else {
+                        const noteMatch = s.match(/([\d,-]+)周/);
+                        if (noteMatch) {
+                            const weekStr = noteMatch[1];
+                            notes.push({ type: "note", weeks_str: weekStr, weeks: parseWeeks(weekStr), description: `线上课程或活动: ${s}` });
+                        }
+                    }
+                }
+                for (const key in scheduleMap) {
+                    const [weekday, location] = key.split('_');
+                    const weekToPeriods = scheduleMap[key];
+                    const periodsToWeeks = {};
+                    for (const week in weekToPeriods) {
+                        const periods = Array.from(weekToPeriods[week]).sort((a, b) => a - b);
+                        const periodsKey = JSON.stringify(periods);
+                        if (!periodsToWeeks[periodsKey]) periodsToWeeks[periodsKey] = [];
+                        periodsToWeeks[periodsKey].push(Number(week));
+                    }
+                    for (const periodsKey in periodsToWeeks) {
+                        const periods = JSON.parse(periodsKey);
+                        const weeks = periodsToWeeks[periodsKey].sort((a, b) => a - b);
+                        if (periods.length > 0) {
+                            newCourse.schedule.push({ weeks: weeks, weekday: Number(weekday), start_period: Math.min(...periods), end_period: Math.max(...periods), location: location });
+                        }
+                    }
+                }
+                newCourse.schedule.push(...notes);
+                return newCourse;
+            }
+
+            // --- 课表渲染与交互 ---
+            const memoManager = {
+                load: () => { const m = localStorage.getItem('courseMemos'); return m ? JSON.parse(m) : {}; },
+                save: (m) => { localStorage.setItem('courseMemos', JSON.stringify(m)); },
+                get: (k) => allMemos[k] || '',
+                set: (k, t) => { if (t && t.trim() !== '') { allMemos[k] = t.trim(); } else { delete allMemos[k]; } memoManager.save(allMemos); }
+            };
+            function getCourseColor(courseCode) {
+                if (!courseColors[courseCode]) {
+                    courseColors[courseCode] = COLORS[colorIndex % COLORS.length];
+                    colorIndex++;
+                }
+                return courseColors[courseCode];
+            }
+
+            // === 新增/替换开始 : 计算周日期 ===
+            function getWeekDates(weekNumber) {
+                const dates = [];
+                const semesterStart = new Date(SEMESTER_START_DATE);
+                // getDay() 返回 0 (周日) 到 6 (周六). 我们需要 1 (周一) 到 7 (周日).
+                const dayOfWeek = semesterStart.getDay();
+                // 计算开学日距离其所在周的周一有多少天
+                const diffToMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+
+                const mondayOfFirstWeek = new Date(semesterStart);
+                mondayOfFirstWeek.setDate(semesterStart.getDate() - diffToMonday);
+
+                const mondayOfTargetWeek = new Date(mondayOfFirstWeek);
+                mondayOfTargetWeek.setDate(mondayOfFirstWeek.getDate() + (weekNumber - 1) * 7);
+
+                for (let i = 0; i < 7; i++) {
+                    const currentDate = new Date(mondayOfTargetWeek);
+                    currentDate.setDate(mondayOfTargetWeek.getDate() + i);
+                    dates.push(`${currentDate.getMonth() + 1}/${currentDate.getDate()}`);
+                }
+                return dates;
+            }
+            // === 新增/替换结束 ===
+
+            function renderSchedule(weekNumber) {
+                const scheduleBody = document.getElementById('schedule-body');
+                const notesContent = document.getElementById('notes-content');
+                scheduleBody.innerHTML = '';
+
+                // === 新增/替换开始 : 更新表头日期 ===
+                const weekDates = getWeekDates(weekNumber);
+                const dayHeaders = document.querySelectorAll('.schedule-table thead th[data-day]');
+                const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+                dayHeaders.forEach((th, index) => {
+                    if (weekDates[index]) {
+                        th.innerHTML = `${dayNames[index]}<br><span class="day-date">${weekDates[index]}</span>`;
+                    }
+                });
+                // === 新增/替换结束 ===
+
+                const userNotes = weeklyNotes[weekNumber] || '';
+
+                const grid = Array(MAX_PERIODS + 1).fill(null).map(() => Array(8).fill(null));
+                const systemNotes = [];
+
+                structuredCourseData.forEach(course => {
+                    const color = getCourseColor(course.课程代码);
+                    (course.schedule || []).forEach(item => {
+                        if (item.weeks.includes(weekNumber)) {
+                            if (item.type !== 'note') {
+                                const span = item.end_period - item.start_period + 1;
+                                grid[item.start_period][item.weekday] = { ...course, ...item, span, color };
+                                for (let i = 1; i < span; i++) {
+                                    grid[item.start_period + i][item.weekday] = 'occupied';
+                                }
+                            } else {
+                                systemNotes.push(`【${course.课程名称}】: ${item.description}`);
+                            }
+                        }
+                    });
+                });
+
+                for (let period = 1; period <= MAX_PERIODS; period++) {
+                    const row = document.createElement('tr');
+                    const periodCell = document.createElement('td');
+                    let timeLabel = '';
+                    if (PERIOD_TIMES[period]) {
+                        const [start, end] = PERIOD_TIMES[period];
+                        timeLabel = `<div class="period-time">${start}<br>${end}</div>`;
+                    }
+                    periodCell.innerHTML = `
+                        <div class="period-number">${period}</div>
+                        ${timeLabel}
+                    `;
+                    row.appendChild(periodCell);
+
+                    for (let day = 1; day <= 7; day++) {
+                        if (grid[period][day] === 'occupied') continue;
+                        const cell = document.createElement('td');
+                        const cellData = grid[period][day];
+                        const startPeriod = cellData ? cellData.start_period : period;
+                        const endPeriod = cellData ? cellData.end_period : period;
+                        cell.addEventListener('click', () => openMemoModal(weekNumber, day, startPeriod, endPeriod));
+
+                        let cellContent = '';
+                        if (cellData) {
+                            cell.rowSpan = cellData.span;
+                            cellContent += `
+                            <div class="course-item" style="background-color: ${cellData.color};">
+                                <div class="course-name">${cellData.课程名称}</div>
+                                <div class="course-location">${cellData.location}</div>
+                                <div class="course-teacher">${cellData.任课教师.split(',')[0]}</div>
+                            </div>`;
+                        }
+                        const memoKey = `w${weekNumber}_d${day}_p${startPeriod}`;
+                        if (memoManager.get(memoKey)) {
+                            cellContent += `<div class="memo-indicator">📝</div>`;
+                        }
+                        cell.innerHTML = cellContent;
+                        row.appendChild(cell);
+                    }
+                    scheduleBody.appendChild(row);
+                }
+
+                let allNotes = [];
+                if (userNotes) {
+                    allNotes.push(`<div style="font-weight: 500; color: var(--text-primary); margin-bottom: 8px;">${userNotes.replace(/\n/g, '<br>')}</div>`);
+                }
+                if (systemNotes.length > 0) {
+                    allNotes.push(...systemNotes.map(note => `<div class="note-item">• ${note}</div>`));
+                }
+                notesContent.innerHTML = allNotes.length > 0 ? allNotes.join('') : '无';
+
+                const currentInfo = getCurrentWeekAndDay();
+                const infoElement = document.getElementById('current-week-info');
+                if (currentInfo.week === weekNumber) {
+                    infoElement.textContent = '（当前周）';
+                } else {
+                    infoElement.textContent = '';
+                }
+                highlightCurrentDay(currentInfo.day, currentInfo.week === weekNumber);
+                resizeRowHeight();
+            }
+
+            const modal = document.getElementById('memo-modal');
+            const overlay = document.getElementById('modal-overlay');
+            function openMemoModal(week, day, startPeriod, endPeriod) {
+                const memoKey = `w${week}_d${day}_p${startPeriod}`;
+                modal.dataset.memoKey = memoKey;
+                const dayStr = "一二三四五六日"[day - 1];
+                const periodStr = startPeriod === endPeriod ? `第${startPeriod}节` : `第${startPeriod}-${endPeriod}节`;
+                document.getElementById('modal-title').textContent = `备忘录 (第${week}周, 星期${dayStr}, ${periodStr})`;
+                document.getElementById('memo-textarea').value = memoManager.get(memoKey);
+                modal.style.display = 'block';
+                overlay.style.display = 'block';
+            }
+            function closeMemoModal() {
+                modal.style.display = 'none';
+                overlay.style.display = 'none';
+            }
+            function setupModalListeners() {
+                document.getElementById('btn-save').addEventListener('click', () => {
+                    const key = modal.dataset.memoKey;
+                    memoManager.set(key, document.getElementById('memo-textarea').value);
+                    closeMemoModal();
+                    renderSchedule(parseInt(document.getElementById('week-selector').value, 10));
+                });
+                document.getElementById('btn-delete').addEventListener('click', () => {
+                    memoManager.set(modal.dataset.memoKey, '');
+                    closeMemoModal();
+                    renderSchedule(parseInt(document.getElementById('week-selector').value, 10));
+                });
+                document.getElementById('btn-cancel').addEventListener('click', closeMemoModal);
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeMemoModal();
+                        closeNotesModal();
+                        closePasteModal();
+                    }
+                });
+            }
+            function initializeScheduleView(autoJumpToCurrentWeek = false) {
+                const weekSelector = document.getElementById('week-selector');
+                weekSelector.innerHTML = '';
+                let maxWeekInCourses = 0;
+                structuredCourseData.forEach(c => c.schedule.forEach(s => {
+                    if (s.weeks && s.weeks.length > 0) {
+                        const max = Math.max(...s.weeks);
+                        if (max > maxWeekInCourses) maxWeekInCourses = max;
+                    }
+                }));
+                const totalWeeks = Math.max(MAX_WEEKS, maxWeekInCourses);
+                for (let i = 1; i <= totalWeeks; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `第 ${i} 周`;
+                    weekSelector.appendChild(option);
+                }
+
+                const currentInfo = getCurrentWeekAndDay();
+
+                const targetWeek = autoJumpToCurrentWeek ? currentInfo.week : 1;
+                weekSelector.value = targetWeek;
+                renderSchedule(targetWeek);
+            }
+
+            // --- 主控制器: 绑定新UI事件 ---
+            document.addEventListener('DOMContentLoaded', () => {
+                allMemos = memoManager.load();
+                weeklyNotes = JSON.parse(localStorage.getItem('weeklyNotes') || '{}');
+                setupModalListeners();
+
+                const savedData = dataManager.loadScheduleData();
+                if (savedData && savedData.length > 0) {
+                    structuredCourseData = savedData;
+                    initializeScheduleView(true);
+                } else {
+                    initializeScheduleView(false);
+                    // 首次加载或无数据时可选择性提示
+                    // alert('请点击右上角设置按钮导入课表数据');
+                }
+
+                // 设置菜单事件
+                const settingsBtn = document.getElementById('settings-btn');
+                const settingsDropdown = document.getElementById('settings-dropdown');
+                settingsBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    settingsDropdown.classList.toggle('active');
+                });
+                document.addEventListener('click', () => {
+                    settingsDropdown.classList.remove('active');
+                });
+
+                document.getElementById('menu-paste').addEventListener('click', openPasteModal);
+                document.getElementById('menu-reset').addEventListener('click', dataManager.clearAllData);
+                document.getElementById('menu-current-week').addEventListener('click', () => {
+                    const currentInfo = getCurrentWeekAndDay();
+                    const weekSelector = document.getElementById('week-selector');
+                    weekSelector.value = currentInfo.week;
+                    renderSchedule(currentInfo.week);
+                });
+
+                // 周切换按钮
+                const weekSelector = document.getElementById('week-selector');
+                weekSelector.addEventListener('change', (e) => renderSchedule(parseInt(e.target.value, 10)));
+
+                document.getElementById('prev-week').addEventListener('click', () => {
+                    const currentWeek = parseInt(weekSelector.value, 10);
+                    if (currentWeek > 1) {
+                        weekSelector.value = currentWeek - 1;
+                        renderSchedule(currentWeek - 1);
+                    }
+                });
+
+                document.getElementById('next-week').addEventListener('click', () => {
+                    const currentWeek = parseInt(weekSelector.value, 10);
+                    const maxWeek = weekSelector.options.length;
+                    if (currentWeek < maxWeek) {
+                        weekSelector.value = currentWeek + 1;
+                        renderSchedule(currentWeek + 1);
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>
