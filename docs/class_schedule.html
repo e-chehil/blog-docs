@@ -241,10 +241,20 @@
             font-size: 14px;
             color: var(--text-secondary);
             padding: 8px 4px;
-            height: 50px;
-            /* 增加一点高度给日期 */
+            height: 48px;
+            /* 适当增加高度以容纳日期 */
             vertical-align: middle;
+            line-height: 1.3;
         }
+
+        /* === 新增/替换开始 : 日期样式 === */
+        .day-date {
+            font-weight: 400;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* === 新增/替换结束 === */
 
         /* 节次列 (第一列) */
         .schedule-table th:first-child,
@@ -585,7 +595,7 @@
             .schedule-table tbody tr {
                 height: calc((100vh - var(--header-h)) / 12);
                 /* header-h 减去 app-header 与 thead 的总高度后已经在原布局里体现，
-                  这里指定一个近似值即可保证 12 行不溢出 */
+                    这里指定一个近似值即可保证 12 行不溢出 */
             }
         }
 
@@ -719,7 +729,7 @@
             let colorIndex = 0;
             let allMemos = {};
             let weeklyNotes = {};
-            const SEMESTER_START_DATE = new Date('2025-09-19');
+            const SEMESTER_START_DATE = new Date('2025-09-22');
             const PERIOD_TIMES = {
                 1: ["08:00", "08:45"],
                 2: ["08:55", "09:40"],
@@ -814,30 +824,6 @@
                     day: currentDay
                 };
             }
-
-            // ==================== 新增函数：更新表头日期 ====================
-            function updateDateHeaders(weekNumber) {
-                // 定义第一周的星期一作为基准日期
-                const firstMonday = new Date('2025-09-22');
-                const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-
-                for (let day = 1; day <= 7; day++) {
-                    const header = document.querySelector(`.schedule-table th[data-day="${day}"]`);
-                    if (header) {
-                        const currentDate = new Date(firstMonday);
-                        // 计算从基准日期开始需要增加的天数
-                        const daysOffset = ((weekNumber - 1) * 7) + (day - 1);
-                        currentDate.setDate(firstMonday.getDate() + daysOffset);
-
-                        const month = currentDate.getMonth() + 1;
-                        const dayOfMonth = currentDate.getDate();
-
-                        // 使用 <br> 换行，并用一个 span 来单独设置日期样式
-                        header.innerHTML = `${dayNames[day - 1]}<br><span style="font-size: 11px; font-weight: normal; opacity: 0.8;">${month}/${dayOfMonth}</span>`;
-                    }
-                }
-            }
-            // ==================== 新增函数结束 ====================
 
             function highlightCurrentDay(currentDay, isCurrentWeek) {
                 document.querySelectorAll('.schedule-table th').forEach(th => th.classList.remove('current-day'));
@@ -968,14 +954,46 @@
                 }
                 return courseColors[courseCode];
             }
+
+            // === 新增/替换开始 : 计算周日期 ===
+            function getWeekDates(weekNumber) {
+                const dates = [];
+                const semesterStart = new Date(SEMESTER_START_DATE);
+                // getDay() 返回 0 (周日) 到 6 (周六). 我们需要 1 (周一) 到 7 (周日).
+                const dayOfWeek = semesterStart.getDay();
+                // 计算开学日距离其所在周的周一有多少天
+                const diffToMonday = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+
+                const mondayOfFirstWeek = new Date(semesterStart);
+                mondayOfFirstWeek.setDate(semesterStart.getDate() - diffToMonday);
+
+                const mondayOfTargetWeek = new Date(mondayOfFirstWeek);
+                mondayOfTargetWeek.setDate(mondayOfFirstWeek.getDate() + (weekNumber - 1) * 7);
+
+                for (let i = 0; i < 7; i++) {
+                    const currentDate = new Date(mondayOfTargetWeek);
+                    currentDate.setDate(mondayOfTargetWeek.getDate() + i);
+                    dates.push(`${currentDate.getMonth() + 1}/${currentDate.getDate()}`);
+                }
+                return dates;
+            }
+            // === 新增/替换结束 ===
+
             function renderSchedule(weekNumber) {
                 const scheduleBody = document.getElementById('schedule-body');
                 const notesContent = document.getElementById('notes-content');
                 scheduleBody.innerHTML = '';
 
-                // ==================== 修改：在这里调用日期更新函数 ====================
-                updateDateHeaders(weekNumber);
-                // ================================================================
+                // === 新增/替换开始 : 更新表头日期 ===
+                const weekDates = getWeekDates(weekNumber);
+                const dayHeaders = document.querySelectorAll('.schedule-table thead th[data-day]');
+                const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+                dayHeaders.forEach((th, index) => {
+                    if (weekDates[index]) {
+                        th.innerHTML = `${dayNames[index]}<br><span class="day-date">${weekDates[index]}</span>`;
+                    }
+                });
+                // === 新增/替换结束 ===
 
                 const userNotes = weeklyNotes[weekNumber] || '';
 
