@@ -241,7 +241,8 @@
             font-size: 14px;
             color: var(--text-secondary);
             padding: 8px 4px;
-            height: 40px;
+            height: 50px;
+            /* 增加一点高度给日期 */
             vertical-align: middle;
         }
 
@@ -270,6 +271,7 @@
             font-size: 14px;
             font-weight: bold;
         }
+
         .period-time {
             font-size: 10px;
             color: var(--text-secondary);
@@ -583,7 +585,7 @@
             .schedule-table tbody tr {
                 height: calc((100vh - var(--header-h)) / 12);
                 /* header-h 减去 app-header 与 thead 的总高度后已经在原布局里体现，
-                   这里指定一个近似值即可保证 12 行不溢出 */
+                  这里指定一个近似值即可保证 12 行不溢出 */
             }
         }
 
@@ -653,7 +655,8 @@
         </div>
         <div class="modal-body">
             <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
-                从<a href="https://yjsfw.zjut.edu.cn/gsapp/sys/wdkbapp/*default/index.do" target="_blank" rel="noopener noreferrer">研究生教务系统</a>复制完整的<strong>课程信息表</strong>（第一列为“课程代码”），然后粘贴到这个文本框中。
+                从<a href="https://yjsfw.zjut.edu.cn/gsapp/sys/wdkbapp/*default/index.do" target="_blank"
+                    rel="noopener noreferrer">研究生教务系统</a>复制完整的<strong>课程信息表</strong>（第一列为“课程代码”），然后粘贴到这个文本框中。
             </p>
             <textarea id="input-textarea" placeholder="在此粘贴表格文本..."></textarea>
         </div>
@@ -812,6 +815,30 @@
                 };
             }
 
+            // ==================== 新增函数：更新表头日期 ====================
+            function updateDateHeaders(weekNumber) {
+                // 定义第一周的星期一作为基准日期
+                const firstMonday = new Date('2025-09-22');
+                const dayNames = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+                for (let day = 1; day <= 7; day++) {
+                    const header = document.querySelector(`.schedule-table th[data-day="${day}"]`);
+                    if (header) {
+                        const currentDate = new Date(firstMonday);
+                        // 计算从基准日期开始需要增加的天数
+                        const daysOffset = ((weekNumber - 1) * 7) + (day - 1);
+                        currentDate.setDate(firstMonday.getDate() + daysOffset);
+
+                        const month = currentDate.getMonth() + 1;
+                        const dayOfMonth = currentDate.getDate();
+
+                        // 使用 <br> 换行，并用一个 span 来单独设置日期样式
+                        header.innerHTML = `${dayNames[day - 1]}<br><span style="font-size: 11px; font-weight: normal; opacity: 0.8;">${month}/${dayOfMonth}</span>`;
+                    }
+                }
+            }
+            // ==================== 新增函数结束 ====================
+
             function highlightCurrentDay(currentDay, isCurrentWeek) {
                 document.querySelectorAll('.schedule-table th').forEach(th => th.classList.remove('current-day'));
                 if (isCurrentWeek) {
@@ -945,6 +972,10 @@
                 const scheduleBody = document.getElementById('schedule-body');
                 const notesContent = document.getElementById('notes-content');
                 scheduleBody.innerHTML = '';
+
+                // ==================== 修改：在这里调用日期更新函数 ====================
+                updateDateHeaders(weekNumber);
+                // ================================================================
 
                 const userNotes = weeklyNotes[weekNumber] || '';
 
