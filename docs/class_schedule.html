@@ -837,7 +837,7 @@
             function parseTable(text) {
                 const lines = text.replace(/\r/g, '').split('\n').filter(l => l.trim() !== '');
                 if (lines.length < 2) throw new Error('输入内容过少，请确保包含表头和至少一行课程数据。');
-                const header = lines[0].split('\t');
+                const header = lines[0].split('\t').map(h => h.trim());
                 const idxMap = {};
                 wantedCols.forEach(k => idxMap[k] = header.indexOf(k));
                 if (idxMap["课程代码"] === -1) throw new Error('首行未检测到"课程代码"列，请确认已包含表头行。');
