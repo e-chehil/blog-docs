@@ -82,19 +82,17 @@
             log('视频准备就绪，强制从头开始并播放。');
             video.muted = true;
             video.currentTime = 0;
+            video.addEventListener('pause', () => {
+                if (!video.ended) {
+                    log('检测到暂停，自动恢复播放...');
+                    video.play().catch(e => log('恢复播放失败:', e.message));
+                } else {
+                    log('视频正常结束，不恢复播放。');
+                }
+            });
             video.play().catch(e => log('自动播放需要用户与页面首次交互，请点击页面。'));
+            video.addEventListener('ended', jumpToNextVideo);
         }, { once: true });
-
-        video.addEventListener('ended', jumpToNextVideo);
-
-        video.addEventListener('pause', () => {
-            if (!video.ended) {
-                log('检测到暂停，自动恢复播放...');
-                video.play().catch(e => log('恢复播放失败:', e.message));
-            } else {
-                log('视频正常结束，不恢复播放。');
-            }
-        });
 
         if (observer) {
             observer.disconnect();
