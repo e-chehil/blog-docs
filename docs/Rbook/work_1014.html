@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-Hans" xml:lang="zh-Hans"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.24">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="雷应">
+
+<title>R语言财务数据分析入门教程</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="work_1014_files/libs/clipboard/clipboard.min.js"></script>
+<script src="work_1014_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="work_1014_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="work_1014_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="work_1014_files/libs/quarto-html/popper.min.js"></script>
+<script src="work_1014_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="work_1014_files/libs/quarto-html/anchor.min.js"></script>
+<link href="work_1014_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="work_1014_files/libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="work_1014_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="work_1014_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="work_1014_files/libs/bootstrap/bootstrap-4d7f0bce1131f3e5f9547cd857cfbfc8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="work_1014_files/libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+
+<script src="work_1014_files/libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul class="collapse">
+  <li><a href="#环境准备与包管理" id="toc-环境准备与包管理" class="nav-link active" data-scroll-target="#环境准备与包管理"><span class="header-section-number">1</span> 环境准备与包管理</a></li>
+  <li><a href="#读取数据" id="toc-读取数据" class="nav-link" data-scroll-target="#读取数据"><span class="header-section-number">2</span> 读取数据</a></li>
+  <li><a href="#数据过滤" id="toc-数据过滤" class="nav-link" data-scroll-target="#数据过滤"><span class="header-section-number">3</span> 数据过滤</a>
+  <ul class="collapse">
+  <li><a href="#函数解析" id="toc-函数解析" class="nav-link" data-scroll-target="#函数解析"><span class="header-section-number">3.1</span> 函数解析</a></li>
+  </ul></li>
+  <li><a href="#数据清洗与合并" id="toc-数据清洗与合并" class="nav-link" data-scroll-target="#数据清洗与合并"><span class="header-section-number">4</span> 数据清洗与合并</a>
+  <ul class="collapse">
+  <li><a href="#连接类型说明" id="toc-连接类型说明" class="nav-link" data-scroll-target="#连接类型说明"><span class="header-section-number">4.1</span> 连接类型说明</a></li>
+  </ul></li>
+  <li><a href="#缺失值处理" id="toc-缺失值处理" class="nav-link" data-scroll-target="#缺失值处理"><span class="header-section-number">5</span> 缺失值处理</a></li>
+  <li><a href="#相关性分析" id="toc-相关性分析" class="nav-link" data-scroll-target="#相关性分析"><span class="header-section-number">6</span> 相关性分析</a>
+  <ul class="collapse">
+  <li><a href="#相关系数矩阵" id="toc-相关系数矩阵" class="nav-link" data-scroll-target="#相关系数矩阵"><span class="header-section-number">6.1</span> 相关系数矩阵</a></li>
+  </ul></li>
+  <li><a href="#列名映射" id="toc-列名映射" class="nav-link" data-scroll-target="#列名映射"><span class="header-section-number">7</span> 列名映射</a></li>
+  <li><a href="#热力图可视化" id="toc-热力图可视化" class="nav-link" data-scroll-target="#热力图可视化"><span class="header-section-number">8</span> 热力图可视化</a></li>
+  <li><a href="#数据归一化" id="toc-数据归一化" class="nav-link" data-scroll-target="#数据归一化"><span class="header-section-number">9</span> 数据归一化</a>
+  <ul class="collapse">
+  <li><a href="#min-max-归一化" id="toc-min-max-归一化" class="nav-link" data-scroll-target="#min-max-归一化"><span class="header-section-number">9.1</span> Min-Max 归一化</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">R语言财务数据分析入门教程</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">作者</div>
+    <div class="quarto-title-meta-contents">
+             <p>雷应 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">发布于</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">2025年10月15日</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="环境准备与包管理" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> 环境准备与包管理</h1>
+<p>在R语言中，<strong>包（Package）</strong>是功能的集合，类似于工具箱。我们需要先安装，然后加载它们。</p>
+<p>安装必要的包：</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"dplyr"</span>, <span class="st">"pheatmap"</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>加载包：</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pheatmap)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>dplyr</code> 是 <em>tidyverse</em> 生态系统中的核心包，提供了一套简洁的数据操作语法：</p>
+<ul>
+<li><code>filter()</code>：筛选行</li>
+<li><code>select()</code>：选择列</li>
+<li><code>mutate()</code>：创建新列或修改现有列</li>
+<li><code>group_by()</code>：分组操作</li>
+<li><code>%&gt;%</code>：管道操作符，让代码更易读</li>
+</ul>
+<p><strong>示例：</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建示例数据</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>example_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  姓名 <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"张三"</span>, <span class="st">"李四"</span>, <span class="st">"王五"</span>),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  年龄 <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">30</span>, <span class="dv">28</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  工资 <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">5000</span>, <span class="dv">8000</span>, <span class="dv">6000</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用管道操作符进行数据处理</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> example_data <span class="sc">%&gt;%</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(年龄 <span class="sc">&gt;</span> <span class="dv">25</span>) <span class="sc">%&gt;%</span> <span class="co"># 筛选年龄大于25的</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(工资级别 <span class="ot">=</span> <span class="fu">ifelse</span>(工资 <span class="sc">&gt;</span> <span class="dv">6000</span>, <span class="st">"高"</span>, <span class="st">"中"</span>)) <span class="co"># 添加新列</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(result)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  姓名 年龄 工资 工资级别
+1 李四   30 8000       高
+2 王五   28 6000       中</code></pre>
+</div>
+</div>
+<p><code>pheatmap</code> 用于创建美观的热力图，常用于展示相关系数矩阵或基因表达数据。</p>
+</section>
+<section id="读取数据" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> 读取数据</h1>
+<p>CSV 是一种常见的表格数据格式，可以用 Excel 打开。Excel 表格也可以另存为 CSV 格式（UTF-8）供脚本使用。这里的 CSV 文件中已经将无用的说明行删除。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 读取三张财务报表</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fs_combas <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"FS_Combas.csv"</span>) <span class="co"># 资产负债表</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fs_comins <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"FS_Comins.csv"</span>) <span class="co"># 利润表</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>fs_comscfd <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"FS_Comscfd.csv"</span>) <span class="co"># 现金流量表</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 简要查看字段</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">combas_cols =</span> <span class="fu">names</span>(fs_combas)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">comins_cols =</span> <span class="fu">names</span>(fs_comins)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>],</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">comscfd_cols =</span> <span class="fu">names</span>(fs_comscfd)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$combas_cols
+ [1] "Stkcd"       "ShortName"   "Accper"      "Typrep"      "IfCorrect"  
+ [6] "DeclareDate" "A001101000"  "A0d1101101"  "A0d1102000"  "A0d1102101" 
+
+$comins_cols
+ [1] "Stkcd"       "ShortName"   "Accper"      "Typrep"      "IfCorrect"  
+ [6] "DeclareDate" "B001100000"  "B001101000"  "Bbd1102000"  "Bbd1102101" 
+
+$comscfd_cols
+ [1] "Stkcd"       "ShortName"   "Accper"      "Typrep"      "IfCorrect"  
+ [6] "DeclareDate" "C001001000"  "C0b1002000"  "C0F1023000"  "C0b1003000" </code></pre>
+</div>
+</div>
+</section>
+<section id="数据过滤" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> 数据过滤</h1>
+<p>我们希望仅保留季度末的合并报表数据，处理步骤如下：</p>
+<ul>
+<li>将 Accper 转为 Date，使用 <code>as.Date(…, format = "%Y-%m-%d")</code></li>
+<li>用 <code>format(Accper, "%m-%d")</code> 提取月份-日期，再与季度末集合匹配</li>
+<li><code>Typrep == "A"</code> 选定合并报表的记录</li>
+</ul>
+<p>当同样的操作需要重复多次时，自定义函数可以避免代码重复，提高效率。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>filter_data <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 步骤1：将Accper列转换为日期格式</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  df<span class="sc">$</span>Accper <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(df<span class="sc">$</span>Accper, <span class="at">format =</span> <span class="st">"%Y-%m-%d"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 筛选季度末日期和A类报表</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  df[<span class="fu">format</span>(df<span class="sc">$</span>Accper, <span class="st">"%m-%d"</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"03-31"</span>, <span class="st">"06-30"</span>, <span class="st">"09-30"</span>, <span class="st">"12-31"</span>) <span class="sc">&amp;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    df<span class="sc">$</span>Typrep <span class="sc">==</span> <span class="st">"A"</span>, ]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>fs_combas <span class="ot">&lt;-</span> <span class="fu">filter_data</span>(fs_combas)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>fs_comins <span class="ot">&lt;-</span> <span class="fu">filter_data</span>(fs_comins)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>fs_comscfd <span class="ot">&lt;-</span> <span class="fu">filter_data</span>(fs_comscfd)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看筛选后规模</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">combas_n =</span> <span class="fu">nrow</span>(fs_combas),</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">comins_n =</span> <span class="fu">nrow</span>(fs_comins),</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">comscfd_n =</span> <span class="fu">nrow</span>(fs_comscfd)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> combas_n  comins_n comscfd_n 
+      987       987       987 </code></pre>
+</div>
+</div>
+<section id="函数解析" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="函数解析"><span class="header-section-number">3.1</span> 函数解析</h2>
+<p><strong>as.Date()函数</strong></p>
+<ul>
+<li>作用：将字符串转换为R的日期对象</li>
+<li>常用格式符号：
+<ul>
+<li><code>%Y</code>：4位年份</li>
+<li><code>%m</code>：月份（01-12）</li>
+<li><code>%d</code>：日期（01-31）</li>
+</ul></li>
+</ul>
+<p><strong>示例：</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 不同格式的日期转换示例</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>date1 <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"2024-10-14"</span>, <span class="at">format =</span> <span class="st">"%Y-%m-%d"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>date2 <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"14/10/2024"</span>, <span class="at">format =</span> <span class="st">"%d/%m/%Y"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>date3 <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="st">"Oct 14, 2024"</span>, <span class="at">format =</span> <span class="st">"%b %d, %Y"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 转换结果</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(date1)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2024-10-14"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(date2)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2024-10-14"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(date3)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+</div>
+<p>若日期格式不为 “YYYY-MM-DD”，需调整 format，可先打印前几行 Accper 核验。此外，<code>%in%</code> 可以检查元素是否在向量中，<code>&amp;</code> 为逻辑“与”操作符，需要两个条件同时满足。</p>
+</section>
+</section>
+<section id="数据清洗与合并" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> 数据清洗与合并</h1>
+<p>三张报表通常存在重复公共列（如 Stkcd、Accper、ShortName、Typrep、IfCorrect、DeclareDate）。在进行横向合并前，应避免重复列名冲突，因此我们在利润表、现金流量表剔除部分公共列，仅保留合并键（Stkcd、Accper）。</p>
+<p>代码要点：</p>
+<ul>
+<li><code>setdiff</code>：集合差运算，返回在第一个集合但不在第二个集合中的元素</li>
+<li><code>any_of</code>：选择器，选择存在的列，忽略不存在的列</li>
+<li><code>full_join</code>：全连接，保留两个数据框的所有行，可用 by 参数指定连接键</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 获取公共列名</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>common_cols_names <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  intersect, <span class="fu">list</span>(<span class="fu">names</span>(fs_combas), <span class="fu">names</span>(fs_comins), <span class="fu">names</span>(fs_comscfd))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 去掉重复的公共列</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>fs_comins_clean <span class="ot">&lt;-</span> fs_comins <span class="sc">%&gt;%</span> <span class="fu">select</span>(</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fu">any_of</span>(<span class="fu">setdiff</span>(common_cols_names, <span class="fu">c</span>(<span class="st">"Stkcd"</span>, <span class="st">"Accper"</span>)))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>fs_comscfd_clean <span class="ot">&lt;-</span> fs_comscfd <span class="sc">%&gt;%</span> <span class="fu">select</span>(</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fu">any_of</span>(<span class="fu">setdiff</span>(common_cols_names, <span class="fu">c</span>(<span class="st">"Stkcd"</span>, <span class="st">"Accper"</span>)))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 合并数据框</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>fs_all <span class="ot">&lt;-</span> fs_combas <span class="sc">%&gt;%</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(fs_comins_clean, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Stkcd"</span>, <span class="st">"Accper"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(fs_comscfd_clean, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Stkcd"</span>, <span class="st">"Accper"</span>))</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(fs_all) <span class="co"># 行列数</span></span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 987 295</code></pre>
+</div>
+</div>
+<section id="连接类型说明" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="连接类型说明"><span class="header-section-number">4.1</span> 连接类型说明</h2>
+<p>R中的 <code>dplyr</code> 包提供了多种连接方式：</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建示例数据</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ID =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="at">Name =</span> <span class="fu">c</span>(<span class="st">"张三"</span>, <span class="st">"李四"</span>, <span class="st">"王五"</span>))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ID =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>), <span class="at">Score =</span> <span class="fu">c</span>(<span class="dv">85</span>, <span class="dv">90</span>, <span class="dv">95</span>))</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df1)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ID Name
+1  1 张三
+2  2 李四
+3  3 王五</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(df2)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ID Score
+1  2    85
+2  3    90
+3  4    95</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 内连接：只保留两边都有的</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">inner_join</span>(df1, df2, <span class="at">by =</span> <span class="st">"ID"</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ID Name Score
+1  2 李四    85
+2  3 王五    90</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 左连接：保留左边所有的</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">left_join</span>(df1, df2, <span class="at">by =</span> <span class="st">"ID"</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ID Name Score
+1  1 张三    NA
+2  2 李四    85
+3  3 王五    90</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 全连接：保留两边所有的</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">full_join</span>(df1, df2, <span class="at">by =</span> <span class="st">"ID"</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  ID Name Score
+1  1 张三    NA
+2  2 李四    85
+3  3 王五    90
+4  4 &lt;NA&gt;    95</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="缺失值处理" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> 缺失值处理</h1>
+<p>移除包含缺失值的列，这很保守，会丢弃大量信息，但能保证相关性计算不会因 NA 报错。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 统计每列缺失值的个数</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>na_counts <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(fs_all))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(na_counts)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    0.0    77.0   947.0   620.1   987.0   987.0 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 统计每列的缺失比例</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>na_ratio <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(<span class="fu">is.na</span>(fs_all))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(na_ratio)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.07801 0.95947 0.62822 1.00000 1.00000 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 保留缺失比例 &lt;= 5% 的列</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>fs_all <span class="ot">&lt;-</span> fs_all[, na_ratio <span class="sc">&lt;=</span> <span class="fl">0.05</span>]</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(fs_all)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 987  71</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 仅保留完全无缺失值的列</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>fs_all <span class="ot">&lt;-</span> fs_all[, <span class="fu">colSums</span>(<span class="fu">is.na</span>(fs_all)) <span class="sc">==</span> <span class="dv">0</span>]</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(fs_all)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 987  52</code></pre>
+</div>
+</div>
+<p><strong>提示：</strong></p>
+<ul>
+<li>如果许多列都有缺失，这一步会删除大量变量，导致相关矩阵很小。</li>
+<li>替代方案：在计算相关系数时使用 <code>use = "pairwise.complete.obs"</code>，允许不同变量对用自己的完整对观测来计算，从而保留更多变量。</li>
+</ul>
+</section>
+<section id="相关性分析" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> 相关性分析</h1>
+<p>fs_all 中的前 6 列为标识列，从第 7 列起都是数值列。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 提取第7列之后的所有数值列</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>data_cols <span class="ot">&lt;-</span> fs_all[, <span class="dv">7</span><span class="sc">:</span><span class="fu">ncol</span>(fs_all)]</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>data_cols_names <span class="ot">&lt;-</span> <span class="fu">names</span>(fs_all)[<span class="dv">7</span><span class="sc">:</span><span class="fu">ncol</span>(fs_all)]</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">list</span>(<span class="at">n_numeric =</span> <span class="fu">ncol</span>(data_cols), <span class="at">first3 =</span> <span class="fu">head</span>(data_cols_names, <span class="dv">3</span>)))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 2
+ $ n_numeric: int 46
+ $ first3   : chr [1:3] "A001101000" "A001121000" "A001123000"</code></pre>
+</div>
+</div>
+<section id="相关系数矩阵" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="相关系数矩阵"><span class="header-section-number">6.1</span> 相关系数矩阵</h2>
+<p>我们使用 cor 计算变量之间的相关系数矩阵。默认 <code>method = "pearson"</code>。</p>
+<p><strong>回顾：</strong></p>
+<ul>
+<li>皮尔逊相关系数 <span class="math inline">\(r(X, Y) = Cov(X, Y) / (sd(X) * sd(Y))\)</span>，取值范围 [-1, 1]。
+<ul>
+<li>r 越接近 1，表示线性正相关</li>
+<li>越接近 -1，表示线性负相关</li>
+<li>接近 0 表示近似无线性相关</li>
+</ul></li>
+</ul>
+<p><strong>示例：</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建示例数据展示不同的相关性</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 正相关</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> x1 <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.3</span>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 负相关</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="sc">-</span>x2 <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.3</span>)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 无相关</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>x3 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>y3 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建图形</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x1, y1, <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"正相关 r ="</span>, <span class="fu">round</span>(<span class="fu">cor</span>(x1, y1), <span class="dv">2</span>)))</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x2, y2, <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"负相关 r ="</span>, <span class="fu">round</span>(<span class="fu">cor</span>(x2, y2), <span class="dv">2</span>)))</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x3, y3, <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"无相关 r ="</span>, <span class="fu">round</span>(<span class="fu">cor</span>(x3, y3), <span class="dv">2</span>)))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="work_1014_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>对我们的数据：</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算相关系数矩阵</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="co"># cor()函数：计算皮尔逊相关系数</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>cor_matrix <span class="ot">&lt;-</span> <span class="fu">cor</span>(data_cols)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看相关系数矩阵的维度</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"相关系数矩阵维度："</span>, <span class="fu">dim</span>(cor_matrix)[<span class="dv">1</span>], <span class="st">"×"</span>, <span class="fu">dim</span>(cor_matrix)[<span class="dv">2</span>], <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>相关系数矩阵维度： 46 × 46 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看相关系数取值范围</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"相关系数范围："</span>, <span class="fu">range</span>(cor_matrix, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>相关系数范围： -0.7796332 1 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 显示部分相关系数矩阵（前6行前6列）</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">round</span>(cor_matrix[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>], <span class="dv">3</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           A001101000 A001121000 A001123000 A001100000 A001212000 A001218000
+A001101000      1.000      0.263      0.846      0.898      0.842      0.314
+A001121000      0.263      1.000      0.436      0.508      0.315      0.477
+A001123000      0.846      0.436      1.000      0.979      0.967      0.360
+A001100000      0.898      0.508      0.979      1.000      0.932      0.429
+A001212000      0.842      0.315      0.967      0.932      1.000      0.283
+A001218000      0.314      0.477      0.360      0.429      0.283      1.000</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="列名映射" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> 列名映射</h1>
+<p>将相关系数矩阵的行列名从科目编码替换为为中文名称。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 列名映射</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>colname_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001101000"</span> <span class="ot">=</span> <span class="st">"货币资金"</span>,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d1101101"</span> <span class="ot">=</span> <span class="st">"其中:客户资金存款"</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d1102000"</span> <span class="ot">=</span> <span class="st">"结算备付金"</span>,</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d1102101"</span> <span class="ot">=</span> <span class="st">"其中：客户备付金"</span>,</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b1103000"</span> <span class="ot">=</span> <span class="st">"现金及存放中央银行款项"</span>,</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b1104000"</span> <span class="ot">=</span> <span class="st">"存放同业款项"</span>,</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b1105000"</span> <span class="ot">=</span> <span class="st">"贵金属"</span>,</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f1106000"</span> <span class="ot">=</span> <span class="st">"拆出资金净额"</span>,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001107000"</span> <span class="ot">=</span> <span class="st">"交易性金融资产"</span>,</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f1108000"</span> <span class="ot">=</span> <span class="st">"衍生金融资产"</span>,</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001109000"</span> <span class="ot">=</span> <span class="st">"短期投资净额"</span>,</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001110000"</span> <span class="ot">=</span> <span class="st">"应收票据净额"</span>,</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001111000"</span> <span class="ot">=</span> <span class="st">"应收账款净额"</span>,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001127000"</span> <span class="ot">=</span> <span class="st">"应收款项融资"</span>,</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001112000"</span> <span class="ot">=</span> <span class="st">"预付款项净额"</span>,</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1113000"</span> <span class="ot">=</span> <span class="st">"应收保费净额"</span>,</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1114000"</span> <span class="ot">=</span> <span class="st">"应收分保账款净额"</span>,</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1115000"</span> <span class="ot">=</span> <span class="st">"应收代位追偿款净额"</span>,</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1116000"</span> <span class="ot">=</span> <span class="st">"应收分保合同准备金净额"</span>,</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1116101"</span> <span class="ot">=</span> <span class="st">"其中:应收分保未到期责任准备金净额"</span>,</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1116201"</span> <span class="ot">=</span> <span class="st">"其中:应收分保未决赔款准备金净额"</span>,</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1116301"</span> <span class="ot">=</span> <span class="st">"其中:应收分保寿险责任准备金净额"</span>,</span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1116401"</span> <span class="ot">=</span> <span class="st">"其中:应收分保长期健康险责任准备金净额"</span>,</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001119000"</span> <span class="ot">=</span> <span class="st">"应收利息净额"</span>,</span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001120000"</span> <span class="ot">=</span> <span class="st">"应收股利净额"</span>,</span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001121000"</span> <span class="ot">=</span> <span class="st">"其他应收款净额"</span>,</span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f1122000"</span> <span class="ot">=</span> <span class="st">"买入返售金融资产净额"</span>,</span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001123000"</span> <span class="ot">=</span> <span class="st">"存货净额"</span>,</span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001123101"</span> <span class="ot">=</span> <span class="st">"其中：数据资源（存货）"</span>,</span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001128000"</span> <span class="ot">=</span> <span class="st">"合同资产"</span>,</span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001129000"</span> <span class="ot">=</span> <span class="st">"持有待售资产"</span>,</span>
+<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001124000"</span> <span class="ot">=</span> <span class="st">"一年内到期的非流动资产"</span>,</span>
+<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d1126000"</span> <span class="ot">=</span> <span class="st">"存出保证金"</span>,</span>
+<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001125000"</span> <span class="ot">=</span> <span class="st">"其他流动资产"</span>,</span>
+<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001100000"</span> <span class="ot">=</span> <span class="st">"流动资产合计"</span>,</span>
+<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1224000"</span> <span class="ot">=</span> <span class="st">"保户质押贷款净额"</span>,</span>
+<span id="cb44-39"><a href="#cb44-39" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1225000"</span> <span class="ot">=</span> <span class="st">"定期存款"</span>,</span>
+<span id="cb44-40"><a href="#cb44-40" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b1201000"</span> <span class="ot">=</span> <span class="st">"发放贷款及垫款净额"</span>,</span>
+<span id="cb44-41"><a href="#cb44-41" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001226000"</span> <span class="ot">=</span> <span class="st">"债权投资"</span>,</span>
+<span id="cb44-42"><a href="#cb44-42" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F1132000"</span> <span class="ot">=</span> <span class="st">"以摊余成本计量的金融资产"</span>,</span>
+<span id="cb44-43"><a href="#cb44-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001202000"</span> <span class="ot">=</span> <span class="st">"可供出售金融资产净额"</span>,</span>
+<span id="cb44-44"><a href="#cb44-44" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001227000"</span> <span class="ot">=</span> <span class="st">"其他债权投资"</span>,</span>
+<span id="cb44-45"><a href="#cb44-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F1232000"</span> <span class="ot">=</span> <span class="st">"以公允价值计量且其变动计入其他综合收益的债务工具投资"</span>,</span>
+<span id="cb44-46"><a href="#cb44-46" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001203000"</span> <span class="ot">=</span> <span class="st">"持有至到期投资净额"</span>,</span>
+<span id="cb44-47"><a href="#cb44-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001204000"</span> <span class="ot">=</span> <span class="st">"长期应收款净额"</span>,</span>
+<span id="cb44-48"><a href="#cb44-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001205000"</span> <span class="ot">=</span> <span class="st">"长期股权投资净额"</span>,</span>
+<span id="cb44-49"><a href="#cb44-49" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001228000"</span> <span class="ot">=</span> <span class="st">"其他权益工具投资"</span>,</span>
+<span id="cb44-50"><a href="#cb44-50" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F1233000"</span> <span class="ot">=</span> <span class="st">"以公允价值计量且其变动计入其他综合收益的权益工具投资"</span>,</span>
+<span id="cb44-51"><a href="#cb44-51" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F1133000"</span> <span class="ot">=</span> <span class="st">"以公允价值计量且其变动计入其他综合收益的金融资产"</span>,</span>
+<span id="cb44-52"><a href="#cb44-52" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001229000"</span> <span class="ot">=</span> <span class="st">"其他非流动金融资产"</span>,</span>
+<span id="cb44-53"><a href="#cb44-53" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001206000"</span> <span class="ot">=</span> <span class="st">"长期债权投资净额"</span>,</span>
+<span id="cb44-54"><a href="#cb44-54" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001207000"</span> <span class="ot">=</span> <span class="st">"长期投资净额"</span>,</span>
+<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1209000"</span> <span class="ot">=</span> <span class="st">"存出资本保证金"</span>,</span>
+<span id="cb44-56"><a href="#cb44-56" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i1210000"</span> <span class="ot">=</span> <span class="st">"独立账户资产"</span>,</span>
+<span id="cb44-57"><a href="#cb44-57" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001211000"</span> <span class="ot">=</span> <span class="st">"投资性房地产净额"</span>,</span>
+<span id="cb44-58"><a href="#cb44-58" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001212000"</span> <span class="ot">=</span> <span class="st">"固定资产净额"</span>,</span>
+<span id="cb44-59"><a href="#cb44-59" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001213000"</span> <span class="ot">=</span> <span class="st">"在建工程净额"</span>,</span>
+<span id="cb44-60"><a href="#cb44-60" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001214000"</span> <span class="ot">=</span> <span class="st">"工程物资"</span>,</span>
+<span id="cb44-61"><a href="#cb44-61" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001215000"</span> <span class="ot">=</span> <span class="st">"固定资产清理"</span>,</span>
+<span id="cb44-62"><a href="#cb44-62" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001216000"</span> <span class="ot">=</span> <span class="st">"生产性生物资产净额"</span>,</span>
+<span id="cb44-63"><a href="#cb44-63" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001217000"</span> <span class="ot">=</span> <span class="st">"油气资产净额"</span>,</span>
+<span id="cb44-64"><a href="#cb44-64" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001230000"</span> <span class="ot">=</span> <span class="st">"使用权资产"</span>,</span>
+<span id="cb44-65"><a href="#cb44-65" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001218000"</span> <span class="ot">=</span> <span class="st">"无形资产净额"</span>,</span>
+<span id="cb44-66"><a href="#cb44-66" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d1218101"</span> <span class="ot">=</span> <span class="st">"其中:交易席位费"</span>,</span>
+<span id="cb44-67"><a href="#cb44-67" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001218201"</span> <span class="ot">=</span> <span class="st">"其中：数据资源（无形资产）"</span>,</span>
+<span id="cb44-68"><a href="#cb44-68" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001219000"</span> <span class="ot">=</span> <span class="st">"开发支出"</span>,</span>
+<span id="cb44-69"><a href="#cb44-69" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001219101"</span> <span class="ot">=</span> <span class="st">"其中：数据资源（开发支出）"</span>,</span>
+<span id="cb44-70"><a href="#cb44-70" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001220000"</span> <span class="ot">=</span> <span class="st">"商誉净额"</span>,</span>
+<span id="cb44-71"><a href="#cb44-71" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001221000"</span> <span class="ot">=</span> <span class="st">"长期待摊费用"</span>,</span>
+<span id="cb44-72"><a href="#cb44-72" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001222000"</span> <span class="ot">=</span> <span class="st">"递延所得税资产"</span>,</span>
+<span id="cb44-73"><a href="#cb44-73" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F1224000"</span> <span class="ot">=</span> <span class="st">"代理业务资产"</span>,</span>
+<span id="cb44-74"><a href="#cb44-74" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001223000"</span> <span class="ot">=</span> <span class="st">"其他非流动资产"</span>,</span>
+<span id="cb44-75"><a href="#cb44-75" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001200000"</span> <span class="ot">=</span> <span class="st">"非流动资产合计"</span>,</span>
+<span id="cb44-76"><a href="#cb44-76" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f1300000"</span> <span class="ot">=</span> <span class="st">"其他资产"</span>,</span>
+<span id="cb44-77"><a href="#cb44-77" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A001000000"</span> <span class="ot">=</span> <span class="st">"资产总计"</span>,</span>
+<span id="cb44-78"><a href="#cb44-78" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002101000"</span> <span class="ot">=</span> <span class="st">"短期借款"</span>,</span>
+<span id="cb44-79"><a href="#cb44-79" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d2101101"</span> <span class="ot">=</span> <span class="st">"其中:质押借款"</span>,</span>
+<span id="cb44-80"><a href="#cb44-80" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0D2130000"</span> <span class="ot">=</span> <span class="st">"应付短期融资款"</span>,</span>
+<span id="cb44-81"><a href="#cb44-81" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b2102000"</span> <span class="ot">=</span> <span class="st">"向中央银行借款"</span>,</span>
+<span id="cb44-82"><a href="#cb44-82" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b2103000"</span> <span class="ot">=</span> <span class="st">"吸收存款及同业存放"</span>,</span>
+<span id="cb44-83"><a href="#cb44-83" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b2103101"</span> <span class="ot">=</span> <span class="st">"其中：同业及其他金融机构存放款项"</span>,</span>
+<span id="cb44-84"><a href="#cb44-84" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0b2103201"</span> <span class="ot">=</span> <span class="st">"其中：吸收存款"</span>,</span>
+<span id="cb44-85"><a href="#cb44-85" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f2104000"</span> <span class="ot">=</span> <span class="st">"拆入资金"</span>,</span>
+<span id="cb44-86"><a href="#cb44-86" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002105000"</span> <span class="ot">=</span> <span class="st">"交易性金融负债"</span>,</span>
+<span id="cb44-87"><a href="#cb44-87" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f2106000"</span> <span class="ot">=</span> <span class="st">"衍生金融负债"</span>,</span>
+<span id="cb44-88"><a href="#cb44-88" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002107000"</span> <span class="ot">=</span> <span class="st">"应付票据"</span>,</span>
+<span id="cb44-89"><a href="#cb44-89" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002108000"</span> <span class="ot">=</span> <span class="st">"应付账款"</span>,</span>
+<span id="cb44-90"><a href="#cb44-90" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002109000"</span> <span class="ot">=</span> <span class="st">"预收款项"</span>,</span>
+<span id="cb44-91"><a href="#cb44-91" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002128000"</span> <span class="ot">=</span> <span class="st">"合同负债"</span>,</span>
+<span id="cb44-92"><a href="#cb44-92" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f2110000"</span> <span class="ot">=</span> <span class="st">"卖出回购金融资产款"</span>,</span>
+<span id="cb44-93"><a href="#cb44-93" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2111000"</span> <span class="ot">=</span> <span class="st">"应付手续费及佣金"</span>,</span>
+<span id="cb44-94"><a href="#cb44-94" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002112000"</span> <span class="ot">=</span> <span class="st">"应付职工薪酬"</span>,</span>
+<span id="cb44-95"><a href="#cb44-95" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002113000"</span> <span class="ot">=</span> <span class="st">"应交税费"</span>,</span>
+<span id="cb44-96"><a href="#cb44-96" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002114000"</span> <span class="ot">=</span> <span class="st">"应付利息"</span>,</span>
+<span id="cb44-97"><a href="#cb44-97" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002115000"</span> <span class="ot">=</span> <span class="st">"应付股利"</span>,</span>
+<span id="cb44-98"><a href="#cb44-98" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2116000"</span> <span class="ot">=</span> <span class="st">"应付赔付款"</span>,</span>
+<span id="cb44-99"><a href="#cb44-99" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2117000"</span> <span class="ot">=</span> <span class="st">"应付保单红利"</span>,</span>
+<span id="cb44-100"><a href="#cb44-100" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2118000"</span> <span class="ot">=</span> <span class="st">"保户储金及投资款"</span>,</span>
+<span id="cb44-101"><a href="#cb44-101" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2119000"</span> <span class="ot">=</span> <span class="st">"保险合同准备金"</span>,</span>
+<span id="cb44-102"><a href="#cb44-102" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2119101"</span> <span class="ot">=</span> <span class="st">"其中:未到期责任准备金"</span>,</span>
+<span id="cb44-103"><a href="#cb44-103" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2119201"</span> <span class="ot">=</span> <span class="st">"其中:未决赔款准备金"</span>,</span>
+<span id="cb44-104"><a href="#cb44-104" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2119301"</span> <span class="ot">=</span> <span class="st">"其中:寿险责任准备金"</span>,</span>
+<span id="cb44-105"><a href="#cb44-105" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2119401"</span> <span class="ot">=</span> <span class="st">"其中:长期健康险责任准备金"</span>,</span>
+<span id="cb44-106"><a href="#cb44-106" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002120000"</span> <span class="ot">=</span> <span class="st">"其他应付款"</span>,</span>
+<span id="cb44-107"><a href="#cb44-107" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2121000"</span> <span class="ot">=</span> <span class="st">"应付分保账款"</span>,</span>
+<span id="cb44-108"><a href="#cb44-108" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d2122000"</span> <span class="ot">=</span> <span class="st">"代理买卖证券款"</span>,</span>
+<span id="cb44-109"><a href="#cb44-109" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d2123000"</span> <span class="ot">=</span> <span class="st">"代理承销证券款"</span>,</span>
+<span id="cb44-110"><a href="#cb44-110" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0i2124000"</span> <span class="ot">=</span> <span class="st">"预收保费"</span>,</span>
+<span id="cb44-111"><a href="#cb44-111" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002129000"</span> <span class="ot">=</span> <span class="st">"持有待售负债"</span>,</span>
+<span id="cb44-112"><a href="#cb44-112" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002125000"</span> <span class="ot">=</span> <span class="st">"一年内到期的非流动负债"</span>,</span>
+<span id="cb44-113"><a href="#cb44-113" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002126000"</span> <span class="ot">=</span> <span class="st">"其他流动负债"</span>,</span>
+<span id="cb44-114"><a href="#cb44-114" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002127000"</span> <span class="ot">=</span> <span class="st">"递延收益-流动负债"</span>,</span>
+<span id="cb44-115"><a href="#cb44-115" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002100000"</span> <span class="ot">=</span> <span class="st">"流动负债合计"</span>,</span>
+<span id="cb44-116"><a href="#cb44-116" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002201000"</span> <span class="ot">=</span> <span class="st">"长期借款"</span>,</span>
+<span id="cb44-117"><a href="#cb44-117" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0d2202000"</span> <span class="ot">=</span> <span class="st">"独立账户负债"</span>,</span>
+<span id="cb44-118"><a href="#cb44-118" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002203000"</span> <span class="ot">=</span> <span class="st">"应付债券"</span>,</span>
+<span id="cb44-119"><a href="#cb44-119" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002211000"</span> <span class="ot">=</span> <span class="st">"租赁负债"</span>,</span>
+<span id="cb44-120"><a href="#cb44-120" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002204000"</span> <span class="ot">=</span> <span class="st">"长期应付款"</span>,</span>
+<span id="cb44-121"><a href="#cb44-121" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002212000"</span> <span class="ot">=</span> <span class="st">"长期应付职工薪酬"</span>,</span>
+<span id="cb44-122"><a href="#cb44-122" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002205000"</span> <span class="ot">=</span> <span class="st">"专项应付款"</span>,</span>
+<span id="cb44-123"><a href="#cb44-123" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002206000"</span> <span class="ot">=</span> <span class="st">"长期负债合计"</span>,</span>
+<span id="cb44-124"><a href="#cb44-124" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002207000"</span> <span class="ot">=</span> <span class="st">"预计负债"</span>,</span>
+<span id="cb44-125"><a href="#cb44-125" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F2210000"</span> <span class="ot">=</span> <span class="st">"代理业务负债"</span>,</span>
+<span id="cb44-126"><a href="#cb44-126" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002208000"</span> <span class="ot">=</span> <span class="st">"递延所得税负债"</span>,</span>
+<span id="cb44-127"><a href="#cb44-127" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002209000"</span> <span class="ot">=</span> <span class="st">"其他非流动负债"</span>,</span>
+<span id="cb44-128"><a href="#cb44-128" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002210000"</span> <span class="ot">=</span> <span class="st">"递延收益-非流动负债"</span>,</span>
+<span id="cb44-129"><a href="#cb44-129" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002200000"</span> <span class="ot">=</span> <span class="st">"非流动负债合计"</span>,</span>
+<span id="cb44-130"><a href="#cb44-130" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f2300000"</span> <span class="ot">=</span> <span class="st">"其他负债"</span>,</span>
+<span id="cb44-131"><a href="#cb44-131" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A002000000"</span> <span class="ot">=</span> <span class="st">"负债合计"</span>,</span>
+<span id="cb44-132"><a href="#cb44-132" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003101000"</span> <span class="ot">=</span> <span class="st">"实收资本(或股本)"</span>,</span>
+<span id="cb44-133"><a href="#cb44-133" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003112000"</span> <span class="ot">=</span> <span class="st">"其他权益工具"</span>,</span>
+<span id="cb44-134"><a href="#cb44-134" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003112101"</span> <span class="ot">=</span> <span class="st">"其中：优先股"</span>,</span>
+<span id="cb44-135"><a href="#cb44-135" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003112201"</span> <span class="ot">=</span> <span class="st">"其中：永续债"</span>,</span>
+<span id="cb44-136"><a href="#cb44-136" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003112301"</span> <span class="ot">=</span> <span class="st">"其中：其他"</span>,</span>
+<span id="cb44-137"><a href="#cb44-137" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003102000"</span> <span class="ot">=</span> <span class="st">"资本公积"</span>,</span>
+<span id="cb44-138"><a href="#cb44-138" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003102101"</span> <span class="ot">=</span> <span class="st">"减：库存股"</span>,</span>
+<span id="cb44-139"><a href="#cb44-139" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003103000"</span> <span class="ot">=</span> <span class="st">"盈余公积"</span>,</span>
+<span id="cb44-140"><a href="#cb44-140" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0f3104000"</span> <span class="ot">=</span> <span class="st">"一般风险准备"</span>,</span>
+<span id="cb44-141"><a href="#cb44-141" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003105000"</span> <span class="ot">=</span> <span class="st">"未分配利润"</span>,</span>
+<span id="cb44-142"><a href="#cb44-142" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003106000"</span> <span class="ot">=</span> <span class="st">"外币报表折算差额"</span>,</span>
+<span id="cb44-143"><a href="#cb44-143" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003107000"</span> <span class="ot">=</span> <span class="st">"加：未确认的投资损失"</span>,</span>
+<span id="cb44-144"><a href="#cb44-144" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F3108000"</span> <span class="ot">=</span> <span class="st">"交易风险准备"</span>,</span>
+<span id="cb44-145"><a href="#cb44-145" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A0F3109000"</span> <span class="ot">=</span> <span class="st">"专项储备"</span>,</span>
+<span id="cb44-146"><a href="#cb44-146" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003111000"</span> <span class="ot">=</span> <span class="st">"其他综合收益"</span>,</span>
+<span id="cb44-147"><a href="#cb44-147" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003100000"</span> <span class="ot">=</span> <span class="st">"归属于母公司所有者权益合计"</span>,</span>
+<span id="cb44-148"><a href="#cb44-148" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003200000"</span> <span class="ot">=</span> <span class="st">"少数股东权益"</span>,</span>
+<span id="cb44-149"><a href="#cb44-149" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A003000000"</span> <span class="ot">=</span> <span class="st">"所有者权益合计"</span>,</span>
+<span id="cb44-150"><a href="#cb44-150" aria-hidden="true" tabindex="-1"></a>  <span class="st">"A004000000"</span> <span class="ot">=</span> <span class="st">"负债与所有者权益总计"</span>,</span>
+<span id="cb44-151"><a href="#cb44-151" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001100000"</span> <span class="ot">=</span> <span class="st">"营业总收入"</span>,</span>
+<span id="cb44-152"><a href="#cb44-152" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001101000"</span> <span class="ot">=</span> <span class="st">"营业收入"</span>,</span>
+<span id="cb44-153"><a href="#cb44-153" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Bbd1102000"</span> <span class="ot">=</span> <span class="st">"利息净收入"</span>,</span>
+<span id="cb44-154"><a href="#cb44-154" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Bbd1102101"</span> <span class="ot">=</span> <span class="st">"利息收入"</span>,</span>
+<span id="cb44-155"><a href="#cb44-155" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Bbd1102203"</span> <span class="ot">=</span> <span class="st">"利息支出"</span>,</span>
+<span id="cb44-156"><a href="#cb44-156" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1103000"</span> <span class="ot">=</span> <span class="st">"已赚保费"</span>,</span>
+<span id="cb44-157"><a href="#cb44-157" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1103101"</span> <span class="ot">=</span> <span class="st">"保险业务收入"</span>,</span>
+<span id="cb44-158"><a href="#cb44-158" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1103111"</span> <span class="ot">=</span> <span class="st">"其中：分保费收入"</span>,</span>
+<span id="cb44-159"><a href="#cb44-159" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1103203"</span> <span class="ot">=</span> <span class="st">"减：分出保费"</span>,</span>
+<span id="cb44-160"><a href="#cb44-160" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1103303"</span> <span class="ot">=</span> <span class="st">"减：提取未到期责任准备金"</span>,</span>
+<span id="cb44-161"><a href="#cb44-161" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0d1104000"</span> <span class="ot">=</span> <span class="st">"手续费及佣金净收入"</span>,</span>
+<span id="cb44-162"><a href="#cb44-162" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0d1104101"</span> <span class="ot">=</span> <span class="st">"其中：代理买卖证券业务净收入"</span>,</span>
+<span id="cb44-163"><a href="#cb44-163" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0d1104201"</span> <span class="ot">=</span> <span class="st">"其中:证券承销业务净收入"</span>,</span>
+<span id="cb44-164"><a href="#cb44-164" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0d1104301"</span> <span class="ot">=</span> <span class="st">"其中：受托客户资产管理业务净收入"</span>,</span>
+<span id="cb44-165"><a href="#cb44-165" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0d1104401"</span> <span class="ot">=</span> <span class="st">"手续费及佣金收入"</span>,</span>
+<span id="cb44-166"><a href="#cb44-166" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0d1104501"</span> <span class="ot">=</span> <span class="st">"手续费及佣金支出"</span>,</span>
+<span id="cb44-167"><a href="#cb44-167" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0f1105000"</span> <span class="ot">=</span> <span class="st">"其他业务收入"</span>,</span>
+<span id="cb44-168"><a href="#cb44-168" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001200000"</span> <span class="ot">=</span> <span class="st">"营业总成本"</span>,</span>
+<span id="cb44-169"><a href="#cb44-169" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001201000"</span> <span class="ot">=</span> <span class="st">"营业成本"</span>,</span>
+<span id="cb44-170"><a href="#cb44-170" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1202000"</span> <span class="ot">=</span> <span class="st">"退保金"</span>,</span>
+<span id="cb44-171"><a href="#cb44-171" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1203000"</span> <span class="ot">=</span> <span class="st">"赔付支出净额"</span>,</span>
+<span id="cb44-172"><a href="#cb44-172" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1203101"</span> <span class="ot">=</span> <span class="st">"赔付支出"</span>,</span>
+<span id="cb44-173"><a href="#cb44-173" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1203203"</span> <span class="ot">=</span> <span class="st">"减：摊回赔付支出"</span>,</span>
+<span id="cb44-174"><a href="#cb44-174" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1204000"</span> <span class="ot">=</span> <span class="st">"提取保险责任准备金净额"</span>,</span>
+<span id="cb44-175"><a href="#cb44-175" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1204101"</span> <span class="ot">=</span> <span class="st">"提取保险责任准备金"</span>,</span>
+<span id="cb44-176"><a href="#cb44-176" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1204203"</span> <span class="ot">=</span> <span class="st">"减：摊回保险责任准备金"</span>,</span>
+<span id="cb44-177"><a href="#cb44-177" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1205000"</span> <span class="ot">=</span> <span class="st">"保单红利支出"</span>,</span>
+<span id="cb44-178"><a href="#cb44-178" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1206000"</span> <span class="ot">=</span> <span class="st">"分保费用"</span>,</span>
+<span id="cb44-179"><a href="#cb44-179" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001207000"</span> <span class="ot">=</span> <span class="st">"税金及附加"</span>,</span>
+<span id="cb44-180"><a href="#cb44-180" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0f1208000"</span> <span class="ot">=</span> <span class="st">"业务及管理费"</span>,</span>
+<span id="cb44-181"><a href="#cb44-181" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0i1208103"</span> <span class="ot">=</span> <span class="st">"减：摊回分保费用"</span>,</span>
+<span id="cb44-182"><a href="#cb44-182" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0I1214000"</span> <span class="ot">=</span> <span class="st">"保险业务手续费及佣金支出"</span>,</span>
+<span id="cb44-183"><a href="#cb44-183" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001209000"</span> <span class="ot">=</span> <span class="st">"销售费用"</span>,</span>
+<span id="cb44-184"><a href="#cb44-184" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001210000"</span> <span class="ot">=</span> <span class="st">"管理费用"</span>,</span>
+<span id="cb44-185"><a href="#cb44-185" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001216000"</span> <span class="ot">=</span> <span class="st">"研发费用"</span>,</span>
+<span id="cb44-186"><a href="#cb44-186" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001211000"</span> <span class="ot">=</span> <span class="st">"财务费用"</span>,</span>
+<span id="cb44-187"><a href="#cb44-187" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001211101"</span> <span class="ot">=</span> <span class="st">"其中：利息费用(财务费用)"</span>,</span>
+<span id="cb44-188"><a href="#cb44-188" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001211203"</span> <span class="ot">=</span> <span class="st">"其中：利息收入(财务费用)"</span>,</span>
+<span id="cb44-189"><a href="#cb44-189" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001305000"</span> <span class="ot">=</span> <span class="st">"其他收益"</span>,</span>
+<span id="cb44-190"><a href="#cb44-190" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001302000"</span> <span class="ot">=</span> <span class="st">"投资收益"</span>,</span>
+<span id="cb44-191"><a href="#cb44-191" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001302101"</span> <span class="ot">=</span> <span class="st">"其中：对联营企业和合营企业的投资收益"</span>,</span>
+<span id="cb44-192"><a href="#cb44-192" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001302201"</span> <span class="ot">=</span> <span class="st">"其中：以摊余成本计量的金融资产终止确认收益"</span>,</span>
+<span id="cb44-193"><a href="#cb44-193" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001303000"</span> <span class="ot">=</span> <span class="st">"汇兑收益"</span>,</span>
+<span id="cb44-194"><a href="#cb44-194" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001306000"</span> <span class="ot">=</span> <span class="st">"净敞口套期收益"</span>,</span>
+<span id="cb44-195"><a href="#cb44-195" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001301000"</span> <span class="ot">=</span> <span class="st">"公允价值变动收益"</span>,</span>
+<span id="cb44-196"><a href="#cb44-196" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001212000"</span> <span class="ot">=</span> <span class="st">"资产减值损失"</span>,</span>
+<span id="cb44-197"><a href="#cb44-197" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001307000"</span> <span class="ot">=</span> <span class="st">"信用减值损失"</span>,</span>
+<span id="cb44-198"><a href="#cb44-198" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001308000"</span> <span class="ot">=</span> <span class="st">"资产处置收益"</span>,</span>
+<span id="cb44-199"><a href="#cb44-199" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B0f1213000"</span> <span class="ot">=</span> <span class="st">"其他业务成本"</span>,</span>
+<span id="cb44-200"><a href="#cb44-200" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001304000"</span> <span class="ot">=</span> <span class="st">"其他业务利润"</span>,</span>
+<span id="cb44-201"><a href="#cb44-201" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001300000"</span> <span class="ot">=</span> <span class="st">"营业利润"</span>,</span>
+<span id="cb44-202"><a href="#cb44-202" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001400000"</span> <span class="ot">=</span> <span class="st">"加：营业外收入"</span>,</span>
+<span id="cb44-203"><a href="#cb44-203" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001400101"</span> <span class="ot">=</span> <span class="st">"其中：非流动资产处置利得"</span>,</span>
+<span id="cb44-204"><a href="#cb44-204" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001500000"</span> <span class="ot">=</span> <span class="st">"减：营业外支出"</span>,</span>
+<span id="cb44-205"><a href="#cb44-205" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001500101"</span> <span class="ot">=</span> <span class="st">"其中：非流动资产处置净损益"</span>,</span>
+<span id="cb44-206"><a href="#cb44-206" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001500201"</span> <span class="ot">=</span> <span class="st">"其中：非流动资产处置损失"</span>,</span>
+<span id="cb44-207"><a href="#cb44-207" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B001000000"</span> <span class="ot">=</span> <span class="st">"利润总额"</span>,</span>
+<span id="cb44-208"><a href="#cb44-208" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002100000"</span> <span class="ot">=</span> <span class="st">"减：所得税费用"</span>,</span>
+<span id="cb44-209"><a href="#cb44-209" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002200000"</span> <span class="ot">=</span> <span class="st">"未确认的投资损失"</span>,</span>
+<span id="cb44-210"><a href="#cb44-210" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002300000"</span> <span class="ot">=</span> <span class="st">"影响净利润的其他项目"</span>,</span>
+<span id="cb44-211"><a href="#cb44-211" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002000000"</span> <span class="ot">=</span> <span class="st">"净利润"</span>,</span>
+<span id="cb44-212"><a href="#cb44-212" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002000401"</span> <span class="ot">=</span> <span class="st">"持续经营净利润"</span>,</span>
+<span id="cb44-213"><a href="#cb44-213" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002000501"</span> <span class="ot">=</span> <span class="st">"终止经营净利润"</span>,</span>
+<span id="cb44-214"><a href="#cb44-214" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002000101"</span> <span class="ot">=</span> <span class="st">"归属于母公司所有者的净利润"</span>,</span>
+<span id="cb44-215"><a href="#cb44-215" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002000301"</span> <span class="ot">=</span> <span class="st">"归属于母公司其他权益工具持有者的净利润"</span>,</span>
+<span id="cb44-216"><a href="#cb44-216" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B002000201"</span> <span class="ot">=</span> <span class="st">"少数股东损益"</span>,</span>
+<span id="cb44-217"><a href="#cb44-217" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B003000000"</span> <span class="ot">=</span> <span class="st">"基本每股收益"</span>,</span>
+<span id="cb44-218"><a href="#cb44-218" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B004000000"</span> <span class="ot">=</span> <span class="st">"稀释每股收益"</span>,</span>
+<span id="cb44-219"><a href="#cb44-219" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B005000000"</span> <span class="ot">=</span> <span class="st">"其他综合收益(损失)"</span>,</span>
+<span id="cb44-220"><a href="#cb44-220" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B005000101"</span> <span class="ot">=</span> <span class="st">"归属母公司所有者的其他综合收益的税后净额"</span>,</span>
+<span id="cb44-221"><a href="#cb44-221" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B005000102"</span> <span class="ot">=</span> <span class="st">"归属于少数股东的其他综合收益的税后净额"</span>,</span>
+<span id="cb44-222"><a href="#cb44-222" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B006000000"</span> <span class="ot">=</span> <span class="st">"综合收益总额"</span>,</span>
+<span id="cb44-223"><a href="#cb44-223" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B006000101"</span> <span class="ot">=</span> <span class="st">"归属于母公司所有者的综合收益"</span>,</span>
+<span id="cb44-224"><a href="#cb44-224" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B006000103"</span> <span class="ot">=</span> <span class="st">"归属于母公司其他权益工具持有者的综合收益总额"</span>,</span>
+<span id="cb44-225"><a href="#cb44-225" aria-hidden="true" tabindex="-1"></a>  <span class="st">"B006000102"</span> <span class="ot">=</span> <span class="st">"归属少数股东的综合收益"</span>,</span>
+<span id="cb44-226"><a href="#cb44-226" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001001000"</span> <span class="ot">=</span> <span class="st">"销售商品、提供劳务收到的现金"</span>,</span>
+<span id="cb44-227"><a href="#cb44-227" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0b1002000"</span> <span class="ot">=</span> <span class="st">"客户存款和同业存放款项净增加额"</span>,</span>
+<span id="cb44-228"><a href="#cb44-228" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1023000"</span> <span class="ot">=</span> <span class="st">"存放央行和同业款项净减少额"</span>,</span>
+<span id="cb44-229"><a href="#cb44-229" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0b1003000"</span> <span class="ot">=</span> <span class="st">"向中央银行借款净增加额"</span>,</span>
+<span id="cb44-230"><a href="#cb44-230" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0b1004000"</span> <span class="ot">=</span> <span class="st">"向其他金融机构拆入资金净增加额"</span>,</span>
+<span id="cb44-231"><a href="#cb44-231" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0i1005000"</span> <span class="ot">=</span> <span class="st">"收到原保险合同保费取得的现金"</span>,</span>
+<span id="cb44-232"><a href="#cb44-232" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0i1006000"</span> <span class="ot">=</span> <span class="st">"收到再保险业务现金净额"</span>,</span>
+<span id="cb44-233"><a href="#cb44-233" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0i1007000"</span> <span class="ot">=</span> <span class="st">"保户储金及投资款净增加额"</span>,</span>
+<span id="cb44-234"><a href="#cb44-234" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0d1008000"</span> <span class="ot">=</span> <span class="st">"处置交易性金融资产净增加额"</span>,</span>
+<span id="cb44-235"><a href="#cb44-235" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0f1009000"</span> <span class="ot">=</span> <span class="st">"收取利息、手续费及佣金的现金"</span>,</span>
+<span id="cb44-236"><a href="#cb44-236" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0d1010000"</span> <span class="ot">=</span> <span class="st">"拆入资金净增加额"</span>,</span>
+<span id="cb44-237"><a href="#cb44-237" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0d1011000"</span> <span class="ot">=</span> <span class="st">"回购业务资金净增加额"</span>,</span>
+<span id="cb44-238"><a href="#cb44-238" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1024000"</span> <span class="ot">=</span> <span class="st">"拆出资金净减少额"</span>,</span>
+<span id="cb44-239"><a href="#cb44-239" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1025000"</span> <span class="ot">=</span> <span class="st">"买入返售款项净减少额"</span>,</span>
+<span id="cb44-240"><a href="#cb44-240" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001012000"</span> <span class="ot">=</span> <span class="st">"收到的税费返还"</span>,</span>
+<span id="cb44-241"><a href="#cb44-241" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001013000"</span> <span class="ot">=</span> <span class="st">"收到的其他与经营活动有关的现金"</span>,</span>
+<span id="cb44-242"><a href="#cb44-242" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001100000"</span> <span class="ot">=</span> <span class="st">"经营活动现金流入小计"</span>,</span>
+<span id="cb44-243"><a href="#cb44-243" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001014000"</span> <span class="ot">=</span> <span class="st">"购买商品、接受劳务支付的现金"</span>,</span>
+<span id="cb44-244"><a href="#cb44-244" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0b1015000"</span> <span class="ot">=</span> <span class="st">"客户贷款及垫款净增加额"</span>,</span>
+<span id="cb44-245"><a href="#cb44-245" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1026000"</span> <span class="ot">=</span> <span class="st">"向中央银行借款净减少额"</span>,</span>
+<span id="cb44-246"><a href="#cb44-246" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0b1016000"</span> <span class="ot">=</span> <span class="st">"存放中央银行和同业款项净增加额"</span>,</span>
+<span id="cb44-247"><a href="#cb44-247" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0i1017000"</span> <span class="ot">=</span> <span class="st">"支付原保险合同赔付款项的现金"</span>,</span>
+<span id="cb44-248"><a href="#cb44-248" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0f1018000"</span> <span class="ot">=</span> <span class="st">"支付利息、手续费及佣金的现金"</span>,</span>
+<span id="cb44-249"><a href="#cb44-249" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1027000"</span> <span class="ot">=</span> <span class="st">"支付再保业务现金净额"</span>,</span>
+<span id="cb44-250"><a href="#cb44-250" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1028000"</span> <span class="ot">=</span> <span class="st">"保户储金及投资款净减少额"</span>,</span>
+<span id="cb44-251"><a href="#cb44-251" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1029000"</span> <span class="ot">=</span> <span class="st">"拆出资金净增加额"</span>,</span>
+<span id="cb44-252"><a href="#cb44-252" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1030000"</span> <span class="ot">=</span> <span class="st">"买入返售款项净增加额"</span>,</span>
+<span id="cb44-253"><a href="#cb44-253" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1031000"</span> <span class="ot">=</span> <span class="st">"拆入资金净减少额"</span>,</span>
+<span id="cb44-254"><a href="#cb44-254" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0F1032000"</span> <span class="ot">=</span> <span class="st">"卖出回购款项净减少额"</span>,</span>
+<span id="cb44-255"><a href="#cb44-255" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0i1019000"</span> <span class="ot">=</span> <span class="st">"支付保单红利的现金"</span>,</span>
+<span id="cb44-256"><a href="#cb44-256" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001020000"</span> <span class="ot">=</span> <span class="st">"支付给职工以及为职工支付的现金"</span>,</span>
+<span id="cb44-257"><a href="#cb44-257" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001021000"</span> <span class="ot">=</span> <span class="st">"支付的各项税费"</span>,</span>
+<span id="cb44-258"><a href="#cb44-258" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001022000"</span> <span class="ot">=</span> <span class="st">"支付其他与经营活动有关的现金"</span>,</span>
+<span id="cb44-259"><a href="#cb44-259" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001200000"</span> <span class="ot">=</span> <span class="st">"经营活动现金流出小计"</span>,</span>
+<span id="cb44-260"><a href="#cb44-260" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C001000000"</span> <span class="ot">=</span> <span class="st">"经营活动产生的现金流量净额"</span>,</span>
+<span id="cb44-261"><a href="#cb44-261" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002001000"</span> <span class="ot">=</span> <span class="st">"收回投资收到的现金"</span>,</span>
+<span id="cb44-262"><a href="#cb44-262" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002002000"</span> <span class="ot">=</span> <span class="st">"取得投资收益收到的现金"</span>,</span>
+<span id="cb44-263"><a href="#cb44-263" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002003000"</span> <span class="ot">=</span> <span class="st">"处置固定资产、无形资产和其他长期资产收回的现金净额"</span>,</span>
+<span id="cb44-264"><a href="#cb44-264" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002004000"</span> <span class="ot">=</span> <span class="st">"处置子公司及其他营业单位收到的现金净额"</span>,</span>
+<span id="cb44-265"><a href="#cb44-265" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002005000"</span> <span class="ot">=</span> <span class="st">"收到的其他与投资活动有关的现金"</span>,</span>
+<span id="cb44-266"><a href="#cb44-266" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002100000"</span> <span class="ot">=</span> <span class="st">"投资活动产生的现金流入小计"</span>,</span>
+<span id="cb44-267"><a href="#cb44-267" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002006000"</span> <span class="ot">=</span> <span class="st">"购建固定资产、无形资产和其他长期资产支付的现金"</span>,</span>
+<span id="cb44-268"><a href="#cb44-268" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002007000"</span> <span class="ot">=</span> <span class="st">"投资支付的现金"</span>,</span>
+<span id="cb44-269"><a href="#cb44-269" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C0i2008000"</span> <span class="ot">=</span> <span class="st">"质押贷款净增加额"</span>,</span>
+<span id="cb44-270"><a href="#cb44-270" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002009000"</span> <span class="ot">=</span> <span class="st">"取得子公司及其他营业单位支付的现金净额"</span>,</span>
+<span id="cb44-271"><a href="#cb44-271" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002010000"</span> <span class="ot">=</span> <span class="st">"支付其他与投资活动有关的现金"</span>,</span>
+<span id="cb44-272"><a href="#cb44-272" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002200000"</span> <span class="ot">=</span> <span class="st">"投资活动产生的现金流出小计"</span>,</span>
+<span id="cb44-273"><a href="#cb44-273" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C002000000"</span> <span class="ot">=</span> <span class="st">"投资活动产生的现金流量净额"</span>,</span>
+<span id="cb44-274"><a href="#cb44-274" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003008000"</span> <span class="ot">=</span> <span class="st">"吸收投资收到的现金"</span>,</span>
+<span id="cb44-275"><a href="#cb44-275" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003001000"</span> <span class="ot">=</span> <span class="st">"吸收权益性投资收到的现金"</span>,</span>
+<span id="cb44-276"><a href="#cb44-276" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003001101"</span> <span class="ot">=</span> <span class="st">"其中：子公司吸收少数股东投资收到的现金"</span>,</span>
+<span id="cb44-277"><a href="#cb44-277" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003003000"</span> <span class="ot">=</span> <span class="st">"发行债券收到的现金"</span>,</span>
+<span id="cb44-278"><a href="#cb44-278" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003002000"</span> <span class="ot">=</span> <span class="st">"取得借款收到的现金"</span>,</span>
+<span id="cb44-279"><a href="#cb44-279" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003004000"</span> <span class="ot">=</span> <span class="st">"收到其他与筹资活动有关的现金"</span>,</span>
+<span id="cb44-280"><a href="#cb44-280" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003100000"</span> <span class="ot">=</span> <span class="st">"筹资活动现金流入小计"</span>,</span>
+<span id="cb44-281"><a href="#cb44-281" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003005000"</span> <span class="ot">=</span> <span class="st">"偿还债务支付的现金"</span>,</span>
+<span id="cb44-282"><a href="#cb44-282" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003006000"</span> <span class="ot">=</span> <span class="st">"分配股利、利润或偿付利息支付的现金"</span>,</span>
+<span id="cb44-283"><a href="#cb44-283" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003006101"</span> <span class="ot">=</span> <span class="st">"其中：子公司支付给少数股东的股利、利润"</span>,</span>
+<span id="cb44-284"><a href="#cb44-284" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003007000"</span> <span class="ot">=</span> <span class="st">"支付其他与筹资活动有关的现金"</span>,</span>
+<span id="cb44-285"><a href="#cb44-285" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003200000"</span> <span class="ot">=</span> <span class="st">"筹资活动现金流出小计"</span>,</span>
+<span id="cb44-286"><a href="#cb44-286" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C003000000"</span> <span class="ot">=</span> <span class="st">"筹资活动产生的现金流量净额"</span>,</span>
+<span id="cb44-287"><a href="#cb44-287" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C004000000"</span> <span class="ot">=</span> <span class="st">"汇率变动对现金及现金等价物的影响"</span>,</span>
+<span id="cb44-288"><a href="#cb44-288" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C007000000"</span> <span class="ot">=</span> <span class="st">"其他对现金的影响"</span>,</span>
+<span id="cb44-289"><a href="#cb44-289" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C005000000"</span> <span class="ot">=</span> <span class="st">"现金及现金等价物净增加额"</span>,</span>
+<span id="cb44-290"><a href="#cb44-290" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C005001000"</span> <span class="ot">=</span> <span class="st">"期初现金及现金等价物余额"</span>,</span>
+<span id="cb44-291"><a href="#cb44-291" aria-hidden="true" tabindex="-1"></a>  <span class="st">"C006000000"</span> <span class="ot">=</span> <span class="st">"期末现金及现金等价物余额"</span></span>
+<span id="cb44-292"><a href="#cb44-292" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-293"><a href="#cb44-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-294"><a href="#cb44-294" aria-hidden="true" tabindex="-1"></a><span class="co"># 替换行列名</span></span>
+<span id="cb44-295"><a href="#cb44-295" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(cor_matrix) <span class="ot">&lt;-</span> colname_map[<span class="fu">rownames</span>(cor_matrix)]</span>
+<span id="cb44-296"><a href="#cb44-296" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(cor_matrix) <span class="ot">&lt;-</span> colname_map[<span class="fu">colnames</span>(cor_matrix)]</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="热力图可视化" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> 热力图可视化</h1>
+<p><code>pheatmap</code> 将矩阵渲染为颜色网格，并可对行/列聚类。对相关矩阵进行聚类时，通常基于 1 - r 的“距离”来归并相似变量。默认 <code>pheatmap</code> 会对矩阵进行聚类（<code>cluster_rows/cols = TRUE</code>），但注意：</p>
+<ul>
+<li>输入已是相似度（相关性）矩阵时，直接用欧式距离聚类未必直观；你也可以设置 <code>clustering_distance_rows/cols = "correlation"</code> 对原始数据矩阵使用相关距离。既然我们已经是相关矩阵，做进一步聚类更多是将相似相关结构归类，可根据需要保留或关闭。</li>
+<li>若变量数量很多，建议增大图尺寸或限制变量集合。</li>
+</ul>
+<p><code>pheatmap()</code> 函数的常用参数：</p>
+<ul>
+<li><strong>main</strong>：图形标题</li>
+<li><strong>fontsize_row/col</strong>：行列标签字体大小</li>
+<li><strong>angle_col</strong>：列标签旋转角度（避免重叠）</li>
+<li><strong>border_color</strong>：单元格边框颜色</li>
+<li><strong>cluster_rows/cols</strong>：是否对行列进行聚类</li>
+<li><strong>show_rownames/colnames</strong>：是否显示行列名</li>
+<li><strong>color</strong>：颜色方案</li>
+</ul>
+<p>保存高分辨率 PNG 文件：</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="st">"cor_heatmap.png"</span>, <span class="at">width =</span> <span class="dv">4200</span>, <span class="at">height =</span> <span class="dv">4200</span>, <span class="at">res =</span> <span class="dv">300</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  cor_matrix,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"相关系数矩阵热力图"</span>,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">fontsize_row =</span> <span class="dv">8</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fontsize_col =</span> <span class="dv">8</span>,</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">angle_col =</span> <span class="dv">45</span>,</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">border_color =</span> <span class="cn">NA</span>,</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cellwidth =</span> <span class="dv">15</span>,</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">cellheight =</span> <span class="dv">15</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="fu">dev.off</span>()</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><img src="cor_heatmap.png" class="img-fluid" style="width:100.0%"></p>
+<p><strong>可选参数建议</strong></p>
+<ul>
+<li><code>cluster_rows = FALSE, cluster_cols = FALSE</code>：禁用聚类，仅按原始顺序展示。</li>
+<li><code>display_numbers = TRUE</code>：在格子中显示数值（对变量较少时）。</li>
+<li><code>color = colorRampPalette(c("navy", "white", "firebrick3"))(50)</code>：自定义配色。</li>
+</ul>
+</section>
+<section id="数据归一化" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> 数据归一化</h1>
+<p><strong>归一化（Normalization）</strong>是将数据缩放到特定范围（通常是 <span class="math inline">\([0,1]\)</span>）的过程。这在机器学习和数据分析中很重要，因为：</p>
+<ol type="1">
+<li>消除量纲影响</li>
+<li>使不同指标可比</li>
+<li>加快算法收敛速度</li>
+</ol>
+<section id="min-max-归一化" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="min-max-归一化"><span class="header-section-number">9.1</span> Min-Max 归一化</h2>
+<p>最常用的归一化方法是 Min-Max 归一化：</p>
+<p><span class="math display">\[X_{normalized} = \frac{X - X_{min}}{X_{max} - X_{min}}\]</span></p>
+<p><strong>示例：</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 创建示例数据</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>example_values <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"原始数据："</span>, example_values, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>原始数据： 10 20 30 40 50 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Min-Max归一化</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>min_val <span class="ot">&lt;-</span> <span class="fu">min</span>(example_values)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>max_val <span class="ot">&lt;-</span> <span class="fu">max</span>(example_values)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>normalized <span class="ot">&lt;-</span> (example_values <span class="sc">-</span> min_val) <span class="sc">/</span> (max_val <span class="sc">-</span> min_val)</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"归一化后："</span>, normalized, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>归一化后： 0 0.25 0.5 0.75 1 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 可视化</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(example_values, <span class="at">main =</span> <span class="st">"原始数据"</span>, <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(normalized, <span class="at">main =</span> <span class="st">"归一化后数据"</span>, <span class="at">col =</span> <span class="st">"lightgreen"</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="work_1014_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>接下来对每个会计期 Accper 进行组内归一化：</p>
+<ul>
+<li>对每个数值列 X，计算 (X - min(X)) / (max(X) - min(X))，使得该期内该变量落在 [0,1]。</li>
+<li>作用：消除不同期之间的量纲差异，便于横向对比。</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用dplyr进行分组归一化</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>fs_all_scaled <span class="ot">&lt;-</span> fs_all <span class="sc">%&gt;%</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Accper) <span class="sc">%&gt;%</span> <span class="co"># 按时期分组</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>( <span class="co"># across()：对多列应用相同的操作</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">all_of</span>(data_cols_names), <span class="co"># all_of()：选择指定的列</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> (. <span class="sc">-</span> <span class="fu">min</span>(.)) <span class="sc">/</span> (<span class="fu">max</span>(.) <span class="sc">-</span> <span class="fu">min</span>(.)) <span class="co"># 归一化公式</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="co"># 取消分组</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看归一化前后的对比</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>original_sample <span class="ot">&lt;-</span> fs_all[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="fu">c</span>(<span class="st">"Stkcd"</span>, <span class="st">"Accper"</span>, data_cols_names[<span class="dv">1</span>])]</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>scaled_sample <span class="ot">&lt;-</span> fs_all_scaled[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="fu">c</span>(<span class="st">"Stkcd"</span>, <span class="st">"Accper"</span>, data_cols_names[<span class="dv">1</span>])]</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 归一化前的数据</span></span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(original_sample)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Stkcd     Accper A001101000
+1   592 2020-03-31  292929506
+2   592 2020-06-30  647060095
+3   592 2020-09-30  572977249</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 归一化后的数据</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(scaled_sample)</span></code></pre></div><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  Stkcd Accper     A001101000
+  &lt;int&gt; &lt;date&gt;          &lt;dbl&gt;
+1   592 2020-03-31     0.0137
+2   592 2020-06-30     0.0265
+3   592 2020-09-30     0.0244</code></pre>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "已复制");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "已复制");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
