@@ -163,26 +163,38 @@
                 /* 优化 iOS 上的滚动体验 */
             }
 
+            table {
+                table-layout: fixed;
+                width: 100%;
+            }
+
+            table thead th:first-child {
+                width: 55%;
+            }
+
+            table thead th:nth-child(2) {
+                width: 22.5%;
+            }
+
+            table thead th:nth-child(3) {
+                width: 22.5%;
+            }
+
             th,
             td {
-                /* 4. 减少单元格内边距 */
                 padding: 8px 10px;
             }
 
             .account-credit {
-                /* 5. 减少贷方缩进 */
                 padding-left: 2rem;
-                /* 从 3rem 减小 */
             }
 
             .comment-cell-credit {
                 padding-left: 2.5rem;
-                /* 从 3.5rem 减小 */
             }
 
             h2 {
                 font-size: 1.25rem;
-                /* 稍微缩小标题 */
                 margin-bottom: 10px;
             }
         }
