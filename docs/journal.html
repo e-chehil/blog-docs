@@ -10,6 +10,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: grid;
             grid-template-columns: 1fr 1.2fr;
+            /* 桌面端两栏 */
             gap: 20px;
             padding: 20px;
             background-color: #f9f9f9;
@@ -72,6 +73,7 @@
             font-family: "Courier New", Courier, monospace;
             font-weight: 600;
             white-space: nowrap;
+            /* 保持金额不换行，配合滚动条 */
         }
 
         tfoot {
@@ -134,6 +136,55 @@
             /* 变为粉色 */
             text-decoration-color: #e83e8c;
             font-weight: normal;
+        }
+
+        /* --- 响应式设计 (Responsive Design) --- */
+        /* 当屏幕宽度小于或等于 768px 时生效 */
+        @media (max-width: 768px) {
+            body {
+                /* 1. 改为单列布局 */
+                grid-template-columns: 1fr;
+                padding: 10px;
+                /* 减少 body 内边距 */
+                gap: 15px;
+                /* 减少 gap */
+            }
+
+            #entryInput {
+                /* 2. 减少 textarea 的高度 */
+                height: 300px;
+            }
+
+            #journalOutput {
+                /* 3. 让表格容器可以水平滚动 */
+                /* 这是处理表格响应式的最简单有效的方法 */
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                /* 优化 iOS 上的滚动体验 */
+            }
+
+            th,
+            td {
+                /* 4. 减少单元格内边距 */
+                padding: 8px 10px;
+            }
+
+            .account-credit {
+                /* 5. 减少贷方缩进 */
+                padding-left: 2rem;
+                /* 从 3rem 减小 */
+            }
+
+            .comment-cell-credit {
+                padding-left: 2.5rem;
+                /* 从 3.5rem 减小 */
+            }
+
+            h2 {
+                font-size: 1.25rem;
+                /* 稍微缩小标题 */
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
@@ -286,7 +337,7 @@
             }
 
             let table = '<table>';
-            table += '<thead><tr><th>账户 (Account)</th><th>借方 (Debit)</th><th>贷方 (Credit)</th></tr></thead>';
+            table += '<thead><tr><th>账户</th><th>借方</th><th>贷方</th></tr></thead>';
             table += '<tbody>';
 
             for (const entry of entries) {
@@ -301,12 +352,12 @@
                 let amountCell = '';
                 if (entry.isFormula) {
                     amountCell = `<td class="amount amount-formula" 
-                                      data-formula="${escapedFormula}" 
-                                      data-result="${entry.amount}" 
-                                      data-state="result" 
-                                      title="点击查看算式: ${escapedFormula}">
-                                      ${entry.amount}
-                                  </td>`;
+                                        data-formula="${escapedFormula}" 
+                                        data-result="${entry.amount}" 
+                                        data-state="result" 
+                                        title="点击查看算式: ${escapedFormula}">
+                                        ${entry.amount}
+                                    </td>`;
                 } else {
                     amountCell = `<td class="amount">${entry.amount}</td>`;
                 }
