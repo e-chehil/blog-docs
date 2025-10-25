@@ -10,7 +10,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: grid;
             grid-template-columns: 1fr 1.2fr;
-            /* 桌面端两栏 */
             gap: 20px;
             padding: 20px;
             background-color: #f9f9f9;
@@ -39,25 +38,54 @@
             overflow: hidden;
         }
 
+        /* --- 2列布局的核心CSS --- */
         table {
             width: 100%;
             border-collapse: collapse;
         }
 
+        /* 1. 【统一内边距】所有单元格都使用此内边距 */
         th,
         td {
             padding: 10px 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
             word-break: break-word;
+            /* 允许科目在需要时换行 */
         }
 
         th {
             background-color: #f7f7f7;
             color: #555;
             font-weight: 600;
-            text-align: center;
         }
+
+        /* 2. 【桌面端】金额区使用 Grid 布局 */
+        .amount-header,
+        .amount-cell {
+            /* 它们本身就是 th/td, 已经有了 padding */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* 3. 【桌面端】插槽本身不需要内边距, 且右对齐 */
+        .debit-label,
+        .debit-slot,
+        .credit-label,
+        .credit-slot {
+            text-align: right;
+            padding: 0;
+        }
+
+        /* 保证空行有高度 */
+        tbody .debit-slot,
+        tbody .credit-slot {
+            min-height: 1.5em;
+        }
+
+        /* --- End 2列布局CSS --- */
+
 
         .account-debit {
             text-align: left;
@@ -74,29 +102,7 @@
             font-family: "Courier New", Courier, monospace;
             font-weight: 600;
             white-space: nowrap;
-            /* 保持金额不换行，配合滚动条 */
-        }
-
-        /* 移动端特有的金额样式 */
-        .amount-debit-mobile {
-            text-align: right;
-            font-family: "Courier New", Courier, monospace;
-            font-weight: 600;
-            white-space: nowrap;
-            padding-right: 1rem;
-        }
-
-        .amount-credit-mobile {
-            text-align: right;
-            font-family: "Courier New", Courier, monospace;
-            font-weight: 600;
-            white-space: nowrap;
-            padding-left: 2rem;
-        }
-
-        /* 移动端隐藏的列 */
-        .mobile-hide {
-            display: table-cell;
+            display: inline-block;
         }
 
         tfoot {
@@ -106,23 +112,6 @@
         .total-row td {
             font-weight: bold;
             font-size: 1.05em;
-        }
-
-                /* 移动端合计行样式 */
-        .total-label-mobile {
-            padding-left: 1rem !important;
-        }
-
-        .total-debit-mobile {
-            text-align: left;
-            padding-left: 1.5rem;
-            font-size: 0.95em;
-        }
-
-        .total-credit-mobile {
-            text-align: left;
-            padding-left: 1.5rem;
-            font-size: 0.95em;
         }
 
         .balance-row td {
@@ -141,6 +130,7 @@
             font-weight: 600;
         }
 
+        /* 注释行现在需要 colspan="2" */
         tr.has-comment>td {
             border-bottom: none;
             padding-bottom: 0;
@@ -170,7 +160,6 @@
             /* 默认显示结果时为蓝色 */
         }
 
-        /* 当切换为显示算式时 */
         .amount-formula.showing-formula {
             color: #e83e8c;
             /* 变为粉色 */
@@ -178,8 +167,7 @@
             font-weight: normal;
         }
 
-        /* --- 响应式设计 --- */
-        /* 当屏幕宽度小于或等于 768px 时生效 */
+        /* --- 响应式设计 (Responsive Design) --- */
         @media (max-width: 768px) {
             body {
                 grid-template-columns: 1fr;
@@ -201,24 +189,22 @@
                 width: 100%;
             }
 
-            table thead th:first-child {
-                width: 65%;
-            }
-
-            table thead th:nth-child(2) {
-                width: 35%;
-            }
-
-            table thead th:nth-child(3),
-            .mobile-hide {
-                display: none;
-            }
-
+            /* 1. 【统一内边距】移动端所有单元格使用新 padding */
             th,
             td {
                 padding: 8px 10px;
             }
 
+            /* 2. 列宽分配 */
+            table thead th:first-child {
+                width: 60%;
+            }
+
+            table thead th:nth-child(2) {
+                width: 40%;
+            }
+
+            /* 3. 科目缩进调整 */
             .account-credit {
                 padding-left: 2rem;
             }
@@ -232,23 +218,57 @@
                 margin-bottom: 10px;
             }
 
-            /* 移动端金额列的特殊处理 */
-            .amount-debit-mobile {
-                padding-right: 2rem;
+
+            /* --- 【核心修正】 --- */
+
+            /* 4. 表头(thead) 和 表尾(tfoot) *不重叠*
+                  它们保持 Grid 布局, 继承 th/td 的 padding */
+            thead .amount-header,
+            tfoot .amount-cell {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 4px;
+                /* 继承 padding: 8px 10px; */
             }
 
-            .amount-credit-mobile {
-                padding-right: 1rem;
+            /* 内部插槽重置 padding 并右对齐 */
+            thead .debit-label,
+            thead .credit-label,
+            tfoot .debit-slot,
+            tfoot .credit-slot {
+                padding: 0;
+                text-align: right;
             }
 
-            /* 合计行在移动端的特殊样式 */
-            .total-row-mobile {
-                display: table-row;
+            /* 5. *仅* 表体(tbody) 的金额单元格应用 "重叠" 布局 */
+            tbody .amount-cell {
+                display: block;
+                /* 覆盖 grid */
+                position: relative;
+                /* 继承 padding: 8px 10px; 这很完美 */
+
+                /* 【修正】设置父td右对齐, 这将对齐 'debit-slot' (span) */
+                text-align: right;
             }
 
-            .total-debit-mobile,
-            .total-credit-mobile {
-                padding-left: 1rem;
+            /* 6. 借方插槽: 正常显示, 右对齐 (通过父元素) */
+            tbody .debit-slot {
+                padding: 0;
+                position: static;
+                display: inline-block;
+                /* 确保是行内块 */
+            }
+
+            /* 7. 贷方插槽: 绝对定位 "重叠" */
+            tbody .credit-slot {
+                position: absolute;
+                right: 10px;
+                /* 对应 'td' 的 padding-right */
+                top: 8px;
+                /* 对应 'td' 的 padding-top */
+                padding: 0;
+                text-align: right;
+                display: inline-block;
             }
         }
     </style>
@@ -267,7 +287,7 @@
     </div>
 
     <script>
-        // --- 辅助函数 ---
+        // --- 辅助函数 (未改变) ---
         function formatAmount(amountNum) {
             if (typeof amountNum !== 'number' || isNaN(amountNum)) return 'N/A';
             return amountNum.toLocaleString('en-US', {
@@ -303,14 +323,10 @@
             if (!str) return '';
             return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
-
-        // 检测是否为移动设备
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
         // --- End 辅助函数 ---
 
         function parseAndRender() {
+            // ... (解析逻辑与之前完全相同)
             const inputText = document.getElementById('entryInput').value;
             const outputDiv = document.getElementById('journalOutput');
 
@@ -397,132 +413,119 @@
 
             const epsilon = 0.001;
             const isBalanced = Math.abs(totalDebit - totalCredit) < epsilon;
+
+            // 【重要】调用 *2列* renderTable
             renderTable(journalEntries, outputDiv, totalDebit, totalCredit, isBalanced);
         }
 
+        /**
+         * 【辅助】渲染单个金额的 <span> (处理公式点击)
+         */
+        function renderAmountSpan(entry) {
+            if (entry.amount === '') return ''; // 空金额
+
+            const escapedFormula = escapeHTML(entry.originalAmount);
+            if (entry.isFormula) {
+                return `<span class="amount amount-formula" 
+                              data-formula="${escapedFormula}" 
+                              data-result="${entry.amount}" 
+                              data-state="result" 
+                              title="点击查看算式: ${escapedFormula}">
+                              ${entry.amount}
+                        </span>`;
+            } else {
+                return `<span class="amount">${entry.amount}</span>`;
+            }
+        }
+
+        /**
+         * 【2列】 renderTable 函数
+         */
         function renderTable(entries, container, totalDebit, totalCredit, isBalanced) {
             if (entries.length === 0) {
                 container.innerHTML = '<p style="padding: 15px; color: #888; text-align: center;">暂无内容</p>';
                 return;
             }
 
-            const mobile = isMobile();
             let table = '<table>';
-
-            // 表头根据设备类型调整
-            if (mobile) {
-                table += '<thead><tr><th>账户</th><th>金额</th></tr></thead>';
-            } else {
-                table += '<thead><tr><th>账户</th><th>借方</th><th>贷方</th></tr></thead>';
-            }
+            // <thead>: 2列
+            table += '<thead><tr>';
+            table += '<th>账户 (Account)</th>';
+            table += '<th class="amount-header">'; // 金额区 <th>
+            table += '<span class="debit-label">借方 (Debit)</span>';
+            table += '<span class="credit-label">贷方 (Credit)</span>';
+            table += '</th>';
+            table += '</tr></thead>';
 
             table += '<tbody>';
 
             for (const entry of entries) {
                 if (entry.type === 'comment') {
-                    table += `<tr class="full-comment-row"><td colspan="${mobile ? '2' : '3'}" class="full-comment-cell"># ${entry.account}</td></tr>`;
+                    // 纯注释行
+                    table += `<tr class="full-comment-row"><td colspan="2" class="full-comment-cell"># ${entry.account}</td></tr>`;
                     continue;
                 }
 
                 const hasComment = entry.comment && entry.comment.trim() !== '';
-                const escapedFormula = escapeHTML(entry.originalAmount);
 
-                let amountCell = '';
-                if (entry.isFormula) {
-                    const amountClass = mobile ?
-                        (entry.type === 'debit' ? 'amount-debit-mobile' : 'amount-credit-mobile') :
-                        'amount';
+                // 准备借方和贷方"插槽"的内容
+                let debitSlotHTML = '';
+                let creditSlotHTML = '';
+                let accountClass = '';
 
-                    amountCell = `<td class="${amountClass} amount-formula" 
-                                    data-formula="${escapedFormula}" 
-                                    data-result="${entry.amount}" 
-                                    data-state="result" 
-                                    title="点击查看算式: ${escapedFormula}">
-                                    ${entry.amount}
-                                </td>`;
-                } else {
-                    const amountClass = mobile ?
-                        (entry.type === 'debit' ? 'amount-debit-mobile' : 'amount-credit-mobile') :
-                        'amount';
-                    amountCell = `<td class="${amountClass}">${entry.amount}</td>`;
+                if (entry.type === 'debit') {
+                    debitSlotHTML = renderAmountSpan(entry);
+                    accountClass = 'account-debit';
+                } else if (entry.type === 'credit') {
+                    creditSlotHTML = renderAmountSpan(entry);
+                    accountClass = 'account-credit';
                 }
 
+                // 1. 渲染主数据行 (2列)
                 table += `<tr class="${hasComment ? 'has-comment' : ''}">`;
-
-                if (mobile) {
-                    // 移动端：账户和金额两列
-                    if (entry.type === 'debit') {
-                        table += `<td class="account-debit">${entry.account}</td>`;
-                        table += amountCell;
-                    } else if (entry.type === 'credit') {
-                        table += `<td class="account-credit">${entry.account}</td>`;
-                        table += amountCell;
-                    }
-                } else {
-                    // 桌面端：账户、借方、贷方三列
-                    if (entry.type === 'debit') {
-                        table += `<td class="account-debit">${entry.account}</td>`;
-                        table += amountCell;
-                        table += `<td></td>`;
-                    } else if (entry.type === 'credit') {
-                        table += `<td class="account-credit">${entry.account}</td>`;
-                        table += `<td></td>`;
-                        table += amountCell;
-                    }
-                }
-
+                // 列 1: 账户
+                table += `<td class="${accountClass}">${entry.account}</td>`;
+                // 列 2: 金额区 (内含2个插槽)
+                table += `<td class="amount-cell">`;
+                table += `<span class="debit-slot">${debitSlotHTML}</span>`;
+                table += `<span class="credit-slot">${creditSlotHTML}</span>`;
+                table += `</td>`;
                 table += '</tr>';
 
+                // 2. 渲染行内注释行 (如果存在)
                 if (hasComment) {
                     let commentCellClass = entry.type === 'credit' ? 'comment-cell-credit' : 'comment-cell-debit';
                     table += '<tr class="comment-row">';
-                    table += `<td colspan="${mobile ? '2' : '3'}" class="comment-cell ${commentCellClass}">↳ ${entry.comment}</td>`;
+                    // 注释行也需要 colspan="2"
+                    table += `<td colspan="2" class="comment-cell ${commentCellClass}">↳ ${entry.comment}</td>`;
                     table += '</tr>';
                 }
             }
             table += '</tbody>';
 
-            // 合计
+            // <tfoot>: 2列
             table += '<tfoot>';
+            // 合计
+            table += '<tr class="total-row">';
+            table += `<td><strong>合计 (Total)</strong></td>`; // 列 1
+            table += `<td class="amount-cell">`; // 列 2
+            table += `<span class="debit-slot amount">${formatAmount(totalDebit)}</span>`;
+            table += `<span class="credit-slot amount">${formatAmount(totalCredit)}</span>`;
+            table += `</td>`;
+            table += '</tr>';
 
-            if (mobile) {
-                // 移动端：分两行显示借贷合计
-                table += '<tr class="total-row">';
-                table += `<td colspan="2" class="total-label-mobile"><strong>合计 (Total)</strong></td>`;
-                table += '</tr>';
-                table += '<tr class="total-row">';
-                table += `<td class="total-debit-mobile">借方合计</td>`;
-                table += `<td class="amount-debit-mobile">${formatAmount(totalDebit)}</td>`;
-                table += '</tr>';
-                table += '<tr class="total-row">';
-                table += `<td class="total-credit-mobile">贷方合计</td>`;
-                table += `<td class="amount-credit-mobile">${formatAmount(totalCredit)}</td>`;
-                table += '</tr>';
-            } else {
-                // 桌面端：保持原有的三列显示
-                table += '<tr class="total-row">';
-                table += `<td><strong>合计 (Total)</strong></td>`;
-                table += `<td class="amount">${formatAmount(totalDebit)}</td>`;
-                table += `<td class="amount">${formatAmount(totalCredit)}</td>`;
-                table += '</tr>';
-            }
-
+            // 配平
             if (!isBalanced) {
                 let difference = Math.abs(totalDebit - totalCredit);
                 table += '<tr class="balance-row">';
-                table += `<td colspan="${mobile ? '2' : '3'}" class="balance-error">分录未配平 (Unbalanced) - 差额: ${formatAmount(difference)}</td>`;
+                table += `<td colspan="2" class="balance-error">分录未配平 (Unbalanced) - 差额: ${formatAmount(difference)}</td>`;
                 table += '</tr>';
             }
             table += '</tfoot></table>';
             container.innerHTML = table;
         }
 
-        // 监听窗口大小变化，重新渲染
-        window.addEventListener('resize', function () {
-            parseAndRender();
-        });
-
-        // 默认示例
+        // 默认示例 (未改变)
         const defaultEntry = `# 研发部门工资表
 借：管理费用——工资（研发部） 5000+0.50
 ——福利费（研发部） 800+200 # 研发人员福利
@@ -540,23 +543,21 @@
         document.getElementById('entryInput').value = defaultEntry;
         parseAndRender(); // 页面加载时立即解析默认值
 
-        // 重写点击事件，实现原地切换
+        // 事件委托 (与上次相同)
         document.getElementById('journalOutput').addEventListener('click', function (e) {
-            // 检查点击的是否是 .amount-formula 单元格
-            const el = e.target;
-            if (el && el.classList.contains('amount-formula')) {
+            const el = e.target.closest('.amount-formula');
+
+            if (el) {
                 const currentState = el.getAttribute('data-state');
                 const formula = el.getAttribute('data-formula');
                 const result = el.getAttribute('data-result');
 
                 if (currentState === 'result') {
-                    // 切换为显示算式
                     el.innerHTML = formula;
                     el.setAttribute('data-state', 'formula');
                     el.setAttribute('title', `点击查看结果: ${result}`);
                     el.classList.add('showing-formula');
                 } else {
-                    // 切换为显示结果
                     el.innerHTML = result;
                     el.setAttribute('data-state', 'result');
                     el.setAttribute('title', `点击查看算式: ${formula}`);
