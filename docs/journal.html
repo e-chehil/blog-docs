@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会计分录解析器</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        #entryInput {
+            width: 100%;
+            height: 450px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+
+        #journalOutput {
+            border: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            word-break: break-word;
+        }
+
+        th {
+            background-color: #f7f7f7;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .account-debit {
+            text-align: left;
+            padding-left: 1rem;
+        }
+
+        .account-credit {
+            text-align: left;
+            padding-left: 3rem;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        tfoot {
+            border-top: 2px solid #333;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .balance-row td {
+            text-align: center;
+            font-weight: bold;
+            border-bottom: none;
+        }
+
+        .balance-error {
+            color: #dc3545;
+        }
+
+        .full-comment-row td.full-comment-cell {
+            background-color: #f7f7f7;
+            color: #444;
+            font-weight: 600;
+        }
+
+        tr.has-comment>td {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .comment-cell {
+            padding-top: 4px;
+            padding-bottom: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .comment-cell-debit {
+            padding-left: 1.5rem;
+        }
+
+        .comment-cell-credit {
+            padding-left: 3.5rem;
+        }
+
+        .amount-formula {
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-decoration-color: #007bff;
+            color: #007bff;
+            /* 默认显示结果时为蓝色 */
+        }
+
+        /* 当切换为显示算式时 */
+        .amount-formula.showing-formula {
+            color: #e83e8c;
+            /* 变为粉色 */
+            text-decoration-color: #e83e8c;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2>输入分录</h2>
+        <textarea id="entryInput" oninput="parseAndRender()" placeholder="请在此处粘贴分录..."></textarea>
+    </div>
+
+    <div>
+        <h2>格式化结果</h2>
+        <div id="journalOutput">
+        </div>
+    </div>
+
+    <script>
+        // --- 辅助函数 ---
+        function formatAmount(amountNum) {
+            if (typeof amountNum !== 'number' || isNaN(amountNum)) return 'N/A';
+            return amountNum.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        function getLevel1Account(accountPart) {
+            const plainTextAccount = accountPart.replace(/<[^>]*>/g, '');
+            const match = plainTextAccount.match(/^(.*?)\s*——\s*/);
+            return match ? match[1].trim() : plainTextAccount.trim();
+        }
+        function evaluateAmount(amountStr) {
+            let original = amountStr;
+            let cleanExpr = amountStr.replace(/,/g, '');
+            if (/^(\d+(\.\d*)?|\.\d+)$/.test(cleanExpr)) {
+                return { result: parseFloat(cleanExpr), original: original, isFormula: false };
+            }
+            cleanExpr = cleanExpr.replace(/(\d+(\.\d+)?)%/g, '($1/100)').replace(/\^/g, '**');
+            const safeMathRegex = /^[\d\s+\-*/().eE]+$/;
+            if (!safeMathRegex.test(cleanExpr)) {
+                return { result: NaN, original: original, isFormula: false };
+            }
+            try {
+                let result = new Function('return ' + cleanExpr)();
+                if (typeof result === 'number' && !isNaN(result)) {
+                    return { result: result, original: original, isFormula: true };
+                }
+            } catch (e) { }
+            return { result: NaN, original: original, isFormula: false };
+        }
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        // --- End 辅助函数 ---
+
+        function parseAndRender() {
+            const inputText = document.getElementById('entryInput').value;
+            const outputDiv = document.getElementById('journalOutput');
+
+            let totalDebit = 0, totalCredit = 0;
+            const lines = inputText.split('\n');
+            let journalEntries = [];
+            let currentType = null, currentLevel1Account = '';
+
+            for (const rawLine of lines) {
+                let parts = rawLine.split('#');
+                let processedLine = parts[0].trim();
+                let comment = parts.slice(1).join('#').trim() || null;
+
+                if (processedLine === '' && comment) {
+                    journalEntries.push({ type: 'comment', account: comment });
+                    continue;
+                } else if (processedLine === '') {
+                    continue;
+                }
+
+                let entry = { type: null, account: '', amount: '', comment: comment, originalAmount: '', isFormula: false };
+                let accountPart = '', amountNum = NaN;
+                let prefix = '', lineContent = '';
+
+                if (processedLine.startsWith('借：')) {
+                    currentType = 'debit';
+                    prefix = '借：';
+                    lineContent = processedLine.substring(2).trim();
+                } else if (processedLine.startsWith('贷：')) {
+                    currentType = 'credit';
+                    prefix = '贷：';
+                    lineContent = processedLine.substring(2).trim();
+                } else if (processedLine.startsWith('——')) {
+                    prefix = '——';
+                    lineContent = processedLine.substring(2).trim();
+                } else {
+                    prefix = '';
+                    lineContent = processedLine.trim();
+                }
+
+                if (lineContent === '') { continue; }
+
+                let evalResult;
+                const contentLastSpace = lineContent.lastIndexOf(' ');
+
+                if (contentLastSpace === -1) {
+                    accountPart = lineContent;
+                    amountNum = NaN;
+                    evalResult = { original: '', isFormula: false };
+                } else {
+                    let potentialAmount = lineContent.substring(contentLastSpace + 1).trim();
+                    evalResult = evaluateAmount(potentialAmount);
+
+                    if (!isNaN(evalResult.result)) {
+                        accountPart = lineContent.substring(0, contentLastSpace).trim();
+                        amountNum = evalResult.result;
+                    } else {
+                        accountPart = lineContent;
+                        amountNum = NaN;
+                        evalResult = { original: '', isFormula: false };
+                    }
+                }
+
+                if (prefix === '——') {
+                    accountPart = `${currentLevel1Account}——${accountPart}`;
+                } else {
+                    if (accountPart.trim() !== '') {
+                        currentLevel1Account = getLevel1Account(accountPart);
+                    }
+                }
+
+                entry.type = currentType;
+                entry.account = accountPart;
+                entry.amount = isNaN(amountNum) ? '' : formatAmount(amountNum);
+                entry.originalAmount = evalResult.original;
+                entry.isFormula = evalResult.isFormula;
+
+                if (!isNaN(amountNum)) {
+                    if (entry.type === 'debit') totalDebit += amountNum;
+                    else if (entry.type === 'credit') totalCredit += amountNum;
+                }
+                journalEntries.push(entry);
+            }
+
+            const epsilon = 0.001;
+            const isBalanced = Math.abs(totalDebit - totalCredit) < epsilon;
+            renderTable(journalEntries, outputDiv, totalDebit, totalCredit, isBalanced);
+        }
+
+        function renderTable(entries, container, totalDebit, totalCredit, isBalanced) {
+            if (entries.length === 0) {
+                container.innerHTML = '<p style="padding: 15px; color: #888; text-align: center;">暂无内容</p>';
+                return;
+            }
+
+            let table = '<table>';
+            table += '<thead><tr><th>账户 (Account)</th><th>借方 (Debit)</th><th>贷方 (Credit)</th></tr></thead>';
+            table += '<tbody>';
+
+            for (const entry of entries) {
+                if (entry.type === 'comment') {
+                    table += `<tr class="full-comment-row"><td colspan="3" class="full-comment-cell"># ${entry.account}</td></tr>`;
+                    continue;
+                }
+
+                const hasComment = entry.comment && entry.comment.trim() !== '';
+                const escapedFormula = escapeHTML(entry.originalAmount);
+
+                let amountCell = '';
+                if (entry.isFormula) {
+                    amountCell = `<td class="amount amount-formula" 
+                                      data-formula="${escapedFormula}" 
+                                      data-result="${entry.amount}" 
+                                      data-state="result" 
+                                      title="点击查看算式: ${escapedFormula}">
+                                      ${entry.amount}
+                                  </td>`;
+                } else {
+                    amountCell = `<td class="amount">${entry.amount}</td>`;
+                }
+
+                table += `<tr class="${hasComment ? 'has-comment' : ''}">`;
+                if (entry.type === 'debit') {
+                    table += `<td class="account-debit">${entry.account}</td>`;
+                    table += amountCell;
+                    table += `<td></td>`;
+                } else if (entry.type === 'credit') {
+                    table += `<td class="account-credit">${entry.account}</td>`;
+                    table += `<td></td>`;
+                    table += amountCell;
+                }
+                table += '</tr>';
+
+                if (hasComment) {
+                    let commentCellClass = entry.type === 'credit' ? 'comment-cell-credit' : 'comment-cell-debit';
+                    table += '<tr class="comment-row">';
+                    table += `<td colspan="3" class="comment-cell ${commentCellClass}">↳ ${entry.comment}</td>`;
+                    table += '</tr>';
+                }
+            }
+            table += '</tbody>';
+
+            // 合计
+            table += '<tfoot>';
+            table += '<tr class="total-row">';
+            table += `<td><strong>合计 (Total)</strong></td>`;
+            table += `<td class="amount">${formatAmount(totalDebit)}</td>`;
+            table += `<td class="amount">${formatAmount(totalCredit)}</td>`;
+            table += '</tr>';
+
+            if (!isBalanced) {
+                let difference = Math.abs(totalDebit - totalCredit);
+                table += '<tr class="balance-row">';
+                table += `<td colspan="3" class="balance-error">分录未配平 (Unbalanced) - 差额: ${formatAmount(difference)}</td>`;
+                table += '</tr>';
+            }
+            table += '</tfoot></table>';
+            container.innerHTML = table;
+        }
+
+        // 默认示例
+        const defaultEntry = `# 研发部门工资表
+借：管理费用——工资（研发部） 5000+0.50
+——福利费（研发部） 800+200 # 研发人员福利
+贷：应付职工薪酬——工资 5000.50
+——福利费 1000 # 贷方注释测试
+
+# 提现 (故意不配平)
+借：银行存款 1500 # 从A银行提现
+贷：库存现金 1499.99
+
+# 仅有科目的行
+贷：库存股（测试）
+`;
+
+        document.getElementById('entryInput').value = defaultEntry;
+        parseAndRender(); // 页面加载时立即解析默认值
+
+        // 重写点击事件，实现原地切换
+        document.getElementById('journalOutput').addEventListener('click', function (e) {
+            // 检查点击的是否是 .amount-formula 单元格
+            const el = e.target;
+            if (el && el.classList.contains('amount-formula')) {
+                const currentState = el.getAttribute('data-state');
+                const formula = el.getAttribute('data-formula');
+                const result = el.getAttribute('data-result');
+
+                if (currentState === 'result') {
+                    // 切换为显示算式
+                    el.innerHTML = formula;
+                    el.setAttribute('data-state', 'formula');
+                    el.setAttribute('title', `点击查看结果: ${result}`);
+                    el.classList.add('showing-formula');
+                } else {
+                    // 切换为显示结果
+                    el.innerHTML = result;
+                    el.setAttribute('data-state', 'result');
+                    el.setAttribute('title', `点击查看算式: ${formula}`);
+                    el.classList.remove('showing-formula');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
