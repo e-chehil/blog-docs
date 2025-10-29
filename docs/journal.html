@@ -108,7 +108,7 @@
             font-size: 1.05em;
         }
 
-                /* 移动端合计行样式 */
+        /* 移动端合计行样式 */
         .total-label-mobile {
             padding-left: 1rem !important;
         }
@@ -196,8 +196,10 @@
                 -webkit-overflow-scrolling: touch;
             }
 
+            /* * 【修复2】: 移除 table-layout: fixed;
+             * 允许表格自动调整列宽以适应内容，防止溢出
+             */
             table {
-                table-layout: fixed;
                 width: 100%;
             }
 
@@ -269,36 +271,93 @@
     <script>
         // --- 辅助函数 ---
         function formatAmount(amountNum) {
-            if (typeof amountNum !== 'number' || isNaN(amountNum)) return 'N/A';
-            return amountNum.toLocaleString('en-US', {
+            if (typeof amountNum !== 'number' || isNaN(amountNum)) {
+                return {
+                    plain: 'N/A',
+                    html: 'N/A'
+                };
+            }
+
+            // 1. 生成标准的、带2位小数的纯文本格式
+            const plainFormatted = amountNum.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+
+            let html;
+
+            // 2. 判断是否为整数
+            if (Number.isInteger(amountNum)) {
+                // 如果是整数，获取不带小数的整数部分
+                const integerPart = amountNum.toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+
+                // 从 plainFormatted 获取小数部分 (例如 ".00")
+                const decimalPart = plainFormatted.substring(plainFormatted.lastIndexOf('.'));
+
+                // 生成HTML，将小数部分用 span 包裹并隐藏
+                html = `${integerPart}<span class="decimal-part" style="visibility: hidden;">${decimalPart}</span>`;
+            } else {
+                // 如果是小数，正常显示
+                // 我们也用span包裹，以便样式统一（虽然此处非必须）
+                const parts = plainFormatted.match(/^(.*?)\.([0-9]{2})$/);
+                if (parts) {
+                    html = `${parts[1]}<span class="decimal-part">.${parts[2]}</span>`;
+                } else {
+                    html = plainFormatted; // 备用
+                }
+            }
+
+            return {
+                plain: plainFormatted,
+                html: html
+            };
         }
+
         function getLevel1Account(accountPart) {
             const plainTextAccount = accountPart.replace(/<[^>]*>/g, '');
             const match = plainTextAccount.match(/^(.*?)\s*——\s*/);
             return match ? match[1].trim() : plainTextAccount.trim();
         }
+
         function evaluateAmount(amountStr) {
             let original = amountStr;
             let cleanExpr = amountStr.replace(/,/g, '');
             if (/^(\d+(\.\d*)?|\.\d+)$/.test(cleanExpr)) {
-                return { result: parseFloat(cleanExpr), original: original, isFormula: false };
+                return {
+                    result: parseFloat(cleanExpr),
+                    original: original,
+                    isFormula: false
+                };
             }
             cleanExpr = cleanExpr.replace(/(\d+(\.\d+)?)%/g, '($1/100)').replace(/\^/g, '**');
             const safeMathRegex = /^[\d\s+\-*/().eE]+$/;
             if (!safeMathRegex.test(cleanExpr)) {
-                return { result: NaN, original: original, isFormula: false };
+                return {
+                    result: NaN,
+                    original: original,
+                    isFormula: false
+                };
             }
             try {
                 let result = new Function('return ' + cleanExpr)();
                 if (typeof result === 'number' && !isNaN(result)) {
-                    return { result: result, original: original, isFormula: true };
+                    return {
+                        result: result,
+                        original: original,
+                        isFormula: true
+                    };
                 }
             } catch (e) { }
-            return { result: NaN, original: original, isFormula: false };
+            return {
+                result: NaN,
+                original: original,
+                isFormula: false
+            };
         }
+
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -314,10 +373,12 @@
             const inputText = document.getElementById('entryInput').value;
             const outputDiv = document.getElementById('journalOutput');
 
-            let totalDebit = 0, totalCredit = 0;
+            let totalDebit = 0,
+                totalCredit = 0;
             const lines = inputText.split('\n');
             let journalEntries = [];
-            let currentType = null, currentLevel1Account = '';
+            let currentType = null,
+                currentLevel1Account = '';
 
             for (const rawLine of lines) {
                 let parts = rawLine.split('#');
@@ -325,15 +386,28 @@
                 let comment = parts.slice(1).join('#').trim() || null;
 
                 if (processedLine === '' && comment) {
-                    journalEntries.push({ type: 'comment', account: comment });
+                    journalEntries.push({
+                        type: 'comment',
+                        account: comment
+                    });
                     continue;
                 } else if (processedLine === '') {
                     continue;
                 }
 
-                let entry = { type: null, account: '', amount: '', comment: comment, originalAmount: '', isFormula: false };
-                let accountPart = '', amountNum = NaN;
-                let prefix = '', lineContent = '';
+                let entry = {
+                    type: null,
+                    account: '',
+                    comment: comment,
+                    originalAmount: '',
+                    isFormula: false,
+                    amountFormatted: '', // 用于显示的HTML
+                    amountPlain: ''      // 用于data-result的纯文本
+                };
+                let accountPart = '',
+                    amountNum = NaN;
+                let prefix = '',
+                    lineContent = '';
 
                 if (processedLine.startsWith('借：')) {
                     currentType = 'debit';
@@ -351,32 +425,41 @@
                     lineContent = processedLine.trim();
                 }
 
-                if (lineContent === '') { continue; }
+                if (lineContent === '') {
+                    continue;
+                }
 
+                // --- 【修复1】: 更新解析逻辑 ---
                 let evalResult;
                 const contentLastSpace = lineContent.lastIndexOf(' ');
 
-                if (contentLastSpace === -1) {
+                // 优先尝试解析最后一部分是否为金额
+                let potentialAmount = (contentLastSpace === -1) ?
+                    lineContent : // 可能是 "1000"
+                    lineContent.substring(contentLastSpace + 1).trim(); // 可能是 "Account 1000"
+
+                evalResult = evaluateAmount(potentialAmount);
+
+                if (!isNaN(evalResult.result)) {
+                    // 解析成功，是金额
+                    amountNum = evalResult.result;
+                    // 金额前面的所有内容都是科目
+                    accountPart = (contentLastSpace === -1) ?
+                        '' : // "1000" 这种情况，科目名为空
+                        lineContent.substring(0, contentLastSpace).trim();
+                } else {
+                    // 解析失败，整行都是科目
                     accountPart = lineContent;
                     amountNum = NaN;
                     evalResult = { original: '', isFormula: false };
-                } else {
-                    let potentialAmount = lineContent.substring(contentLastSpace + 1).trim();
-                    evalResult = evaluateAmount(potentialAmount);
-
-                    if (!isNaN(evalResult.result)) {
-                        accountPart = lineContent.substring(0, contentLastSpace).trim();
-                        amountNum = evalResult.result;
-                    } else {
-                        accountPart = lineContent;
-                        amountNum = NaN;
-                        evalResult = { original: '', isFormula: false };
-                    }
                 }
+                // --- 结束修复1 ---
+
 
                 if (prefix === '——') {
                     accountPart = `${currentLevel1Account}——${accountPart}`;
                 } else {
+                    // 仅当科目部分不为空时，才更新一级科目
                     if (accountPart.trim() !== '') {
                         currentLevel1Account = getLevel1Account(accountPart);
                     }
@@ -384,7 +467,11 @@
 
                 entry.type = currentType;
                 entry.account = accountPart;
-                entry.amount = isNaN(amountNum) ? '' : formatAmount(amountNum);
+
+                const amountData = isNaN(amountNum) ? { plain: '', html: '' } : formatAmount(amountNum);
+                entry.amountFormatted = amountData.html; // 用于显示
+                entry.amountPlain = amountData.plain;   // 用于 data-result 属性
+
                 entry.originalAmount = evalResult.original;
                 entry.isFormula = evalResult.isFormula;
 
@@ -424,6 +511,19 @@
                     continue;
                 }
 
+                // 如果类型为null (例如在'借/贷'前输入了纯数字)，则跳过渲染
+                // 修复1 允许 accountPart 为空，但 type 必须存在
+                if (entry.type === null && entry.account === '' && entry.amountPlain === '') {
+                    continue; // 跳过完全无效的行
+                }
+                // 如果类型为null，但有金额，给予一个默认类型（例如借方）
+                // 或者，我们可以要求用户必须先指定 借/贷
+                // 当前的逻辑：如果 type 为 null，则不显示
+                if (entry.type === null) {
+                    continue;
+                }
+
+
                 const hasComment = entry.comment && entry.comment.trim() !== '';
                 const escapedFormula = escapeHTML(entry.originalAmount);
 
@@ -434,17 +534,17 @@
                         'amount';
 
                     amountCell = `<td class="${amountClass} amount-formula" 
-                                    data-formula="${escapedFormula}" 
-                                    data-result="${entry.amount}" 
-                                    data-state="result" 
-                                    title="点击查看算式: ${escapedFormula}">
-                                    ${entry.amount}
-                                </td>`;
+                                        data-formula="${escapedFormula}" 
+                                        data-result="${entry.amountPlain}" 
+                                        data-state="result" 
+                                        title="点击查看算式: ${escapedFormula}">
+                                        ${entry.amountFormatted}
+                                    </td>`;
                 } else {
                     const amountClass = mobile ?
                         (entry.type === 'debit' ? 'amount-debit-mobile' : 'amount-credit-mobile') :
                         'amount';
-                    amountCell = `<td class="${amountClass}">${entry.amount}</td>`;
+                    amountCell = `<td class="${amountClass}">${entry.amountFormatted}</td>`;
                 }
 
                 table += `<tr class="${hasComment ? 'has-comment' : ''}">`;
@@ -492,25 +592,25 @@
                 table += '</tr>';
                 table += '<tr class="total-row">';
                 table += `<td class="total-debit-mobile">借方合计</td>`;
-                table += `<td class="amount-debit-mobile">${formatAmount(totalDebit)}</td>`;
+                table += `<td class="amount-debit-mobile">${formatAmount(totalDebit).html}</td>`;
                 table += '</tr>';
                 table += '<tr class="total-row">';
                 table += `<td class="total-credit-mobile">贷方合计</td>`;
-                table += `<td class="amount-credit-mobile">${formatAmount(totalCredit)}</td>`;
+                table += `<td class="amount-credit-mobile">${formatAmount(totalCredit).html}</td>`;
                 table += '</tr>';
             } else {
                 // 桌面端：保持原有的三列显示
                 table += '<tr class="total-row">';
                 table += `<td><strong>合计 (Total)</strong></td>`;
-                table += `<td class="amount">${formatAmount(totalDebit)}</td>`;
-                table += `<td class="amount">${formatAmount(totalCredit)}</td>`;
+                table += `<td class="amount">${formatAmount(totalDebit).html}</td>`;
+                table += `<td class="amount">${formatAmount(totalCredit).html}</td>`;
                 table += '</tr>';
             }
 
             if (!isBalanced) {
                 let difference = Math.abs(totalDebit - totalCredit);
                 table += '<tr class="balance-row">';
-                table += `<td colspan="${mobile ? '2' : '3'}" class="balance-error">分录未配平 (Unbalanced) - 差额: ${formatAmount(difference)}</td>`;
+                table += `<td colspan="${mobile ? '2' : '3'}" class="balance-error">分录未配平 (Unbalanced) - 差额: ${formatAmount(difference).html}</td>`;
                 table += '</tr>';
             }
             table += '</tfoot></table>';
@@ -535,6 +635,11 @@
 
 # 仅有科目的行
 贷：库存股（测试）
+
+# 纯数字的行
+借：
+1000
+2000.50
 `;
 
         document.getElementById('entryInput').value = defaultEntry;
@@ -547,17 +652,21 @@
             if (el && el.classList.contains('amount-formula')) {
                 const currentState = el.getAttribute('data-state');
                 const formula = el.getAttribute('data-formula');
-                const result = el.getAttribute('data-result');
 
                 if (currentState === 'result') {
                     // 切换为显示算式
                     el.innerHTML = formula;
                     el.setAttribute('data-state', 'formula');
+                    const result = el.getAttribute('data-result');
                     el.setAttribute('title', `点击查看结果: ${result}`);
                     el.classList.add('showing-formula');
                 } else {
                     // 切换为显示结果
-                    el.innerHTML = result;
+                    const resultStr = el.getAttribute('data-result'); // e.g., "5,000.00"
+                    // 将纯文本金额转回数字
+                    const resultNum = parseFloat(resultStr.replace(/,/g, ''));
+                    // 重新格式化为带隐藏span的HTML
+                    el.innerHTML = formatAmount(resultNum).html;
                     el.setAttribute('data-state', 'result');
                     el.setAttribute('title', `点击查看算式: ${formula}`);
                     el.classList.remove('showing-formula');
