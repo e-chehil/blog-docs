@@ -4,21 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计 V3</title>
+    <title>专辑海报设计 V5 (优雅版)</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 引入 Google Fonts (思源宋体 和 思源黑体) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+
     <style>
-        /* 使用 Inter 字体 */
+        /* 全局应用思源黑体 */
         body {
-            font-family: 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            font-family: 'Noto Sans SC', 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
+            background-color: #f3f4f6;
+            /* bg-gray-100 */
+            color: #1f2937;
+            /* text-gray-800 */
         }
 
-        /* 毛玻璃/玻璃拟态效果 */
-        .glass-panel {
-            background-color: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 0.1);
+        /* 干净的白色卡片 UI */
+        .light-panel {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            /* border-gray-200 */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            /* shadow-lg */
         }
 
         /* 隐藏文件输入的默认按钮 */
@@ -32,7 +47,7 @@
             cursor: pointer;
         }
 
-        /* 自定义美化模板选择器 (Radio) */
+        /* 模板选择器 (浅色版) */
         .template-selector input[type="radio"] {
             display: none;
         }
@@ -41,16 +56,18 @@
             cursor: pointer;
             padding: 10px 12px;
             border-radius: 8px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #f9fafb;
+            /* bg-gray-50 */
+            border: 1px solid #e5e7eb;
+            /* border-gray-200 */
             transition: all 0.2s ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
             font-size: 0.8rem;
-            color: #9CA3AF;
-            /* text-gray-400 */
+            color: #6b7280;
+            /* text-gray-500 */
         }
 
         .template-selector input[type="radio"]:checked+label {
@@ -63,199 +80,235 @@
         }
 
         .template-selector label:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: #f3f4f6;
+            /* bg-gray-100 */
         }
 
-        /* 自定义美化范围滑块 (Range) */
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: rgba(0, 0, 0, 0.3);
-            outline: none;
+        /* 浅色版表单 */
+        .light-input {
+            background-color: #f9fafb;
+            /* bg-gray-50 */
+            border: 1px solid #d1d5db;
+            /* border-gray-300 */
+            color: #111827;
+            /* text-gray-900 */
+            border-radius: 0.375rem;
+            /* rounded-md */
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #EF4444;
-            /* red-500 */
-            cursor: pointer;
-            border: 2px solid #FFF;
+        .light-input:focus {
+            border-color: #EF4444;
+            /* focus:border-red-500 */
+            ring: 1px;
+            ring-color: #EF4444;
+            /* focus:ring-red-500 */
         }
 
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #EF4444;
-            /* red-500 */
-            cursor: pointer;
-            border: 2px solid #FFF;
+        /* 浅色版上传插槽 */
+        .light-slot {
+            background-color: #f9fafb;
+            /* bg-gray-50 */
+            border: 2px dashed #d1d5db;
+            /* border-gray-300 */
+            color: #9ca3af;
+            /* text-gray-400 */
+            transition: all 0.2s ease-in-out;
+        }
+
+        .light-slot:hover {
+            border-color: #EF4444;
+            /* hover:border-red-500 */
+            color: #e_f4444;
         }
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-gray-900 via-gray-900 to-red-900 text-gray-100 min-h-screen p-4 md:p-8">
+<body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
         <!-- 标题 -->
         <header class="text-center mb-8">
-            <h1
-                class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">
-                专辑海报设计 V3
+            <h1 class="text-3xl md:text-4xl font-bold" style="font-family: 'Noto Serif SC', serif; color: #C81E1E;">
+                专辑海报设计 V5
             </h1>
-            <p class="text-gray-400 mt-2">
-                动态背景 · 专业排版 · 尊重封面
+            <p class="text-gray-600 mt-2">
+                优雅白 · 衬线字体 · 九宫格
             </p>
         </header>
 
-        <!-- 主内容区：响应式布局 -->
+        <!-- 主内容区：响应式布局 (Canvas 永远在最前) -->
         <main class="flex flex-col md:flex-row gap-6 md:gap-8">
+
+            <!-- 右侧/上方：画布预览 -->
+            <section class="w-full md:w-2/3 lg:w-2/3">
+                <div class="w-full light-panel p-2 sticky top-8">
+                    <canvas id="poster-canvas" width="1000" height="1000"
+                        class="w-full h-auto rounded-lg aspect-square"></canvas>
+                </div>
+            </section>
 
             <!-- 左侧/下方：控制面板 -->
             <aside class="w-full md:w-1/3 lg:w-1/3 shrink-0">
-                <div
-                    class="glass-panel rounded-xl shadow-lg p-5 md:p-6 flex flex-col gap-6 sticky top-8 max-h-[90vh] overflow-y-auto">
+                <div class="light-panel p-5 md:p-6 flex flex-col gap-6">
 
                     <!-- 1. 海报文本 -->
                     <div class="flex flex-col gap-4">
-                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">1. 海报文本</h2>
+                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">1. 海报文本</h2>
                         <div>
-                            <label for="poster-title" class="text-sm font-medium text-gray-300 mb-1 block">标题</label>
-                            <input type="text" id="poster-title" placeholder="我的本周最爱"
-                                class="w-full h-10 px-3 rounded-md bg-gray-900/50 border border-gray-700 text-white focus:ring-red-500 focus:border-red-500 transition">
+                            <label for="poster-title" class="text-sm font-medium text-gray-700 mb-1 block">标题
+                                (顶部)</label>
+                            <input type="text" id="poster-title" placeholder="顔色推歌"
+                                class="w-full h-10 px-3 light-input">
                         </div>
                         <div>
-                            <label for="poster-sharer" class="text-sm font-medium text-gray-300 mb-1 block">分享人</label>
-                            <input type="text" id="poster-sharer" placeholder="Shared by @你的昵称"
-                                class="w-full h-10 px-3 rounded-md bg-gray-900/50 border border-gray-700 text-white focus:ring-red-500 focus:border-red-500 transition">
+                            <label for="poster-sharer" class="text-sm font-medium text-gray-700 mb-1 block">分享人
+                                (底部)</label>
+                            <input type="text" id="poster-sharer" placeholder="填表人："
+                                class="w-full h-10 px-3 light-input">
                         </div>
                     </div>
 
                     <!-- 2. 选择布局 -->
                     <div>
-                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2 mb-4">2. 选择布局</h2>
+                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">2. 选择布局 (图片区)
+                        </h2>
                         <div class="grid grid-cols-3 gap-3 template-selector">
-                            <!-- 模板: Stack -->
+                            <!-- 模板: Hero (3) -->
                             <div>
-                                <input type="radio" name="template" id="template-stack" value="stack" checked>
-                                <label for="template-stack">
+                                <input type="radio" name="template" id="template-hero" value="hero">
+                                <label for="template-hero">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 6h16M4 12h16M4 18h16"></path>
+                                            d="M4 4h10v10H4zM16 4h4v4h-4zM16 10h4v4h-4z"></path>
                                     </svg>
-                                    堆叠
+                                    精选 (3图)
                                 </label>
                             </div>
-                            <!-- 模板: Spotlight -->
+                            <!-- 模板: Grid (4) -->
                             <div>
-                                <input type="radio" name="template" id="template-spotlight" value="spotlight">
-                                <label for="template-spotlight">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 4H5a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V5a1 1 0 00-1-1zM19 14h-4a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1zM14 4h-4a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V5a1 1 0 00-1-1zM19 4h-4a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V5a1 1 0 00-1-1zM9 14H5a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1zM14 14h-4a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1z">
-                                        </path>
-                                    </svg>
-                                    聚焦
-                                </label>
-                            </div>
-                            <!-- 模板: Grid -->
-                            <div>
-                                <input type="radio" name="template" id="template-grid" value="grid">
-                                <label for="template-grid">
+                                <input type="radio" name="template" id="template-grid-2x2" value="grid-2x2">
+                                <label for="template-grid-2x2">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                                         </path>
                                     </svg>
-                                    网格
+                                    网格 (4图)
+                                </label>
+                            </div>
+                            <!-- 模板: Grid (9) -->
+                            <div>
+                                <input type="radio" name="template" id="template-grid-3x3" value="grid-3x3" checked>
+                                <label for="template-grid-3x3">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M3 3h4v4H3zM10 3h4v4h-4zM17 3h4v4h-4zM3 10h4v4H3zM10 10h4v4h-4zM17 10h4v4h-4zM3 17h4v4H3zM10 17h4v4h-4zM17 17h4v4h-4z">
+                                        </path>
+                                    </svg>
+                                    九宫格 (9图)
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3. 上传封面 -->
+                    <!-- 3. 上传封面 (支持9图) -->
                     <div>
-                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2 mb-4">3. 上传封面
-                            (第1张用作背景)</h2>
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- 插槽 1-4 -->
-                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">3. 上传封面 (1-9
+                            张)</h2>
+                        <div class="grid grid-cols-3 gap-3">
+                            <!-- 插槽 1-9 -->
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-1">
                                 <img id="preview-1"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览1">
-                                <div class="flex flex-col items-center z-0">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    <span class="text-xs mt-1">插槽 1 (背景)</span>
-                                </div>
+                                <span class="text-xs z-0">插槽 1</span>
                                 <input type="file" accept="image/*" id="upload-1" data-slot="1">
                             </div>
-                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-2">
                                 <img id="preview-2"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览2">
-                                <div class="flex flex-col items-center z-0"><svg class="w-8 h-8" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg><span class="text-xs mt-1">插槽 2</span></div>
+                                <span class="text-xs z-0">插槽 2</span>
                                 <input type="file" accept="image/*" id="upload-2" data-slot="2">
                             </div>
-                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-3">
                                 <img id="preview-3"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览3">
-                                <div class="flex flex-col items-center z-0"><svg class="w-8 h-8" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg><span class="text-xs mt-1">插槽 3</span></div>
+                                <span class="text-xs z-0">插槽 3</span>
                                 <input type="file" accept="image/*" id="upload-3" data-slot="3">
                             </div>
-                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-4">
                                 <img id="preview-4"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览4">
-                                <div class="flex flex-col items-center z-0"><svg class="w-8 h-8" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg><span class="text-xs mt-1">插槽 4</span></div>
+                                <span class="text-xs z-0">插槽 4</span>
                                 <input type="file" accept="image/*" id="upload-4" data-slot="4">
+                            </div>
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
+                                id="slot-container-5">
+                                <img id="preview-5"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览5">
+                                <span class="text-xs z-0">插槽 5</span>
+                                <input type="file" accept="image/*" id="upload-5" data-slot="5">
+                            </div>
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
+                                id="slot-container-6">
+                                <img id="preview-6"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览6">
+                                <span class="text-xs z-0">插槽 6</span>
+                                <input type="file" accept="image/*" id="upload-6" data-slot="6">
+                            </div>
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
+                                id="slot-container-7">
+                                <img id="preview-7"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览7">
+                                <span class="text-xs z-0">插槽 7</span>
+                                <input type="file" accept="image/*" id="upload-7" data-slot="7">
+                            </div>
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
+                                id="slot-container-8">
+                                <img id="preview-8"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览8">
+                                <span class="text-xs z-0">插槽 8</span>
+                                <input type="file" accept="image/*" id="upload-8" data-slot="8">
+                            </div>
+                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
+                                id="slot-container-9">
+                                <img id="preview-9"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览9">
+                                <span class="text-xs z-0">插槽 9</span>
+                                <input type="file" accept="image/*" id="upload-9" data-slot="9">
                             </div>
                         </div>
                     </div>
 
                     <!-- 4. 样式和操作 -->
                     <div class="flex flex-col gap-4">
-                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">4. 样式与操作</h2>
+                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">4. 样式与操作</h2>
                         <div class="flex flex-col">
-                            <label for="bg-color" class="text-sm font-medium text-gray-300 mb-2">备用背景色 (无图时)</label>
-                            <input id="bg-color" type="color" value="#111827"
-                                class="w-full h-10 p-1 rounded-md bg-gray-900/50 border-gray-700 cursor-pointer appearance-none border">
+                            <label for="bg-color" class="text-sm font-medium text-gray-700 mb-2">海报背景色</label>
+                            <input id="bg-color" type="color" value="#F4F4F8"
+                                class="w-full h-10 p-1 rounded-md light-input cursor-pointer appearance-none border-gray-300">
                         </div>
                         <div class="flex flex-col">
-                            <label for="padding-size" class="text-sm font-medium text-gray-300 mb-2">海报内边距: <span
-                                    id="padding-value">50</span>px</label>
-                            <input id="padding-size" type="range" value="50" min="10" max="150" class="w-full">
+                            <label for="poster-padding" class="text-sm font-medium text-gray-700 mb-2">海报内边距: <span
+                                    id="padding-value">60</span>px</label>
+                            <input id="poster-padding" type="range" value="60" min="20" max="150" class="w-full">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4 mt-2">
                             <button id="clear-btn"
-                                class="w-full py-3 px-4 rounded-lg bg-gray-600 hover:bg-gray-500 text-white font-semibold transition-colors shadow-md">
+                                class="w-full py-3 px-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold transition-colors shadow-md">
                                 清空
                             </button>
                             <button id="download-btn"
@@ -267,14 +320,6 @@
 
                 </div>
             </aside>
-
-            <!-- 右侧/上方：画布预览 -->
-            <section class="w-full md:w-2/3 lg:w-2/3">
-                <div class="w-full glass-panel rounded-xl shadow-lg p-2 sticky top-8">
-                    <canvas id="poster-canvas" width="1000" height="1000"
-                        class="w-full h-auto rounded-lg aspect-square"></canvas>
-                </div>
-            </section>
 
         </main>
     </div>
@@ -288,7 +333,8 @@
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            let imageSlots = { 1: null, 2: null, 3: null, 4: null };
+            // 扩展到 9 个插槽
+            let imageSlots = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
             let loadedImages = {}; // 存储加载的 Image 对象
 
             // --- DOM 元素 ---
@@ -296,9 +342,9 @@
             const textSharer = document.getElementById('poster-sharer');
             const templateRadios = document.querySelectorAll('input[name="template"]');
             const bgColorInput = document.getElementById('bg-color');
-            const paddingSizeInput = document.getElementById('padding-size');
+            const paddingInput = document.getElementById('poster-padding');
             const paddingValueDisplay = document.getElementById('padding-value');
-            const uploadInputs = document.querySelectorAll('input[type="file"]');
+            const uploadInputs = document.querySelectorAll('input[type="file"]'); // 会自动找到所有 9 个
             const clearBtn = document.getElementById('clear-btn');
             const downloadBtn = document.getElementById('download-btn');
 
@@ -306,14 +352,14 @@
             drawPoster();
 
             // --- 事件监听器 ---
-            [textTitle, textSharer, bgColorInput, paddingSizeInput].forEach(el => {
+            [textTitle, textSharer, bgColorInput, paddingInput].forEach(el => {
                 el.addEventListener('input', drawPoster);
             });
             templateRadios.forEach(radio => {
                 radio.addEventListener('change', drawPoster);
             });
-            paddingSizeInput.addEventListener('input', () => {
-                paddingValueDisplay.textContent = paddingSizeInput.value;
+            paddingInput.addEventListener('input', () => {
+                paddingValueDisplay.textContent = paddingInput.value;
             });
             uploadInputs.forEach(input => {
                 input.addEventListener('change', (e) => handleFileChange(e, input.dataset.slot));
@@ -332,9 +378,11 @@
                     imageSlots[slot] = null;
                     loadedImages[slot] = null;
                     const previewImg = document.getElementById(`preview-${slot}`);
-                    previewImg.src = '';
-                    previewImg.classList.add('hidden');
-                    drawPoster();
+                    if (previewImg) {
+                        previewImg.src = '';
+                        previewImg.classList.add('hidden');
+                    }
+                    drawPoster(); // 移除图片后重绘
                     return;
                 }
 
@@ -344,8 +392,10 @@
                     imageSlots[slot] = dataURL;
 
                     const previewImg = document.getElementById(`preview-${slot}`);
-                    previewImg.src = dataURL;
-                    previewImg.classList.remove('hidden');
+                    if (previewImg) {
+                        previewImg.src = dataURL;
+                        previewImg.classList.remove('hidden');
+                    }
 
                     loadImage(dataURL, slot).then(() => {
                         drawPoster(); // 图像加载后重绘
@@ -360,6 +410,7 @@
             function loadImage(src, slot) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
+                    img.crossOrigin = "anonymous";
                     img.onload = () => {
                         loadedImages[slot] = img;
                         resolve(img);
@@ -378,121 +429,124 @@
             function drawPoster() {
                 // 1. 获取所有设置
                 const settings = {
-                    title: textTitle.value || "我的音乐周报",
-                    sharer: textSharer.value || "Shared by Netease Music Fan",
+                    title: textTitle.value || "顔色推歌",
+                    sharer: textSharer.value || "填表人：",
                     template: document.querySelector('input[name="template"]:checked').value,
-                    bgColor: bgColorInput.value || '#111827',
-                    padding: parseInt(paddingSizeInput.value, 10) || 50,
+                    bgColor: bgColorInput.value || '#F4F4F8',
+                    padding: parseInt(paddingInput.value, 10) || 60,
                 };
 
                 const activeImages = Object.values(loadedImages).filter(Boolean);
-                const bgImage = loadedImages[1]; // 始终使用第一张图做背景
 
-                // 2. 绘制背景
-                ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                if (bgImage) {
-                    // 使用第一张图作为模糊背景
-                    ctx.save();
-                    ctx.filter = 'blur(40px)'; // 高斯模糊
-                    // 绘制图像以覆盖整个画布
-                    drawCoverImage(bgImage, -50, -50, CANVAS_SIZE + 100, CANVAS_SIZE + 100);
-                    ctx.filter = 'none';
-                    // 压暗
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                    ctx.restore();
-                } else {
-                    // 回退到纯色背景
-                    ctx.fillStyle = settings.bgColor;
-                    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                    if (activeImages.length === 0) {
-                        ctx.fillStyle = '#6B7280';
-                        ctx.font = '30px Inter';
-                        ctx.textAlign = 'center';
-                        ctx.fillText('请在左侧上传专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
-                    }
-                }
+                // 2. 绘制背景 (V5: 移除动态模糊，只用纯色)
+                drawBackground(settings.bgColor, activeImages.length === 0);
 
-                // 3. 根据模板绘制封面
+                // 3. 定义安全区域
+                const TOP_TEXT_ZONE_HEIGHT = 150;
+                const BOTTOM_TEXT_ZONE_HEIGHT = 100;
+                const contentBox = {
+                    x: settings.padding,
+                    y: settings.padding + TOP_TEXT_ZONE_HEIGHT,
+                    width: CANVAS_SIZE - settings.padding * 2,
+                    height: CANVAS_SIZE - (settings.padding * 2) - TOP_TEXT_ZONE_HEIGHT - BOTTOM_TEXT_ZONE_HEIGHT
+                };
+
+                // 4. 绘制图片布局 (在 contentBox 内)
                 switch (settings.template) {
-                    case 'stack':
-                        drawStackTemplate(activeImages, settings.padding);
+                    case 'hero':
+                        drawHeroLayout(activeImages, contentBox); // 1+2 = 3图
                         break;
-                    case 'spotlight':
-                        drawSpotlightTemplate(activeImages, settings.padding);
+                    case 'grid-2x2':
+                        drawGrid2x2Layout(activeImages, contentBox); // 2x2 = 4图
                         break;
-                    case 'grid':
-                        drawGridTemplate(activeImages, settings.padding);
+                    case 'grid-3x3':
+                        drawGrid3x3Layout(activeImages, contentBox); // 3x3 = 9图
                         break;
                 }
 
-                // 4. 绘制文本 (在所有图像之上，带阴影)
+                // 5. 绘制文本 (V5: 使用新字体，移除阴影)
                 drawText(settings);
             }
 
-            // --- 模板绘制函数 ---
+            /**
+             * (V5) 辅助: 绘制背景 (纯色)
+             */
+            function drawBackground(color, showHint) {
+                ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-            /** 布局1: 堆叠 (最多3张) */
-            function drawStackTemplate(images, padding) {
-                const gap = padding / 2.5; // 内部间距
-                const imgCount = Math.min(images.length, 3);
-                if (imgCount === 0) return;
-
-                // 总内容高度 = 3 * size + 2 * gap
-                // We reserve text space: padding * 2 top/bottom, 100px extra
-                const textSpace = padding * 2 + 150;
-                const totalContentHeight = CANVAS_SIZE - textSpace;
-                const size = (totalContentHeight - gap * (imgCount - 1)) / imgCount;
-
-                const x = (CANVAS_SIZE - size) / 2; // 水平居中
-                let y = (CANVAS_SIZE - totalContentHeight) / 2; // 垂直居中
-
-                images.slice(0, imgCount).forEach((img) => {
-                    drawSquareCover(img, x, y, size);
-                    y += size + gap;
-                });
+                if (showHint) {
+                    // 绘制提示
+                    ctx.fillStyle = '#9ca3af'; // text-gray-400
+                    ctx.font = '30px "Noto Sans SC", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('请在左侧上传专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+                }
             }
 
-            /** 布局2: 聚焦 (1大 2小) */
-            function drawSpotlightTemplate(images, padding) {
-                if (images.length === 0) return;
+            /**
+             * (V5) 辅助: 绘制文本 (新字体, 无阴影, 深色)
+             */
+            function drawText(settings) {
+                // 重置阴影
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
 
-                const gap = padding / 2.5;
-                const textSpace = padding * 2 + 200; // 顶部和底部为文字留白
-                const totalContentHeight = CANVAS_SIZE - textSpace;
+                const padding = settings.padding;
+                const TOP_TEXT_ZONE_HEIGHT = 150;
+                const BOTTOM_TEXT_ZONE_HEIGHT = 100;
 
-                const mainSize = Math.min(totalContentHeight, CANVAS_SIZE - padding * 2) * 0.9;
-                const smallSize = (mainSize - gap) / 2;
+                // 绘制标题 (顶部居中, 宋体)
+                ctx.fillStyle = '#333333'; // 深灰色
+                ctx.font = 'bold 52px "Noto Serif SC", serif'; // 使用思源宋体
+                ctx.textAlign = 'center';
+                const titleY = padding + (TOP_TEXT_ZONE_HEIGHT / 2) + 15;
+                ctx.fillText(settings.title, CANVAS_SIZE / 2, titleY);
 
-                const yMain = (CANVAS_SIZE - (mainSize + gap + smallSize)) / 2;
-                const xMain = (CANVAS_SIZE - mainSize) / 2;
+                // 绘制分享人 (底部居中, 黑体)
+                ctx.font = 'normal 28px "Noto Sans SC", sans-serif'; // 使用思源黑体
+                ctx.fillStyle = '#555555'; // 次深灰色
+                ctx.textAlign = 'center';
+                const sharerY = (CANVAS_SIZE - padding - BOTTOM_TEXT_ZONE_HEIGHT) + (BOTTOM_TEXT_ZONE_HEIGHT / 2) + 10;
+                ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
+            }
 
-                if (images[0]) {
-                    drawSquareCover(images[0], xMain, yMain, mainSize);
-                }
+            // --- 布局绘制函数 (V5) ---
 
-                const ySmall = yMain + mainSize + gap;
-                const xSmall1 = xMain;
-                const xSmall2 = xMain + smallSize + gap;
+            /** 布局1: 精选 (1大2小, 3图) */
+            function drawHeroLayout(images, box) {
+                const gap = 20;
+                if (!images[0]) return;
+                const heroSize = box.height;
+                const smallSize = (box.height - gap) / 2;
+                const totalWidth = heroSize + gap + smallSize;
+                const startX = box.x + (box.width - totalWidth) / 2;
 
+                drawSquareCover(images[0], startX, box.y, heroSize);
                 if (images[1]) {
-                    drawSquareCover(images[1], xSmall1, ySmall, smallSize);
+                    drawSquareCover(images[1], startX + heroSize + gap, box.y, smallSize);
                 }
                 if (images[2]) {
-                    drawSquareCover(images[2], xSmall2, ySmall, smallSize);
+                    drawSquareCover(images[2], startX + heroSize + gap, box.y + smallSize + gap, smallSize);
                 }
             }
 
-            /** 布局3: 网格 (2x2) */
-            function drawGridTemplate(images, padding) {
-                const gap = padding / 2.5;
-                const totalSize = CANVAS_SIZE - padding * 2;
-                const size = (totalSize - gap) / 2;
+            /** 布局2: 网格 (2x2, 4图) */
+            function drawGrid2x2Layout(images, box) {
+                const gap = 20;
+                let size = (box.width - gap) / 2;
+                if (size * 2 + gap > box.height) {
+                    size = (box.height - gap) / 2;
+                }
 
-                const x1 = padding;
-                const y1 = (CANVAS_SIZE - totalSize) / 2; // 垂直居中
-                const x2 = x1 + size + gap;
-                const y2 = y1 + size + gap;
+                const startX = box.x + (box.width - (size * 2 + gap)) / 2;
+                const startY = box.y + (box.height - (size * 2 + gap)) / 2;
+
+                const x1 = startX;
+                const x2 = startX + size + gap;
+                const y1 = startY;
+                const y2 = startY + size + gap;
 
                 if (images[0]) drawSquareCover(images[0], x1, y1, size);
                 if (images[1]) drawSquareCover(images[1], x2, y1, size);
@@ -500,67 +554,50 @@
                 if (images[3]) drawSquareCover(images[3], x2, y2, size);
             }
 
-            /** 绘制文本 (带阴影和排版) */
-            function drawText(settings) {
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 2;
-
-                const padding = settings.padding;
-                const template = settings.template;
-
-                if (template === 'grid') {
-                    // 网格布局，文字在画布的页眉和页脚
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.font = 'bold 48px Inter, sans-serif';
-                    ctx.textAlign = 'left';
-                    ctx.fillText(settings.title, padding, padding + 10); // 顶部padding内
-
-                    ctx.font = 'normal 24px Inter, sans-serif';
-                    ctx.fillStyle = '#E5E5E5';
-                    ctx.textAlign = 'right';
-                    ctx.fillText(settings.sharer, CANVAS_SIZE - padding, CANVAS_SIZE - padding + 10); // 底部padding内
-
-                } else {
-                    // 堆叠和聚焦布局，文字在内容块的上方和下方
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.font = 'bold 52px Inter, sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(settings.title, CANVAS_SIZE / 2, padding + 60); // 顶部
-
-                    ctx.font = 'normal 28px Inter, sans-serif';
-                    ctx.fillStyle = '#E5E5E5';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(settings.sharer, CANVAS_SIZE / 2, CANVAS_SIZE - padding - 30); // 底部
+            /** 布局3: 九宫格 (3x3, 9图) - 新增 */
+            function drawGrid3x3Layout(images, box) {
+                const gap = 20;
+                let size = (box.width - gap * 2) / 3;
+                if (size * 3 + gap * 2 > box.height) {
+                    size = (box.height - gap * 2) / 3;
                 }
 
-                // 重置阴影
-                ctx.shadowColor = 'transparent';
-                ctx.shadowBlur = 0;
+                const totalWidth = size * 3 + gap * 2;
+                const totalHeight = size * 3 + gap * 2;
+                const startX = box.x + (box.width - totalWidth) / 2;
+                const startY = box.y + (box.height - totalHeight) / 2;
+
+                for (let i = 0; i < 9; i++) {
+                    if (images[i]) {
+                        const row = Math.floor(i / 3);
+                        const col = i % 3;
+                        const x = startX + col * (size + gap);
+                        const y = startY + row * (size + gap);
+                        drawSquareCover(images[i], x, y, size);
+                    }
+                }
             }
 
-
             /**
-             * (新) 辅助: 绘制 1:1 正方形封面 (中心裁剪)
+             * (辅助) 绘制 1:1 正方形封面 (中心裁剪) + 圆角
              */
             function drawSquareCover(img, dx, dy, dSize) {
                 const sMin = Math.min(img.width, img.height);
                 const sx = (img.width - sMin) / 2;
                 const sy = (img.height - sMin) / 2;
+                const cornerRadius = 8; // 圆角 (减小一点更精致)
 
-                // 添加一个微妙的圆角
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(dx + 12, dy);
-                ctx.lineTo(dx + dSize - 12, dy);
-                ctx.quadraticCurveTo(dx + dSize, dy, dx + dSize, dy + 12);
-                ctx.lineTo(dx + dSize, dy + dSize - 12);
-                ctx.quadraticCurveTo(dx + dSize, dy + dSize, dx + dSize - 12, dy + dSize);
-                ctx.lineTo(dx + 12, dy + dSize);
-                ctx.quadraticCurveTo(dx, dy + dSize, dx, dy + dSize - 12);
-                ctx.lineTo(dx, dy + 12);
-                ctx.quadraticCurveTo(dx, dy, dx + 12, dy);
+                ctx.moveTo(dx + cornerRadius, dy);
+                ctx.lineTo(dx + dSize - cornerRadius, dy);
+                ctx.quadraticCurveTo(dx + dSize, dy, dx + dSize, dy + cornerRadius);
+                ctx.lineTo(dx + dSize, dy + dSize - cornerRadius);
+                ctx.quadraticCurveTo(dx + dSize, dy + dSize, dx + dSize - cornerRadius, dy + dSize);
+                ctx.lineTo(dx + cornerRadius, dy + dSize);
+                ctx.quadraticCurveTo(dx, dy + dSize, dx, dy + dSize - cornerRadius);
+                ctx.lineTo(dx, dy + cornerRadius);
+                ctx.quadraticCurveTo(dx, dy, dx + cornerRadius, dy);
                 ctx.closePath();
                 ctx.clip(); // 应用裁剪
 
@@ -570,45 +607,28 @@
             }
 
             /**
-             * (旧) 辅助: 绘制封面 (object-fit: cover) - 用于背景
-             */
-            function drawCoverImage(img, dx, dy, dWidth, dHeight) {
-                const sWidth = img.width;
-                const sHeight = img.height;
-                const sRatio = sWidth / sHeight;
-                const dRatio = dWidth / dHeight;
-                let sx = 0, sy = 0, sw = sWidth, sh = sHeight;
-
-                if (sRatio > dRatio) { // 图像更宽
-                    sw = sHeight * dRatio;
-                    sx = (sWidth - sw) / 2;
-                } else { // 图像更高
-                    sh = sWidth / dRatio;
-                    sy = (sHeight - sh) / 2;
-                }
-                ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dWidth, dHeight);
-            }
-
-            /**
              * 清空所有
              */
             function clearAll() {
-                imageSlots = { 1: null, 2: null, 3: null, 4: null };
+                // 扩展到 9 个
+                imageSlots = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
                 loadedImages = {};
 
                 uploadInputs.forEach((input, index) => {
                     input.value = null;
                     const previewImg = document.getElementById(`preview-${index + 1}`);
-                    previewImg.src = '';
-                    previewImg.classList.add('hidden');
+                    if (previewImg) {
+                        previewImg.src = '';
+                        previewImg.classList.add('hidden');
+                    }
                 });
 
                 textTitle.value = '';
                 textSharer.value = '';
-                bgColorInput.value = '#111827';
-                paddingSizeInput.value = '50';
-                paddingValueDisplay.textContent = '50';
-                document.getElementById('template-stack').checked = true;
+                bgColorInput.value = '#F4F4F8'; // 默认浅色
+                paddingInput.value = '60';
+                paddingValueDisplay.textContent = '60';
+                document.getElementById('template-grid-3x3').checked = true; // 默认九宫格
 
                 drawPoster();
             }
@@ -618,7 +638,7 @@
              */
             function downloadPoster() {
                 const link = document.createElement('a');
-                link.download = 'my-music-poster-v3.png';
+                link.download = 'my-music-poster-v5.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }
