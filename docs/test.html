@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计 V10 (链接分享状态)</title>
+    <title>专辑海报设计 (链接分享状态)</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/7/main/result.css">
 
     <style>
-        /* [V9] 全局应用新字体 */
+        /* 全局应用新字体 */
         body {
             font-family: "STDongGuanTi", 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
             background-color: #f3f4f6;
@@ -115,7 +115,7 @@
         <!-- 标题 -->
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-bold" style="font-family: 'STDongGuanTi', serif; color: #C81E1E;">
-                专辑海报设计 V10
+                专辑海报设计
             </h1>
             <p class="text-gray-600 mt-2" style="font-family: 'Zhuque Fangsong (technical preview)', sans-serif;">
                 链接分享 · 3000px 高清画布
@@ -220,12 +220,14 @@
                         <h3 class="text-md font-semibold text-gray-800 mb-3">手动上传 (1-9 张)</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <!-- 插槽 1-9 -->
-                            <!-- ... 省略 9 个插槽的 HTML (与V9相同) ... -->
+                            <!-- ... 省略 9 个插槽的 HTML ... -->
                             <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-1">
                                 <img id="preview-1"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览1">
+                                <button id="delete-1" data-slot="1"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 1</span>
                                 <input type="file" accept="image/*" id="upload-1" data-slot="1">
                             </div>
@@ -234,6 +236,8 @@
                                 <img id="preview-2"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览2">
+                                <button id="delete-2" data-slot="2"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 2</span>
                                 <input type="file" accept="image/*" id="upload-2" data-slot="2">
                             </div>
@@ -242,6 +246,8 @@
                                 <img id="preview-3"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览3">
+                                <button id="delete-3" data-slot="3"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 3</span>
                                 <input type="file" accept="image/*" id="upload-3" data-slot="3">
                             </div>
@@ -250,6 +256,8 @@
                                 <img id="preview-4"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览4">
+                                <button id="delete-4" data-slot="4"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 4</span>
                                 <input type="file" accept="image/*" id="upload-4" data-slot="4">
                             </div>
@@ -258,6 +266,8 @@
                                 <img id="preview-5"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览5">
+                                <button id="delete-5" data-slot="5"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 5</span>
                                 <input type="file" accept="image/*" id="upload-5" data-slot="5">
                             </div>
@@ -266,6 +276,8 @@
                                 <img id="preview-6"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览6">
+                                <button id="delete-6" data-slot="6"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 6</span>
                                 <input type="file" accept="image/*" id="upload-6" data-slot="6">
                             </div>
@@ -274,6 +286,8 @@
                                 <img id="preview-7"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览7">
+                                <button id="delete-7" data-slot="7"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 7</span>
                                 <input type="file" accept="image/*" id="upload-7" data-slot="7">
                             </div>
@@ -282,6 +296,8 @@
                                 <img id="preview-8"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览8">
+                                <button id="delete-8" data-slot="8"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 8</span>
                                 <input type="file" accept="image/*" id="upload-8" data-slot="8">
                             </div>
@@ -290,6 +306,8 @@
                                 <img id="preview-9"
                                     class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
                                     alt="预览9">
+                                <button id="delete-9" data-slot="9"
+                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
                                 <span class="text-xs z-0">插槽 9</span>
                                 <input type="file" accept="image/*" id="upload-9" data-slot="9">
                             </div>
@@ -336,7 +354,7 @@
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            // [V10] sourceUrls 用于存储可分享的源 URL
+            // sourceUrls 用于存储可分享的源 URL
             let sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
             let loadedImages = {}; // 存储加载的 Image 对象
 
@@ -356,13 +374,14 @@
             const neteaseBtnText = document.getElementById('netease-btn-text');
             const neteaseLoader = document.getElementById('netease-loader');
             const neteaseMsg = document.getElementById('netease-msg');
+            const deleteBtns = document.querySelectorAll('.delete-btn');
 
             const CORS_PROXY_URL = "https://api.allorigins.win/raw?url=";
 
-            // --- [V10] 状态更新函数 ---
+            // --- 状态更新函数 ---
 
             /**
-             * [V10] 将当前所有配置编码到 URL
+             * 将当前所有配置编码到 URL
              * (使用 Base64 压缩以支持中文和长 URL)
              */
             function updateUrl() {
@@ -398,7 +417,7 @@
             }
 
             /**
-             * [V10] 页面加载时，从 URL 解码并加载状态
+             * 页面加载时，从 URL 解码并加载状态
              */
             async function loadStateFromUrl() {
                 try {
@@ -443,6 +462,10 @@
                                     previewImg.src = url;
                                     previewImg.classList.remove('hidden');
                                 }
+                                const deleteBtn = document.getElementById(`delete-${i}`);
+                                if (deleteBtn) {
+                                    deleteBtn.classList.remove('hidden');
+                                }
                                 // 4c. 加载图片到画布
                                 imageLoadPromises.push(loadImage(url, i));
                             }
@@ -466,11 +489,11 @@
 
             // --- 初始化 ---
             populateSlotSelector();
-            // [V10] 启动时从 URL 加载状态，而不是直接绘制
+            // 启动时从 URL 加载状态，而不是直接绘制
             loadStateFromUrl();
 
 
-            // --- [V10] 更新事件监听器，加入 updateUrl() ---
+            // --- 更新事件监听器，加入 updateUrl() ---
             [textTitle, textSharer, bgColorInput, paddingInput].forEach(el => {
                 el.addEventListener('input', () => {
                     drawPoster();
@@ -491,6 +514,13 @@
             });
             clearBtn.addEventListener('click', clearAll);
             downloadBtn.addEventListener('click', downloadPoster);
+            deleteBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault(); // 防止触发文件选择器
+                    e.stopPropagation(); // 停止冒泡
+                    clearSlot(btn.dataset.slot);
+                });
+            });
 
             neteaseFetchBtn.addEventListener('click', handleNeteaseFetch);
             neteaseUrlInput.addEventListener('keypress', (e) => {
@@ -499,6 +529,30 @@
 
 
             // --- 核心函数 ---
+
+            function clearSlot(slot) {
+                sourceUrls[slot] = null;
+                loadedImages[slot] = null;
+
+                const previewImg = document.getElementById(`preview-${slot}`);
+                if (previewImg) {
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
+                }
+
+                const deleteBtn = document.getElementById(`delete-${slot}`);
+                if (deleteBtn) {
+                    deleteBtn.classList.add('hidden');
+                }
+
+                const fileInput = document.getElementById(`upload-${slot}`);
+                if (fileInput) {
+                    fileInput.value = null; // 清除文件输入
+                }
+
+                drawPoster();
+                updateUrl();
+            }
 
             function populateSlotSelector() {
                 for (let i = 1; i <= 9; i++) {
@@ -510,7 +564,7 @@
             }
 
             /**
-             * [V8] 代理 + OG:Image 提取逻辑
+             * 代理 + OG:Image 提取逻辑
              */
             async function handleNeteaseFetch() {
                 const rawInput = neteaseUrlInput.value.trim();
@@ -548,7 +602,7 @@
                     const baseUrl = imageUrl.split('?')[0];
                     const hdUrl = `${baseUrl}?param=3000y3000`;
 
-                    // [V10] 存储可分享的 URL
+                    // 存储可分享的 URL
                     sourceUrls[targetSlot] = hdUrl;
 
                     const previewImg = document.getElementById(`preview-${targetSlot}`);
@@ -556,22 +610,33 @@
                         previewImg.src = hdUrl;
                         previewImg.classList.remove('hidden');
                     }
+                    const deleteBtn = document.getElementById(`delete-${targetSlot}`);
+                    if (deleteBtn) {
+                        deleteBtn.classList.remove('hidden');
+                    }
                     const fileInput = document.getElementById(`upload-${targetSlot}`);
                     if (fileInput) fileInput.value = null;
 
                     await loadImage(hdUrl, targetSlot);
 
-                    // [V10] 重绘并更新 URL
+                    // 重绘并更新 URL
                     drawPoster();
                     updateUrl();
 
                     showNeteaseMessage(`成功提取到插槽 ${targetSlot}！`, 'success');
                     neteaseUrlInput.value = '';
 
+                    let currentSlot = parseInt(neteaseSlotSelect.value, 10);
+                    let nextSlot = currentSlot + 1;
+                    if (nextSlot > 9) {
+                        nextSlot = 1; // 如果超过9, 循环回1
+                    }
+                    neteaseSlotSelect.value = nextSlot.toString();
+
                 } catch (err) {
                     console.error("提取失败:", err);
                     showNeteaseMessage(err.message || '提取失败，请重试。', 'error');
-                    // [V10] 提取失败，清除源
+                    // 提取失败，清除源
                     sourceUrls[targetSlot] = null;
                 } finally {
                     setNeteaseLoading(false);
@@ -609,19 +674,12 @@
             function handleFileChange(event, slot) {
                 showNeteaseMessage('', 'hidden');
 
-                // [V10] 本地上传的图片无法分享，清除 sourceUrl
+                // 本地上传的图片无法分享，清除 sourceUrl
                 sourceUrls[slot] = null;
 
                 const file = event.target.files[0];
                 if (!file) {
-                    loadedImages[slot] = null;
-                    const previewImg = document.getElementById(`preview-${slot}`);
-                    if (previewImg) {
-                        previewImg.src = '';
-                        previewImg.classList.add('hidden');
-                    }
-                    drawPoster();
-                    updateUrl(); // [V10] 移除了图片，也更新 URL
+                    clearSlot(slot);
                     return;
                 }
 
@@ -633,10 +691,14 @@
                         previewImg.src = dataURL;
                         previewImg.classList.remove('hidden');
                     }
-                    // [V10] dataURL 不存入 sourceUrls
+                    const deleteBtn = document.getElementById(`delete-${slot}`);
+                    if (deleteBtn) {
+                        deleteBtn.classList.remove('hidden');
+                    }
+                    // dataURL 不存入 sourceUrls
                     loadImage(dataURL, slot).then(() => {
                         drawPoster();
-                        updateUrl(); // [V10] 添加了图片，更新 URL (虽然这张图不会被分享)
+                        updateUrl(); // 添加了图片，更新 URL (虽然这张图不会被分享)
                     });
                 };
                 reader.readAsDataURL(file);
@@ -651,16 +713,25 @@
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
                         loadedImages[slot] = img;
-                        resolve(img); // [V1D] 成功时只 resolve
+                        resolve(img); // 成功时只 resolve
                     };
                     img.onerror = (err) => {
                         console.error(`Failed to load image for slot ${slot}:`, src, err);
                         loadedImages[slot] = null;
-                        // [V10] 即使加载失败也清除源 URL，并重绘
+                        // 即使加载失败也清除源 URL，并重绘
                         sourceUrls[slot] = null;
+                        const previewImg = document.getElementById(`preview-${slot}`);
+                        if (previewImg) {
+                            previewImg.src = '';
+                            previewImg.classList.add('hidden');
+                        }
+                        const deleteBtn = document.getElementById(`delete-${slot}`);
+                        if (deleteBtn) {
+                            deleteBtn.classList.add('hidden');
+                        }
                         drawPoster();
                         updateUrl();
-                        reject(err); // [V10] 失败时 reject
+                        reject(err); // 失败时 reject
                     };
                     img.src = src;
                 });
@@ -713,7 +784,7 @@
             }
 
             /**
-             * [V9] 辅助: 绘制文本 (使用新字体和新尺寸)
+             * 辅助: 绘制文本 (使用新字体和新尺寸)
              */
             function drawText(settings) {
                 ctx.shadowColor = 'transparent';
@@ -737,7 +808,7 @@
                 ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
             }
 
-            // --- 布局绘制函数 (V9 缩放版) ---
+            // --- 布局绘制函数 ---
 
             function drawHeroLayout(images, box) {
                 const gap = 60;
@@ -809,16 +880,22 @@
              * 清空所有
              */
             function clearAll() {
-                // [V10] 重置所有状态
+                // 重置所有状态
                 sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
                 loadedImages = {};
 
                 uploadInputs.forEach((input, index) => {
                     input.value = null;
-                    const previewImg = document.getElementById(`preview-${index + 1}`);
+                    const slot = index + 1; // 修正索引
+                    const previewImg = document.getElementById(`preview-${slot}`);
                     if (previewImg) {
                         previewImg.src = '';
                         previewImg.classList.add('hidden');
+                    }
+                    // 隐藏删除按钮
+                    const deleteBtn = document.getElementById(`delete-${slot}`);
+                    if (deleteBtn) {
+                        deleteBtn.classList.add('hidden');
                     }
                 });
 
@@ -835,7 +912,7 @@
 
                 drawPoster();
 
-                // [V10] 清空 URL
+                // 清空 URL
                 window.history.pushState({}, '', window.location.pathname);
             }
 
