@@ -376,7 +376,32 @@
             const neteaseMsg = document.getElementById('netease-msg');
             const deleteBtns = document.querySelectorAll('.delete-btn');
 
-            const CORS_PROXY_URL = "https://api.allorigins.win/raw?url=";
+            const CORS_PROXIES = [
+                "https://api.allorigins.win/raw?url=",
+                "https://everyorigin.jwvbremen.nl/raw?url="
+            ];
+
+            async function fetchWithProxies(targetUrl) {
+                let lastError = null;
+
+                for (const base of CORS_PROXIES) {
+                    try {
+                        const proxyUrl = `${base}${encodeURIComponent(targetUrl)}`;
+                        const resp = await fetch(proxyUrl);
+
+                        if (!resp.ok) {
+                            throw new Error(`网络错误 (代理 ${base}): ${resp.status}`);
+                        }
+
+                        return await resp.text();
+                    } catch (e) {
+                        console.warn("代理失败:", base, e);
+                        lastError = e;
+                    }
+                }
+
+                throw lastError || new Error("所有代理都请求失败");
+            }
 
             // --- 状态更新函数 ---
 
@@ -584,11 +609,7 @@
                     let songUrl = match[0].replace("/#/", "/");
                     showNeteaseMessage('识别到URL, 正在解析...', 'loading');
 
-                    const proxyUrl = `${CORS_PROXY_URL}${encodeURIComponent(songUrl)}`;
-                    const response = await fetch(proxyUrl);
-                    if (!response.ok) throw new Error(`网络错误 (代理): ${response.status}`);
-
-                    const html = await response.text();
+                    const html = await fetchWithProxies(songUrl);
                     showNeteaseMessage('解析HTML, 查找封面...', 'loading');
 
                     const parser = new DOMParser();
@@ -783,6 +804,41 @@
                 }
             }
 
+            // 根据背景色自动选择适合的文字颜色（深/浅）
+            function getContrastingTextColors(bgColor) {
+                if (!bgColor) {
+                    return { main: '#333333', secondary: '#555555' };
+                }
+
+                // 去掉 # 号
+                let hex = bgColor.replace('#', '');
+                // 支持 #fff 这种 3 位写法
+                if (hex.length === 3) {
+                    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                }
+
+                const r = parseInt(hex.substr(0, 2), 16);
+                const g = parseInt(hex.substr(2, 2), 16);
+                const b = parseInt(hex.substr(4, 2), 16);
+
+                // 简单亮度计算（YIQ），0-255，数值越大越亮
+                const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+                if (yiq >= 128) {
+                    // 背景偏亮 -> 文字用深色
+                    return {
+                        main: '#111827',      // 主标题
+                        secondary: '#4B5563', // 副标题（分享人）
+                    };
+                } else {
+                    // 背景偏暗 -> 文字用浅色
+                    return {
+                        main: '#F9FAFB',
+                        secondary: '#E5E7EB',
+                    };
+                }
+            }
+
             /**
              * 辅助: 绘制文本 (使用新字体和新尺寸)
              */
@@ -793,8 +849,11 @@
                 const TOP_TEXT_ZONE_HEIGHT = 450;
                 const BOTTOM_TEXT_ZONE_HEIGHT = 300;
 
+                // 根据背景色，动态计算一组适合的文字颜色
+                const { main, secondary } = getContrastingTextColors(settings.bgColor);
+
                 // 标题
-                ctx.fillStyle = '#333333';
+                ctx.fillStyle = main;
                 ctx.font = 'bold 156px "STDongGuanTi", "Noto Serif SC", serif';
                 ctx.textAlign = 'center';
                 const titleY = padding + (TOP_TEXT_ZONE_HEIGHT / 2) + 45;
@@ -802,7 +861,7 @@
 
                 // 分享人
                 ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)", "Noto Sans SC", sans-serif';
-                ctx.fillStyle = '#555555';
+                ctx.fillStyle = secondary;
                 ctx.textAlign = 'center';
                 const sharerY = (CANVAS_SIZE - padding - BOTTOM_TEXT_ZONE_HEIGHT) + (BOTTOM_TEXT_ZONE_HEIGHT / 2) + 30;
                 ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
