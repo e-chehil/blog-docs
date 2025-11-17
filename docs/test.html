@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计 V5 (优雅版)</title>
+    <title>专辑海报设计 V6 (链接提取)</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -97,10 +97,10 @@
         }
 
         .light-input:focus {
+            outline: none;
             border-color: #EF4444;
             /* focus:border-red-500 */
-            ring: 1px;
-            ring-color: #EF4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
             /* focus:ring-red-500 */
         }
 
@@ -118,7 +118,23 @@
         .light-slot:hover {
             border-color: #EF4444;
             /* hover:border-red-500 */
-            color: #e_f4444;
+            color: #ef4444;
+        }
+
+        /* 加载按钮 */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
         }
     </style>
 </head>
@@ -129,10 +145,10 @@
         <!-- 标题 -->
         <header class="text-center mb-8">
             <h1 class="text-3xl md:text-4xl font-bold" style="font-family: 'Noto Serif SC', serif; color: #C81E1E;">
-                专辑海报设计 V5
+                专辑海报设计 V6
             </h1>
             <p class="text-gray-600 mt-2">
-                优雅白 · 衬线字体 · 九宫格
+                优雅白 · 衬线字体 · 链接提取
             </p>
         </header>
 
@@ -181,7 +197,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4 4h10v10H4zM16 4h4v4h-4zM16 10h4v4h-4z"></path>
                                     </svg>
-                                    精选<br>(3图)
+                                    精选 (3图)
                                 </label>
                             </div>
                             <!-- 模板: Grid (4) -->
@@ -193,7 +209,7 @@
                                             d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
                                         </path>
                                     </svg>
-                                    网格<br>(4图)
+                                    网格 (4图)
                                 </label>
                             </div>
                             <!-- 模板: Grid (9) -->
@@ -205,7 +221,7 @@
                                             d="M3 3h4v4H3zM10 3h4v4h-4zM17 3h4v4h-4zM3 10h4v4H3zM10 10h4v4h-4zM17 10h4v4h-4zM3 17h4v4H3zM10 17h4v4h-4zM17 17h4v4h-4z">
                                         </path>
                                     </svg>
-                                    九宫格<br>(9图)
+                                    九宫格 (9图)
                                 </label>
                             </div>
                         </div>
@@ -213,8 +229,31 @@
 
                     <!-- 3. 上传封面 (支持9图) -->
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">3. 上传封面 (1-9
-                            张)</h2>
+                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">3. 上传 / 提取封面
+                        </h2>
+
+                        <!-- 新增: 提取封面 -->
+                        <div class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <label for="netease-url-input" class="text-sm font-medium text-gray-700">从网易云链接提取</label>
+                            <input type="text" id="netease-url-input" placeholder="粘贴专辑链接... (如: /album?id=...)"
+                                class="w-full h-10 px-3 light-input">
+                            <div class="flex gap-2">
+                                <select id="netease-slot-select"
+                                    class="flex-grow h-10 px-3 light-input text-sm focus:ring-0">
+                                    <!-- Options 动态生成 -->
+                                </select>
+                                <button id="netease-fetch-btn"
+                                    class="py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-md text-sm whitespace-nowrap flex items-center justify-center disabled:bg-gray-400"
+                                    style="min-width: 80px;">
+                                    <span id="netease-btn-text">提取</span>
+                                    <div id="netease-loader" class="loader hidden"></div>
+                                </button>
+                            </div>
+                            <!-- 消息提示 -->
+                            <div id="netease-msg" class="text-xs text-center hidden"></div>
+                        </div>
+
+                        <h3 class="text-md font-semibold text-gray-800 mb-3">手动上传 (1-9 张)</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <!-- 插槽 1-9 -->
                             <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
@@ -348,7 +387,17 @@
             const clearBtn = document.getElementById('clear-btn');
             const downloadBtn = document.getElementById('download-btn');
 
+            // --- 新增: 网易云提取相关 DOM ---
+            const neteaseUrlInput = document.getElementById('netease-url-input');
+            const neteaseSlotSelect = document.getElementById('netease-slot-select');
+            const neteaseFetchBtn = document.getElementById('netease-fetch-btn');
+            const neteaseBtnText = document.getElementById('netease-btn-text');
+            const neteaseLoader = document.getElementById('netease-loader');
+            const neteaseMsg = document.getElementById('netease-msg');
+            const API_BASE_URL = "https://netease-cloud-music-api-theta-henna.vercel.app";
+
             // --- 初始化 ---
+            populateSlotSelector();
             drawPoster();
 
             // --- 事件监听器 ---
@@ -367,12 +416,127 @@
             clearBtn.addEventListener('click', clearAll);
             downloadBtn.addEventListener('click', downloadPoster);
 
+            // --- 新增: 网易云提取事件 ---
+            neteaseFetchBtn.addEventListener('click', handleNeteaseFetch);
+            neteaseUrlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleNeteaseFetch();
+            });
+
+
             // --- 核心函数 ---
+
+            /**
+             * 新增: 填充插槽选择器
+             */
+            function populateSlotSelector() {
+                for (let i = 1; i <= 9; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = `到插槽 ${i}`;
+                    neteaseSlotSelect.appendChild(option);
+                }
+            }
+
+            /**
+             * 新增: 处理网易云链接提取
+             */
+            async function handleNeteaseFetch() {
+                const input = neteaseUrlInput.value;
+                const targetSlot = neteaseSlotSelect.value; // e.g., "1"
+
+                // 1. 验证和提取ID
+                const idMatch = input.match(/id=(\d+)/) || input.match(/album\/(\d+)/);
+                if (!idMatch) {
+                    showNeteaseMessage('无法识别专辑ID，请检查链接。', 'error');
+                    return;
+                }
+                const albumId = idMatch[1];
+
+                // 2. 设置加载状态
+                setNeteaseLoading(true);
+                showNeteaseMessage('正在提取...', 'loading');
+
+                try {
+                    // 3. 请求 API
+                    const response = await fetch(`${API_BASE_URL}/album?id=${albumId}`);
+                    if (!response.ok) throw new Error(`API 请求失败 (状态: ${response.status})`);
+
+                    const data = await response.json();
+                    if (data.code !== 200 || !data.album) throw new Error('未找到该专辑信息。');
+
+                    // 4. 获取高清图片 URL
+                    const picUrl = data.album.picUrl;
+                    const hdUrl = picUrl + "?param=3000y3000";
+
+                    // 5. 【桥接】将 URL 送入海报工具
+
+                    // 5a. 更新UI预览
+                    const previewImg = document.getElementById(`preview-${targetSlot}`);
+                    if (previewImg) {
+                        previewImg.src = hdUrl; // 直接使用 URL
+                        previewImg.classList.remove('hidden');
+                    }
+
+                    // 5b. 清除本地文件输入（如果之前有的话）
+                    const fileInput = document.getElementById(`upload-${targetSlot}`);
+                    if (fileInput) fileInput.value = null;
+
+                    // 5c. 调用 loadImage (关键: 它处理 crossOrigin)
+                    await loadImage(hdUrl, targetSlot);
+
+                    // 5d. 重绘
+                    drawPoster();
+
+                    // 6. 成功
+                    showNeteaseMessage(`成功提取到插槽 ${targetSlot}！`, 'success');
+                    neteaseUrlInput.value = ''; // 清空输入框
+
+                } catch (err) {
+                    console.error(err);
+                    showNeteaseMessage(err.message || '提取失败，请重试。', 'error');
+                } finally {
+                    setNeteaseLoading(false);
+                }
+            }
+
+            /**
+             * 新增: 控制网易云提取按钮的加载状态
+             */
+            function setNeteaseLoading(isLoading) {
+                if (isLoading) {
+                    neteaseFetchBtn.disabled = true;
+                    neteaseBtnText.classList.add('hidden');
+                    neteaseLoader.classList.remove('hidden');
+                } else {
+                    neteaseFetchBtn.disabled = false;
+                    neteaseBtnText.classList.remove('hidden');
+                    neteaseLoader.classList.add('hidden');
+                }
+            }
+
+            /**
+             * 新增: 显示网易云提取的消息
+             */
+            function showNeteaseMessage(message, type = 'loading') {
+                neteaseMsg.textContent = message;
+                neteaseMsg.classList.remove('hidden', 'text-gray-500', 'text-green-600', 'text-red-500');
+                if (type === 'error') {
+                    neteaseMsg.classList.add('text-red-500');
+                } else if (type === 'success') {
+                    neteaseMsg.classList.add('text-green-600');
+                } else {
+                    neteaseMsg.classList.add('text-gray-500');
+                }
+            }
+
 
             /**
              * 处理文件上传
              */
             function handleFileChange(event, slot) {
+                // 清除可能存在的提取错误
+                showNeteaseMessage('', 'hidden');
+
                 const file = event.target.files[0];
                 if (!file) {
                     imageSlots[slot] = null;
@@ -406,17 +570,22 @@
 
             /**
              * 异步加载图像并存入 loadedImages
+             * (重要: crossOrigin 允许加载来自网易云的跨域图片)
              */
             function loadImage(src, slot) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
+                    // 关键! 允许跨域图片污染画布，以便后续下载
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
                         loadedImages[slot] = img;
                         resolve(img);
                     };
                     img.onerror = (err) => {
+                        console.error(`Failed to load image for slot ${slot}:`, src, err);
                         loadedImages[slot] = null;
+                        // 即使加载失败也重绘，以清除旧图
+                        drawPoster();
                         reject(err);
                     };
                     img.src = src;
@@ -436,7 +605,13 @@
                     padding: parseInt(paddingInput.value, 10) || 60,
                 };
 
-                const activeImages = Object.values(loadedImages).filter(Boolean);
+                // (修改) 确保按插槽顺序获取图像
+                const activeImages = [];
+                for (let i = 1; i <= 9; i++) {
+                    if (loadedImages[i]) {
+                        activeImages.push(loadedImages[i]);
+                    }
+                }
 
                 // 2. 绘制背景 (V5: 移除动态模糊，只用纯色)
                 drawBackground(settings.bgColor, activeImages.length === 0);
@@ -481,7 +656,7 @@
                     ctx.fillStyle = '#9ca3af'; // text-gray-400
                     ctx.font = '30px "Noto Sans SC", sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.fillText('请在左侧上传专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+                    ctx.fillText('请在左侧上传或提取专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
                 }
             }
 
@@ -582,6 +757,10 @@
              * (辅助) 绘制 1:1 正方形封面 (中心裁剪) + 圆角
              */
             function drawSquareCover(img, dx, dy, dSize) {
+                if (!img || !img.width || !img.height) {
+                    console.warn('Invalid image object passed to drawSquareCover', img);
+                    return;
+                }
                 const sMin = Math.min(img.width, img.height);
                 const sx = (img.width - sMin) / 2;
                 const sy = (img.height - sMin) / 2;
@@ -630,6 +809,11 @@
                 paddingValueDisplay.textContent = '60';
                 document.getElementById('template-grid-3x3').checked = true; // 默认九宫格
 
+                // 新增: 重置提取工具
+                neteaseUrlInput.value = '';
+                neteaseSlotSelect.value = '1';
+                showNeteaseMessage('', 'hidden');
+
                 drawPoster();
             }
 
@@ -637,10 +821,15 @@
              * 下载海报
              */
             function downloadPoster() {
-                const link = document.createElement('a');
-                link.download = 'my-music-poster-v5.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                try {
+                    const link = document.createElement('a');
+                    link.download = `${textTitle.value || 'music-poster'}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (e) {
+                    console.error("下载失败，可能是画布被跨域图片污染:", e);
+                    alert("下载失败！\n\n这可能是由于浏览器安全限制（CORS）导致的。\n\n解决方案：请尝试刷新页面，并重新提取或上传图片。");
+                }
             }
         });
     </script>
