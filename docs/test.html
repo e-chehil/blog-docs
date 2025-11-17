@@ -4,39 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计 V6 (链接提取)</title>
+    <title>专辑海报设计 V10 (链接分享状态)</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- 引入 Google Fonts (思源宋体 和 思源黑体) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;700&display=swap"
-        rel="stylesheet">
+    <!-- 引入自定义字体 (STDongGuanTi 和 Zhuque Fangsong) -->
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/488/main/result.css">
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/7/main/result.css">
 
     <style>
-        /* 全局应用思源黑体 */
+        /* [V9] 全局应用新字体 */
         body {
-            font-family: 'Noto Sans SC', 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
+            font-family: "STDongGuanTi", 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
             background-color: #f3f4f6;
-            /* bg-gray-100 */
             color: #1f2937;
-            /* text-gray-800 */
         }
 
-        /* 干净的白色卡片 UI */
         .light-panel {
             background-color: #ffffff;
             border: 1px solid #e5e7eb;
-            /* border-gray-200 */
             border-radius: 0.75rem;
-            /* rounded-xl */
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            /* shadow-lg */
         }
 
-        /* 隐藏文件输入的默认按钮 */
         input[type="file"] {
             opacity: 0;
             position: absolute;
@@ -47,7 +37,6 @@
             cursor: pointer;
         }
 
-        /* 模板选择器 (浅色版) */
         .template-selector input[type="radio"] {
             display: none;
         }
@@ -57,9 +46,7 @@
             padding: 10px 12px;
             border-radius: 8px;
             background-color: #f9fafb;
-            /* bg-gray-50 */
             border: 1px solid #e5e7eb;
-            /* border-gray-200 */
             transition: all 0.2s ease-in-out;
             display: flex;
             flex-direction: column;
@@ -67,61 +54,44 @@
             gap: 4px;
             font-size: 0.8rem;
             color: #6b7280;
-            /* text-gray-500 */
         }
 
         .template-selector input[type="radio"]:checked+label {
             background-color: #C81E1E;
-            /* 亮红色 */
             color: #FFFFFF;
             border-color: #EF4444;
-            /* red-500 */
             box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
         }
 
         .template-selector label:hover {
             background-color: #f3f4f6;
-            /* bg-gray-100 */
         }
 
-        /* 浅色版表单 */
         .light-input {
             background-color: #f9fafb;
-            /* bg-gray-50 */
             border: 1px solid #d1d5db;
-            /* border-gray-300 */
             color: #111827;
-            /* text-gray-900 */
             border-radius: 0.375rem;
-            /* rounded-md */
         }
 
         .light-input:focus {
             outline: none;
             border-color: #EF4444;
-            /* focus:border-red-500 */
             box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
-            /* focus:ring-red-500 */
         }
 
-        /* 浅色版上传插槽 */
         .light-slot {
             background-color: #f9fafb;
-            /* bg-gray-50 */
             border: 2px dashed #d1d5db;
-            /* border-gray-300 */
             color: #9ca3af;
-            /* text-gray-400 */
             transition: all 0.2s ease-in-out;
         }
 
         .light-slot:hover {
             border-color: #EF4444;
-            /* hover:border-red-500 */
             color: #ef4444;
         }
 
-        /* 加载按钮 */
         @keyframes spin {
             to {
                 transform: rotate(360deg);
@@ -144,26 +114,26 @@
     <div class="max-w-7xl mx-auto">
         <!-- 标题 -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold" style="font-family: 'Noto Serif SC', serif; color: #C81E1E;">
-                专辑海报设计 V6
+            <h1 class="text-3xl md:text-4xl font-bold" style="font-family: 'STDongGuanTi', serif; color: #C81E1E;">
+                专辑海报设计 V10
             </h1>
-            <p class="text-gray-600 mt-2">
-                优雅白 · 衬线字体 · 链接提取
+            <p class="text-gray-600 mt-2" style="font-family: 'Zhuque Fangsong (technical preview)', sans-serif;">
+                链接分享 · 3000px 高清画布
             </p>
         </header>
 
-        <!-- 主内容区：响应式布局 (Canvas 永远在最前) -->
+        <!-- 主内容区 -->
         <main class="flex flex-col md:flex-row gap-6 md:gap-8">
 
-            <!-- 右侧/上方：画布预览 -->
+            <!-- 画布预览 -->
             <section class="w-full md:w-2/3 lg:w-2/3">
                 <div class="w-full light-panel p-2 sticky top-8">
-                    <canvas id="poster-canvas" width="1000" height="1000"
+                    <canvas id="poster-canvas" width="3000" height="3000"
                         class="w-full h-auto rounded-lg aspect-square"></canvas>
                 </div>
             </section>
 
-            <!-- 左侧/下方：控制面板 -->
+            <!-- 控制面板 -->
             <aside class="w-full md:w-1/3 lg:w-1/3 shrink-0">
                 <div class="light-panel p-5 md:p-6 flex flex-col gap-6">
 
@@ -171,14 +141,12 @@
                     <div class="flex flex-col gap-4">
                         <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">1. 海报文本</h2>
                         <div>
-                            <label for="poster-title" class="text-sm font-medium text-gray-700 mb-1 block">标题
-                                (顶部)</label>
+                            <label for="poster-title" class="text-sm font-medium text-gray-700 mb-1 block">标题</label>
                             <input type="text" id="poster-title" placeholder="顔色推歌"
                                 class="w-full h-10 px-3 light-input">
                         </div>
                         <div>
-                            <label for="poster-sharer" class="text-sm font-medium text-gray-700 mb-1 block">分享人
-                                (底部)</label>
+                            <label for="poster-sharer" class="text-sm font-medium text-gray-700 mb-1 block">分享人</label>
                             <input type="text" id="poster-sharer" placeholder="填表人："
                                 class="w-full h-10 px-3 light-input">
                         </div>
@@ -186,8 +154,7 @@
 
                     <!-- 2. 选择布局 -->
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">2. 选择布局 (图片区)
-                        </h2>
+                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">2. 选择布局</h2>
                         <div class="grid grid-cols-3 gap-3 template-selector">
                             <!-- 模板: Hero (3) -->
                             <div>
@@ -227,15 +194,13 @@
                         </div>
                     </div>
 
-                    <!-- 3. 上传封面 (支持9图) -->
+                    <!-- 3. 上传 / 提取封面 -->
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">3. 上传 / 提取封面
                         </h2>
-
-                        <!-- 新增: 提取封面 -->
                         <div class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-lg border border-gray-200">
                             <label for="netease-url-input" class="text-sm font-medium text-gray-700">从网易云链接提取</label>
-                            <input type="text" id="netease-url-input" placeholder="粘贴专辑链接... (如: /album?id=...)"
+                            <input type="text" id="netease-url-input" placeholder="粘贴歌曲/专辑的分享文本或链接..."
                                 class="w-full h-10 px-3 light-input">
                             <div class="flex gap-2">
                                 <select id="netease-slot-select"
@@ -249,13 +214,13 @@
                                     <div id="netease-loader" class="loader hidden"></div>
                                 </button>
                             </div>
-                            <!-- 消息提示 -->
                             <div id="netease-msg" class="text-xs text-center hidden"></div>
                         </div>
 
                         <h3 class="text-md font-semibold text-gray-800 mb-3">手动上传 (1-9 张)</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <!-- 插槽 1-9 -->
+                            <!-- ... 省略 9 个插槽的 HTML (与V9相同) ... -->
                             <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-1">
                                 <img id="preview-1"
@@ -341,8 +306,8 @@
                         </div>
                         <div class="flex flex-col">
                             <label for="poster-padding" class="text-sm font-medium text-gray-700 mb-2">海报内边距: <span
-                                    id="padding-value">60</span>px</label>
-                            <input id="poster-padding" type="range" value="60" min="20" max="150" class="w-full">
+                                    id="padding-value">180</span>px</label>
+                            <input id="poster-padding" type="range" value="180" min="60" max="450" class="w-full">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4 mt-2">
@@ -359,21 +324,20 @@
 
                 </div>
             </aside>
-
         </main>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- 全局状态 ---
-            const CANVAS_SIZE = 1000;
+            const CANVAS_SIZE = 3000;
             const canvas = document.getElementById('poster-canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            // 扩展到 9 个插槽
-            let imageSlots = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
+            // [V10] sourceUrls 用于存储可分享的源 URL
+            let sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
             let loadedImages = {}; // 存储加载的 Image 对象
 
             // --- DOM 元素 ---
@@ -383,29 +347,140 @@
             const bgColorInput = document.getElementById('bg-color');
             const paddingInput = document.getElementById('poster-padding');
             const paddingValueDisplay = document.getElementById('padding-value');
-            const uploadInputs = document.querySelectorAll('input[type="file"]'); // 会自动找到所有 9 个
+            const uploadInputs = document.querySelectorAll('input[type="file"]');
             const clearBtn = document.getElementById('clear-btn');
             const downloadBtn = document.getElementById('download-btn');
-
-            // --- 新增: 网易云提取相关 DOM ---
             const neteaseUrlInput = document.getElementById('netease-url-input');
             const neteaseSlotSelect = document.getElementById('netease-slot-select');
             const neteaseFetchBtn = document.getElementById('netease-fetch-btn');
             const neteaseBtnText = document.getElementById('netease-btn-text');
             const neteaseLoader = document.getElementById('netease-loader');
             const neteaseMsg = document.getElementById('netease-msg');
-            const API_BASE_URL = "https://netease-cloud-music-api-theta-henna.vercel.app";
+
+            const CORS_PROXY_URL = "https://api.allorigins.win/raw?url=";
+
+            // --- [V10] 状态更新函数 ---
+
+            /**
+             * [V10] 将当前所有配置编码到 URL
+             * (使用 Base64 压缩以支持中文和长 URL)
+             */
+            function updateUrl() {
+                try {
+                    const state = {
+                        title: textTitle.value,
+                        sharer: textSharer.value,
+                        layout: document.querySelector('input[name="template"]:checked').value,
+                        bgColor: bgColorInput.value,
+                        padding: paddingInput.value,
+                        images: sourceUrls // 只保存可分享的 URL
+                    };
+
+                    // 1. 将 state 转换成 JSON 字符串
+                    const jsonString = JSON.stringify(state);
+
+                    // 2. 健壮的 UTF-8 -> Base64 编码
+                    // (防止 'btoa' 在遇到中文字符时出错)
+                    const utf8State = unescape(encodeURIComponent(jsonString));
+                    const base64State = btoa(utf8State);
+
+                    // 3. 创建新的 URL
+                    const params = new URLSearchParams();
+                    params.set('data', base64State);
+                    const newUrl = `${window.location.pathname}?${params.toString()}`;
+
+                    // 4. 更新 URL (不刷新页面)
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+
+                } catch (e) {
+                    console.error("更新 URL 失败:", e);
+                }
+            }
+
+            /**
+             * [V10] 页面加载时，从 URL 解码并加载状态
+             */
+            async function loadStateFromUrl() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const base64State = params.get('data');
+
+                    if (!base64State) {
+                        // 没有 data 参数，正常绘制
+                        drawPoster();
+                        return;
+                    }
+
+                    showNeteaseMessage('正在从链接加载配置...', 'loading');
+
+                    // 1. 健壮的 Base64 -> UTF-8 解码
+                    const jsonString = decodeURIComponent(escape(atob(base64State)));
+                    const state = JSON.parse(jsonString);
+
+                    // 2. 应用文本和设置
+                    textTitle.value = state.title || '';
+                    textSharer.value = state.sharer || '';
+                    bgColorInput.value = state.bgColor || '#F4F4F8';
+                    paddingInput.value = state.padding || '180';
+                    paddingValueDisplay.textContent = state.padding || '180';
+
+                    // 3. 应用布局
+                    const layoutRadio = document.getElementById(state.layout || 'template-grid-3x3');
+                    if (layoutRadio) layoutRadio.checked = true;
+
+                    // 4. 异步加载所有图片
+                    const imageLoadPromises = [];
+                    if (state.images) {
+                        for (let i = 1; i <= 9; i++) {
+                            const url = state.images[i];
+                            if (url) {
+                                // 4a. 恢复状态
+                                sourceUrls[i] = url;
+                                // 4b. 更新 UI 预览
+                                const previewImg = document.getElementById(`preview-${i}`);
+                                if (previewImg) {
+                                    previewImg.src = url;
+                                    previewImg.classList.remove('hidden');
+                                }
+                                // 4c. 加载图片到画布
+                                imageLoadPromises.push(loadImage(url, i));
+                            }
+                        }
+                    }
+
+                    // 5. 等待所有图片加载（或失败）
+                    await Promise.allSettled(imageLoadPromises);
+
+                    showNeteaseMessage('配置加载完毕!', 'success');
+                    setTimeout(() => showNeteaseMessage('', 'hidden'), 2000);
+
+                } catch (e) {
+                    console.error("从 URL 加载状态失败:", e);
+                    showNeteaseMessage('链接解析失败!', 'error');
+                } finally {
+                    // 无论成功与否，最后都重绘一次
+                    drawPoster();
+                }
+            }
 
             // --- 初始化 ---
             populateSlotSelector();
-            drawPoster();
+            // [V10] 启动时从 URL 加载状态，而不是直接绘制
+            loadStateFromUrl();
 
-            // --- 事件监听器 ---
+
+            // --- [V10] 更新事件监听器，加入 updateUrl() ---
             [textTitle, textSharer, bgColorInput, paddingInput].forEach(el => {
-                el.addEventListener('input', drawPoster);
+                el.addEventListener('input', () => {
+                    drawPoster();
+                    updateUrl();
+                });
             });
             templateRadios.forEach(radio => {
-                radio.addEventListener('change', drawPoster);
+                radio.addEventListener('change', () => {
+                    drawPoster();
+                    updateUrl();
+                });
             });
             paddingInput.addEventListener('input', () => {
                 paddingValueDisplay.textContent = paddingInput.value;
@@ -416,7 +491,6 @@
             clearBtn.addEventListener('click', clearAll);
             downloadBtn.addEventListener('click', downloadPoster);
 
-            // --- 新增: 网易云提取事件 ---
             neteaseFetchBtn.addEventListener('click', handleNeteaseFetch);
             neteaseUrlInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') handleNeteaseFetch();
@@ -425,9 +499,6 @@
 
             // --- 核心函数 ---
 
-            /**
-             * 新增: 填充插槽选择器
-             */
             function populateSlotSelector() {
                 for (let i = 1; i <= 9; i++) {
                     const option = document.createElement('option');
@@ -438,70 +509,75 @@
             }
 
             /**
-             * 新增: 处理网易云链接提取
+             * [V8] 代理 + OG:Image 提取逻辑
              */
             async function handleNeteaseFetch() {
-                const input = neteaseUrlInput.value;
-                const targetSlot = neteaseSlotSelect.value; // e.g., "1"
-
-                // 1. 验证和提取ID
-                const idMatch = input.match(/id=(\d+)/) || input.match(/album\/(\d+)/);
-                if (!idMatch) {
-                    showNeteaseMessage('无法识别专辑ID，请检查链接。', 'error');
+                const rawInput = neteaseUrlInput.value.trim();
+                const targetSlot = neteaseSlotSelect.value;
+                if (!rawInput) {
+                    showNeteaseMessage('请输入分享文本或URL', 'error');
                     return;
                 }
-                const albumId = idMatch[1];
-
-                // 2. 设置加载状态
                 setNeteaseLoading(true);
-                showNeteaseMessage('正在提取...', 'loading');
+                showNeteaseMessage('正在识别链接...', 'loading');
 
                 try {
-                    // 3. 请求 API
-                    const response = await fetch(`${API_BASE_URL}/album?id=${albumId}`);
-                    if (!response.ok) throw new Error(`API 请求失败 (状态: ${response.status})`);
+                    const urlRegex = /(https?:\/\/[^\s"'()]+)/;
+                    const match = rawInput.match(urlRegex);
+                    if (!match) throw new Error('未在输入内容中找到有效的URL。');
 
-                    const data = await response.json();
-                    if (data.code !== 200 || !data.album) throw new Error('未找到该专辑信息。');
+                    let songUrl = match[0].replace("/#/", "/");
+                    showNeteaseMessage('识别到URL, 正在解析...', 'loading');
 
-                    // 4. 获取高清图片 URL
-                    const picUrl = data.album.picUrl;
-                    const hdUrl = picUrl + "?param=3000y3000";
+                    const proxyUrl = `${CORS_PROXY_URL}${encodeURIComponent(songUrl)}`;
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error(`网络错误 (代理): ${response.status}`);
 
-                    // 5. 【桥接】将 URL 送入海报工具
+                    const html = await response.text();
+                    showNeteaseMessage('解析HTML, 查找封面...', 'loading');
 
-                    // 5a. 更新UI预览
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const ogImageTag = doc.querySelector("meta[property='og:image']");
+                    if (!ogImageTag) throw new Error('无法在此页面找到封面图片(og:image)。');
+
+                    let imageUrl = ogImageTag.getAttribute('content');
+                    if (!imageUrl) throw new Error('找到了图片标签(og:image)，但内容为空。');
+
+                    const baseUrl = imageUrl.split('?')[0];
+                    const hdUrl = `${baseUrl}?param=3000y3000`;
+
+                    // [V10] 存储可分享的 URL
+                    sourceUrls[targetSlot] = hdUrl;
+
                     const previewImg = document.getElementById(`preview-${targetSlot}`);
                     if (previewImg) {
-                        previewImg.src = hdUrl; // 直接使用 URL
+                        previewImg.src = hdUrl;
                         previewImg.classList.remove('hidden');
                     }
-
-                    // 5b. 清除本地文件输入（如果之前有的话）
                     const fileInput = document.getElementById(`upload-${targetSlot}`);
                     if (fileInput) fileInput.value = null;
 
-                    // 5c. 调用 loadImage (关键: 它处理 crossOrigin)
                     await loadImage(hdUrl, targetSlot);
 
-                    // 5d. 重绘
+                    // [V10] 重绘并更新 URL
                     drawPoster();
+                    updateUrl();
 
-                    // 6. 成功
                     showNeteaseMessage(`成功提取到插槽 ${targetSlot}！`, 'success');
-                    neteaseUrlInput.value = ''; // 清空输入框
+                    neteaseUrlInput.value = '';
 
                 } catch (err) {
-                    console.error(err);
+                    console.error("提取失败:", err);
                     showNeteaseMessage(err.message || '提取失败，请重试。', 'error');
+                    // [V10] 提取失败，清除源
+                    sourceUrls[targetSlot] = null;
                 } finally {
                     setNeteaseLoading(false);
                 }
             }
 
-            /**
-             * 新增: 控制网易云提取按钮的加载状态
-             */
+
             function setNeteaseLoading(isLoading) {
                 if (isLoading) {
                     neteaseFetchBtn.disabled = true;
@@ -514,79 +590,76 @@
                 }
             }
 
-            /**
-             * 新增: 显示网易云提取的消息
-             */
             function showNeteaseMessage(message, type = 'loading') {
+                if (type === 'hidden') {
+                    neteaseMsg.classList.add('hidden');
+                    return;
+                }
                 neteaseMsg.textContent = message;
                 neteaseMsg.classList.remove('hidden', 'text-gray-500', 'text-green-600', 'text-red-500');
-                if (type === 'error') {
-                    neteaseMsg.classList.add('text-red-500');
-                } else if (type === 'success') {
-                    neteaseMsg.classList.add('text-green-600');
-                } else {
-                    neteaseMsg.classList.add('text-gray-500');
-                }
+                if (type === 'error') neteaseMsg.classList.add('text-red-500');
+                else if (type === 'success') neteaseMsg.classList.add('text-green-600');
+                else neteaseMsg.classList.add('text-gray-500');
             }
-
 
             /**
              * 处理文件上传
              */
             function handleFileChange(event, slot) {
-                // 清除可能存在的提取错误
                 showNeteaseMessage('', 'hidden');
+
+                // [V10] 本地上传的图片无法分享，清除 sourceUrl
+                sourceUrls[slot] = null;
 
                 const file = event.target.files[0];
                 if (!file) {
-                    imageSlots[slot] = null;
                     loadedImages[slot] = null;
                     const previewImg = document.getElementById(`preview-${slot}`);
                     if (previewImg) {
                         previewImg.src = '';
                         previewImg.classList.add('hidden');
                     }
-                    drawPoster(); // 移除图片后重绘
+                    drawPoster();
+                    updateUrl(); // [V10] 移除了图片，也更新 URL
                     return;
                 }
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const dataURL = e.target.result;
-                    imageSlots[slot] = dataURL;
-
                     const previewImg = document.getElementById(`preview-${slot}`);
                     if (previewImg) {
                         previewImg.src = dataURL;
                         previewImg.classList.remove('hidden');
                     }
-
+                    // [V10] dataURL 不存入 sourceUrls
                     loadImage(dataURL, slot).then(() => {
-                        drawPoster(); // 图像加载后重绘
+                        drawPoster();
+                        updateUrl(); // [V10] 添加了图片，更新 URL (虽然这张图不会被分享)
                     });
                 };
                 reader.readAsDataURL(file);
             }
 
             /**
-             * 异步加载图像并存入 loadedImages
-             * (重要: crossOrigin 允许加载来自网易云的跨域图片)
+             * 异步加载图像
              */
             function loadImage(src, slot) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
-                    // 关键! 允许跨域图片污染画布，以便后续下载
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
                         loadedImages[slot] = img;
-                        resolve(img);
+                        resolve(img); // [V1D] 成功时只 resolve
                     };
                     img.onerror = (err) => {
                         console.error(`Failed to load image for slot ${slot}:`, src, err);
                         loadedImages[slot] = null;
-                        // 即使加载失败也重绘，以清除旧图
+                        // [V10] 即使加载失败也清除源 URL，并重绘
+                        sourceUrls[slot] = null;
                         drawPoster();
-                        reject(err);
+                        updateUrl();
+                        reject(err); // [V10] 失败时 reject
                     };
                     img.src = src;
                 });
@@ -596,152 +669,107 @@
              * 主绘制函数
              */
             function drawPoster() {
-                // 1. 获取所有设置
                 const settings = {
                     title: textTitle.value || "顔色推歌",
                     sharer: textSharer.value || "填表人：",
                     template: document.querySelector('input[name="template"]:checked').value,
                     bgColor: bgColorInput.value || '#F4F4F8',
-                    padding: parseInt(paddingInput.value, 10) || 60,
+                    padding: parseInt(paddingInput.value, 10) || 180,
                 };
-
-                // (修改) 确保按插槽顺序获取图像
                 const activeImages = [];
                 for (let i = 1; i <= 9; i++) {
                     if (loadedImages[i]) {
                         activeImages.push(loadedImages[i]);
                     }
                 }
-
-                // 2. 绘制背景 (V5: 移除动态模糊，只用纯色)
                 drawBackground(settings.bgColor, activeImages.length === 0);
-
-                // 3. 定义安全区域
-                const TOP_TEXT_ZONE_HEIGHT = 150;
-                const BOTTOM_TEXT_ZONE_HEIGHT = 100;
+                const TOP_TEXT_ZONE_HEIGHT = 450;
+                const BOTTOM_TEXT_ZONE_HEIGHT = 300;
                 const contentBox = {
                     x: settings.padding,
                     y: settings.padding + TOP_TEXT_ZONE_HEIGHT,
                     width: CANVAS_SIZE - settings.padding * 2,
                     height: CANVAS_SIZE - (settings.padding * 2) - TOP_TEXT_ZONE_HEIGHT - BOTTOM_TEXT_ZONE_HEIGHT
                 };
-
-                // 4. 绘制图片布局 (在 contentBox 内)
                 switch (settings.template) {
-                    case 'hero':
-                        drawHeroLayout(activeImages, contentBox); // 1+2 = 3图
-                        break;
-                    case 'grid-2x2':
-                        drawGrid2x2Layout(activeImages, contentBox); // 2x2 = 4图
-                        break;
-                    case 'grid-3x3':
-                        drawGrid3x3Layout(activeImages, contentBox); // 3x3 = 9图
-                        break;
+                    case 'hero': drawHeroLayout(activeImages, contentBox); break;
+                    case 'grid-2x2': drawGrid2x2Layout(activeImages, contentBox); break;
+                    case 'grid-3x3': drawGrid3x3Layout(activeImages, contentBox); break;
                 }
-
-                // 5. 绘制文本 (V5: 使用新字体，移除阴影)
                 drawText(settings);
             }
 
-            /**
-             * (V5) 辅助: 绘制背景 (纯色)
-             */
             function drawBackground(color, showHint) {
                 ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
                 if (showHint) {
-                    // 绘制提示
-                    ctx.fillStyle = '#9ca3af'; // text-gray-400
-                    ctx.font = '30px "Noto Sans SC", sans-serif';
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.font = '90px "STDongGuanTi", sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillText('请在左侧上传或提取专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
                 }
             }
 
             /**
-             * (V5) 辅助: 绘制文本 (新字体, 无阴影, 深色)
+             * [V9] 辅助: 绘制文本 (使用新字体和新尺寸)
              */
             function drawText(settings) {
-                // 重置阴影
                 ctx.shadowColor = 'transparent';
                 ctx.shadowBlur = 0;
-
                 const padding = settings.padding;
-                const TOP_TEXT_ZONE_HEIGHT = 150;
-                const BOTTOM_TEXT_ZONE_HEIGHT = 100;
+                const TOP_TEXT_ZONE_HEIGHT = 450;
+                const BOTTOM_TEXT_ZONE_HEIGHT = 300;
 
-                // 绘制标题 (顶部居中, 宋体)
-                ctx.fillStyle = '#333333'; // 深灰色
-                ctx.font = 'bold 52px "Noto Serif SC", serif'; // 使用思源宋体
+                // 标题
+                ctx.fillStyle = '#333333';
+                ctx.font = 'bold 156px "STDongGuanTi", "Noto Serif SC", serif';
                 ctx.textAlign = 'center';
-                const titleY = padding + (TOP_TEXT_ZONE_HEIGHT / 2) + 15;
+                const titleY = padding + (TOP_TEXT_ZONE_HEIGHT / 2) + 45;
                 ctx.fillText(settings.title, CANVAS_SIZE / 2, titleY);
 
-                // 绘制分享人 (底部居中, 黑体)
-                ctx.font = 'normal 28px "Noto Sans SC", sans-serif'; // 使用思源黑体
-                ctx.fillStyle = '#555555'; // 次深灰色
+                // 分享人
+                ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)", "Noto Sans SC", sans-serif';
+                ctx.fillStyle = '#555555';
                 ctx.textAlign = 'center';
-                const sharerY = (CANVAS_SIZE - padding - BOTTOM_TEXT_ZONE_HEIGHT) + (BOTTOM_TEXT_ZONE_HEIGHT / 2) + 10;
+                const sharerY = (CANVAS_SIZE - padding - BOTTOM_TEXT_ZONE_HEIGHT) + (BOTTOM_TEXT_ZONE_HEIGHT / 2) + 30;
                 ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
             }
 
-            // --- 布局绘制函数 (V5) ---
+            // --- 布局绘制函数 (V9 缩放版) ---
 
-            /** 布局1: 精选 (1大2小, 3图) */
             function drawHeroLayout(images, box) {
-                const gap = 20;
+                const gap = 60;
                 if (!images[0]) return;
                 const heroSize = box.height;
                 const smallSize = (box.height - gap) / 2;
                 const totalWidth = heroSize + gap + smallSize;
                 const startX = box.x + (box.width - totalWidth) / 2;
-
                 drawSquareCover(images[0], startX, box.y, heroSize);
-                if (images[1]) {
-                    drawSquareCover(images[1], startX + heroSize + gap, box.y, smallSize);
-                }
-                if (images[2]) {
-                    drawSquareCover(images[2], startX + heroSize + gap, box.y + smallSize + gap, smallSize);
-                }
+                if (images[1]) drawSquareCover(images[1], startX + heroSize + gap, box.y, smallSize);
+                if (images[2]) drawSquareCover(images[2], startX + heroSize + gap, box.y + smallSize + gap, smallSize);
             }
 
-            /** 布局2: 网格 (2x2, 4图) */
             function drawGrid2x2Layout(images, box) {
-                const gap = 20;
+                const gap = 60;
                 let size = (box.width - gap) / 2;
-                if (size * 2 + gap > box.height) {
-                    size = (box.height - gap) / 2;
-                }
-
+                if (size * 2 + gap > box.height) size = (box.height - gap) / 2;
                 const startX = box.x + (box.width - (size * 2 + gap)) / 2;
                 const startY = box.y + (box.height - (size * 2 + gap)) / 2;
-
-                const x1 = startX;
-                const x2 = startX + size + gap;
-                const y1 = startY;
-                const y2 = startY + size + gap;
-
-                if (images[0]) drawSquareCover(images[0], x1, y1, size);
-                if (images[1]) drawSquareCover(images[1], x2, y1, size);
-                if (images[2]) drawSquareCover(images[2], x1, y2, size);
-                if (images[3]) drawSquareCover(images[3], x2, y2, size);
+                if (images[0]) drawSquareCover(images[0], startX, y1, size);
+                if (images[1]) drawSquareCover(images[1], startX + size + gap, y1, size);
+                if (images[2]) drawSquareCover(images[2], startX, startY + size + gap, size);
+                if (images[3]) drawSquareCover(images[3], startX + size + gap, startY + size + gap, size);
             }
 
-            /** 布局3: 九宫格 (3x3, 9图) - 新增 */
             function drawGrid3x3Layout(images, box) {
-                const gap = 20;
+                const gap = 60;
                 let size = (box.width - gap * 2) / 3;
-                if (size * 3 + gap * 2 > box.height) {
-                    size = (box.height - gap * 2) / 3;
-                }
-
+                if (size * 3 + gap * 2 > box.height) size = (box.height - gap * 2) / 3;
                 const totalWidth = size * 3 + gap * 2;
                 const totalHeight = size * 3 + gap * 2;
                 const startX = box.x + (box.width - totalWidth) / 2;
                 const startY = box.y + (box.height - totalHeight) / 2;
-
                 for (let i = 0; i < 9; i++) {
                     if (images[i]) {
                         const row = Math.floor(i / 3);
@@ -753,19 +781,12 @@
                 }
             }
 
-            /**
-             * (辅助) 绘制 1:1 正方形封面 (中心裁剪) + 圆角
-             */
             function drawSquareCover(img, dx, dy, dSize) {
-                if (!img || !img.width || !img.height) {
-                    console.warn('Invalid image object passed to drawSquareCover', img);
-                    return;
-                }
+                if (!img || !img.width || !img.height) return;
                 const sMin = Math.min(img.width, img.height);
                 const sx = (img.width - sMin) / 2;
                 const sy = (img.height - sMin) / 2;
-                const cornerRadius = 8; // 圆角 (减小一点更精致)
-
+                const cornerRadius = 24;
                 ctx.save();
                 ctx.beginPath();
                 ctx.moveTo(dx + cornerRadius, dy);
@@ -778,19 +799,17 @@
                 ctx.lineTo(dx, dy + cornerRadius);
                 ctx.quadraticCurveTo(dx, dy, dx + cornerRadius, dy);
                 ctx.closePath();
-                ctx.clip(); // 应用裁剪
-
+                ctx.clip();
                 ctx.drawImage(img, sx, sy, sMin, sMin, dx, dy, dSize, dSize);
-
-                ctx.restore(); // 移除裁剪
+                ctx.restore();
             }
 
             /**
              * 清空所有
              */
             function clearAll() {
-                // 扩展到 9 个
-                imageSlots = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
+                // [V10] 重置所有状态
+                sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
                 loadedImages = {};
 
                 uploadInputs.forEach((input, index) => {
@@ -804,22 +823,21 @@
 
                 textTitle.value = '';
                 textSharer.value = '';
-                bgColorInput.value = '#F4F4F8'; // 默认浅色
-                paddingInput.value = '60';
-                paddingValueDisplay.textContent = '60';
-                document.getElementById('template-grid-3x3').checked = true; // 默认九宫格
+                bgColorInput.value = '#F4F4F8';
+                paddingInput.value = '180';
+                paddingValueDisplay.textContent = '180';
+                document.getElementById('template-grid-3x3').checked = true;
 
-                // 新增: 重置提取工具
                 neteaseUrlInput.value = '';
                 neteaseSlotSelect.value = '1';
                 showNeteaseMessage('', 'hidden');
 
                 drawPoster();
+
+                // [V10] 清空 URL
+                window.history.pushState({}, '', window.location.pathname);
             }
 
-            /**
-             * 下载海报
-             */
             function downloadPoster() {
                 try {
                     const link = document.createElement('a');
@@ -827,8 +845,8 @@
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 } catch (e) {
-                    console.error("下载失败，可能是画布被跨域图片污染:", e);
-                    alert("下载失败！\n\n这可能是由于浏览器安全限制（CORS）导致的。\n\n解决方案：请尝试刷新页面，并重新提取或上传图片。");
+                    console.error("下载失败:", e);
+                    showNeteaseMessage('下载失败 (可能CORS错误)', 'error');
                 }
             }
         });
