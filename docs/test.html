@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客 // 启动中...</title>
+    <!-- 导入像素字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+    <style>
+        /* * CSS重置和全局设置
+         */
+        :root {
+            --primary-color: #00ffff;
+            /* 主色调 (青色) */
+            --secondary-color: #ff00ff;
+            /* 辅助色 (洋红) */
+            --bg-color: #0d0d0d;
+            /* 背景 (深黑) */
+            --font-body: 'VT323', monospace;
+            --font-heading: 'Press Start 2P', monospace;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            /* 文本辉光效果 */
+            text-shadow: 0 0 3px var(--primary-color), 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        /* 文本选择时反色 */
+        ::selection {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            text-shadow: none;
+        }
+
+        /* * CRT (老式显示器) 效果
+         */
+        .crt-container {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            /* 模拟屏幕闪烁 */
+            animation: flicker 15s linear infinite;
+        }
+
+        /* CRT 扫描线 */
+        .crt-container::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: repeating-linear-gradient(to bottom,
+                    rgba(18, 16, 16, 0) 0px,
+                    rgba(18, 16, 16, 0) 1px,
+                    rgba(18, 16, 16, 0.3) 2px,
+                    rgba(18, 16, 16, 0.3) 3px);
+            pointer-events: none;
+            /* 允许点击穿透 */
+            z-index: 100;
+        }
+
+        /* * 布局和内容
+         */
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: var(--font-heading);
+            color: var(--secondary-color);
+            text-shadow: 0 0 5px var(--secondary-color), 0 0 8px rgba(255, 0, 255, 0.7);
+            letter-spacing: 2px;
+            margin-top: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            line-height: 1.4;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 3px var(--primary-color);
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            transition: all 0.2s ease-in-out;
+        }
+
+        a:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            text-shadow: none;
+            text-decoration: none;
+        }
+
+        /* * 头部和导航
+         */
+        .header {
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        /* 打字效果 */
+        #type-text::after {
+            content: '_';
+            animation: blink 1s step-end infinite;
+            margin-left: 5px;
+        }
+
+        .main-title {
+            font-family: var(--font-body);
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .nav-list li a {
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border: 1px solid transparent;
+        }
+
+        .nav-list li a:hover {
+            border: 1px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* * 博客文章
+         */
+        .post-list article {
+            border: 2px solid var(--primary-color);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            /* 霓虹辉光 */
+            box-shadow: 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color) inset;
+            transition: all 0.3s ease;
+        }
+
+        .post-list article:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--primary-color), 0 0 25px var(--secondary-color) inset;
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            border-bottom: 1px dashed var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .read-more-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: var(--bg-color);
+            text-shadow: none;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            border: 2px solid var(--primary-color);
+        }
+
+        .read-more-btn:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* * 页脚
+         */
+        footer {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            margin-top: 3rem;
+            border-top: 2px solid var(--primary-color);
+            padding-top: 1.5rem;
+        }
+
+        /* * 动画
+         */
+
+        /* 闪烁动画 */
+        @keyframes flicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.95;
+            }
+
+            50.2% {
+                opacity: 1;
+            }
+
+            50.4% {
+                opacity: 0.9;
+            }
+
+            50.6% {
+                opacity: 1;
+            }
+        }
+
+        /* 光标闪烁 */
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* * 响应式设计
+         */
+        @media (max-width: 600px) {
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+            }
+
+            .main-title {
+                font-size: 1.4rem;
+            }
+
+            .nav-list {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .post-list article {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="crt-container">
+        <div class="content-wrapper">
+
+            <!-- 头部 -->
+            <header class="header">
+                <h1>
+                    &gt; [ <span id="type-text"></span> ]
+                </h1>
+                <h2 class="main-title">欢迎来到我的赛博空间</h2>
+
+                <nav>
+                    <ul class="nav-list">
+                        <li><a href="#">// 首页</a></li>
+                        <li><a href="#">// 关于我</a></li>
+                        <li><a href="#">// 项目</a></li>
+                        <li><a href="#">// 联系</a></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <!-- 主内容 -->
+            <main>
+                <section class="post-list">
+                    <h2>// 最新日志</h2>
+
+                    <!-- 博客文章 1 -->
+                    <article>
+                        <h3>第一次浪潮：深入Vaporwave美学</h3>
+                        <p class="post-meta">发布于: 2025.10.28 // 标签: #美学 #复古 #音乐</p>
+                        <p>
+                            蒸汽波不仅仅是一种音乐流派；它是一种对80和90年代消费主义的怀旧和批判。在这篇文章中，我们将深入探讨它的视觉元素——罗马半身像、故障艺术和早期的计算机图形...
+                        </p>
+                        <a href="#" class="read-more-btn">&gt; 读取完整条目</a>
+                    </article>
+
+                    <!-- 博客文章 2 -->
+                    <article>
+                        <h3>代码与阴影：我的第一个Cyberpunk游戏</h3>
+                        <p class="post-meta">发布于: 2025.10.15 // 标签: #游戏开发 #Cyberpunk #日志</p>
+                        <p>
+                            经过六个月的深夜编码和无数杯咖啡，我的第一个项目《霓虹阴影》终于进入了Alpha测试阶段。这是一个关于在反乌托邦城市中航行的故事。开发过程充满了挑战，尤其是在实现动态霓虹灯反射时...
+                        </p>
+                        <a href="#" class="read-more-btn">&gt; 读取完整条目</a>
+                    </article>
+
+                    <!-- 博客文章 3 -->
+                    <article>
+                        <h3>你好，世界！// 系统启动</h3>
+                        <p class="post-meta">发布于: 2025.10.01 // 标签: #个人 #元</p>
+                        <p>
+                            系统已上线。这个空间将是我在数字荒野中的个人终端。我将在这里记录我的想法、项目和发现。连接建立...
+                        </p>
+                        <a href="#" class="read-more-btn">&gt; 读取完整条目</a>
+                    </article>
+
+                </section>
+            </main>
+
+            <!-- 页脚 -->
+            <footer>
+                <p>// 最后更新: 2025-11-17</p>
+                <p>&copy; 2025 [你的名字]. 版权所有.</p>
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        // 简单的打字机效果
+        document.addEventListener("DOMContentLoaded", function () {
+            const textToType = "SYSTEM BOOTING... WELCOME, USER.";
+            const targetElement = document.getElementById("type-text");
+            let index = 0;
+            const speed = 100; // 打字速度 (ms)
+
+            function typeWriter() {
+                if (index < textToType.length) {
+                    targetElement.innerHTML += textToType.charAt(index);
+                    index++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+
+            typeWriter();
+        });
+    </script>
+</body>
+
+</html>
