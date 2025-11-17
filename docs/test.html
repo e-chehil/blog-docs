@@ -756,8 +756,8 @@
                 if (size * 2 + gap > box.height) size = (box.height - gap) / 2;
                 const startX = box.x + (box.width - (size * 2 + gap)) / 2;
                 const startY = box.y + (box.height - (size * 2 + gap)) / 2;
-                if (images[0]) drawSquareCover(images[0], startX, y1, size);
-                if (images[1]) drawSquareCover(images[1], startX + size + gap, y1, size);
+                if (images[0]) drawSquareCover(images[0], startX, startY, size);
+                if (images[1]) drawSquareCover(images[1], startX + size + gap, startY, size);
                 if (images[2]) drawSquareCover(images[2], startX, startY + size + gap, size);
                 if (images[3]) drawSquareCover(images[3], startX + size + gap, startY + size + gap, size);
             }
