@@ -4,376 +4,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>博客 // 启动中...</title>
-    <!-- 导入像素字体 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-
+    <title>专辑封面拼图海报生成器</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* * CSS重置和全局设置
-         */
-        :root {
-            --primary-color: #00ffff;
-            /* 主色调 (青色) */
-            --secondary-color: #ff00ff;
-            /* 辅助色 (洋红) */
-            --bg-color: #0d0d0d;
-            /* 背景 (深黑) */
-            --font-body: 'VT323', monospace;
-            --font-heading: 'Press Start 2P', monospace;
-        }
-
+        /* 使用 Inter 字体 */
         body {
-            background-color: var(--bg-color);
-            color: var(--primary-color);
-            font-family: var(--font-body);
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            /* 文本辉光效果 */
-            text-shadow: 0 0 3px var(--primary-color), 0 0 5px rgba(0, 255, 255, 0.5);
+            font-family: 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
         }
 
-        /* 文本选择时反色 */
-        ::selection {
-            background: var(--primary-color);
-            color: var(--bg-color);
-            text-shadow: none;
-        }
-
-        /* * CRT (老式显示器) 效果
-         */
-        .crt-container {
-            position: relative;
-            min-height: 100vh;
-            width: 100%;
-            overflow: hidden;
-            /* 模拟屏幕闪烁 */
-            animation: flicker 15s linear infinite;
-        }
-
-        /* CRT 扫描线 */
-        .crt-container::after {
-            content: " ";
-            display: block;
+        /* 隐藏文件输入的默认按钮 */
+        input[type="file"] {
+            opacity: 0;
             position: absolute;
             top: 0;
             left: 0;
-            bottom: 0;
-            right: 0;
-            background: repeating-linear-gradient(to bottom,
-                    rgba(18, 16, 16, 0) 0px,
-                    rgba(18, 16, 16, 0) 1px,
-                    rgba(18, 16, 16, 0.3) 2px,
-                    rgba(18, 16, 16, 0.3) 3px);
-            pointer-events: none;
-            /* 允许点击穿透 */
-            z-index: 100;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
 
-        /* * 布局和内容
-         */
-        .content-wrapper {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
+        /* 预览图的容器 */
+        .slot-preview {
             position: relative;
-            z-index: 10;
-        }
-
-        h1,
-        h2,
-        h3 {
-            font-family: var(--font-heading);
-            color: var(--secondary-color);
-            text-shadow: 0 0 5px var(--secondary-color), 0 0 8px rgba(255, 0, 255, 0.7);
-            letter-spacing: 2px;
-            margin-top: 1.5em;
-            margin-bottom: 1em;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            line-height: 1.4;
-        }
-
-        h2 {
-            font-size: 1.2rem;
-        }
-
-        h3 {
-            font-size: 1rem;
-            color: var(--primary-color);
-            text-shadow: 0 0 3px var(--primary-color);
-        }
-
-        a {
-            color: var(--primary-color);
-            text-decoration: underline;
-            text-decoration-style: dashed;
+            aspect-ratio: 1 / 1;
+            border: 2px dashed #4B5563;
+            /* dark:border-gray-700 -> border-gray-600 */
+            background-color: #1F2937;
+            /* dark:bg-gray-800 -> bg-gray-900 */
+            color: #9CA3AF;
+            /* dark:text-gray-400 -> text-gray-500 */
             transition: all 0.2s ease-in-out;
         }
 
-        a:hover {
-            background: var(--primary-color);
-            color: var(--bg-color);
-            text-shadow: none;
-            text-decoration: none;
-        }
-
-        /* * 头部和导航
-         */
-        .header {
-            border-bottom: 2px solid var(--primary-color);
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-        }
-
-        /* 打字效果 */
-        #type-text::after {
-            content: '_';
-            animation: blink 1s step-end infinite;
-            margin-left: 5px;
-        }
-
-        .main-title {
-            font-family: var(--font-body);
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            margin: 0.5rem 0;
-        }
-
-        .nav-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
-
-        .nav-list li a {
-            text-decoration: none;
-            font-family: var(--font-heading);
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border: 1px solid transparent;
-        }
-
-        .nav-list li a:hover {
-            border: 1px solid var(--primary-color);
-            background: transparent;
-            color: var(--primary-color);
-            box-shadow: 0 0 10px var(--primary-color);
-        }
-
-        /* * 博客文章
-         */
-        .post-list article {
-            border: 2px solid var(--primary-color);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            /* 霓虹辉光 */
-            box-shadow: 0 0 10px var(--primary-color), 0 0 15px var(--secondary-color) inset;
-            transition: all 0.3s ease;
-        }
-
-        .post-list article:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px var(--primary-color), 0 0 25px var(--secondary-color) inset;
-        }
-
-        .post-meta {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            border-bottom: 1px dashed var(--primary-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .read-more-btn {
-            display: inline-block;
-            background: var(--primary-color);
-            color: var(--bg-color);
-            text-shadow: none;
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            font-family: var(--font-heading);
-            font-size: 0.8rem;
-            margin-top: 1rem;
-            border: 2px solid var(--primary-color);
-        }
-
-        .read-more-btn:hover {
-            background: var(--bg-color);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 0 10px var(--primary-color);
-        }
-
-        /* * 页脚
-         */
-        footer {
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.6;
-            margin-top: 3rem;
-            border-top: 2px solid var(--primary-color);
-            padding-top: 1.5rem;
-        }
-
-        /* * 动画
-         */
-
-        /* 闪烁动画 */
-        @keyframes flicker {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.95;
-            }
-
-            50.2% {
-                opacity: 1;
-            }
-
-            50.4% {
-                opacity: 0.9;
-            }
-
-            50.6% {
-                opacity: 1;
-            }
-        }
-
-        /* 光标闪烁 */
-        @keyframes blink {
-            50% {
-                opacity: 0;
-            }
-        }
-
-        /* * 响应式设计
-         */
-        @media (max-width: 600px) {
-            .content-wrapper {
-                padding: 1rem;
-            }
-
-            h1 {
-                font-size: 1.1rem;
-            }
-
-            .main-title {
-                font-size: 1.4rem;
-            }
-
-            .nav-list {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .post-list article {
-                padding: 1rem;
-            }
+        .slot-preview:hover {
+            border-color: #EF4444;
+            /* red-500 */
+            color: #F9FAFB;
+            /* dark:text-gray-100 -> text-gray-200 */
         }
     </style>
 </head>
 
-<body>
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 md:p-8">
 
-    <div class="crt-container">
-        <div class="content-wrapper">
+    <div class="max-w-7xl mx-auto">
+        <!-- 标题 -->
+        <header class="text-center mb-8">
+            <h1
+                class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700">
+                专辑封面拼图海报生成器
+            </h1>
+            <p class="text-gray-400 mt-2">
+                上传 1-4 张专辑封面，创作你的专属音乐海报
+            </p>
+        </header>
 
-            <!-- 头部 -->
-            <header class="header">
-                <h1>
-                    &gt; [ <span id="type-text"></span> ]
-                </h1>
-                <h2 class="main-title">欢迎来到我的赛博空间</h2>
+        <!-- 主内容区：左侧控制 + 右侧预览 -->
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                <nav>
-                    <ul class="nav-list">
-                        <li><a href="#">// 首页</a></li>
-                        <li><a href="#">// 关于我</a></li>
-                        <li><a href="#">// 项目</a></li>
-                        <li><a href="#">// 联系</a></li>
-                    </ul>
-                </nav>
-            </header>
+            <!-- 左侧：控制面板 -->
+            <div class="flex flex-col gap-6 p-6 bg-gray-800 rounded-xl shadow-lg">
+                <!-- 1. 上传区域 -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4">1. 上传封面</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- 插槽 1 -->
+                        <div id="slot-container-1"
+                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
+                            <img id="preview-1"
+                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览1">
+                            <div class="flex flex-col items-center z-0">
+                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span class="text-sm">插槽 1</span>
+                            </div>
+                            <input type="file" accept="image/*" id="upload-1" data-slot="1">
+                        </div>
+                        <!-- 插槽 2 -->
+                        <div id="slot-container-2"
+                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
+                            <img id="preview-2"
+                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览2">
+                            <div class="flex flex-col items-center z-0">
+                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span class="text-sm">插槽 2</span>
+                            </div>
+                            <input type="file" accept="image/*" id="upload-2" data-slot="2">
+                        </div>
+                        <!-- 插槽 3 -->
+                        <div id="slot-container-3"
+                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
+                            <img id="preview-3"
+                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览3">
+                            <div class="flex flex-col items-center z-0">
+                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span class="text-sm">插槽 3</span>
+                            </div>
+                            <input type="file" accept="image/*" id="upload-3" data-slot="3">
+                        </div>
+                        <!-- 插槽 4 -->
+                        <div id="slot-container-4"
+                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
+                            <img id="preview-4"
+                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览4">
+                            <div class="flex flex-col items-center z-0">
+                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                                <span class="text-sm">插槽 4</span>
+                            </div>
+                            <input type="file" accept="image/*" id="upload-4" data-slot="4">
+                        </div>
+                    </div>
+                </div>
 
-            <!-- 主内容 -->
-            <main>
-                <section class="post-list">
-                    <h2>// 最新日志</h2>
+                <!-- 2. 自定义选项 -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4">2. 自定义海报</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- 背景色 -->
+                        <div class="flex flex-col">
+                            <label for="bg-color" class="mb-2 text-sm font-medium text-gray-300">背景颜色</label>
+                            <div class="relative">
+                                <input id="bg-color" type="color" value="#111827"
+                                    class="p-2 h-10 w-full rounded-md border-gray-700 bg-gray-900 cursor-pointer appearance-none border-none">
+                            </div>
+                        </div>
+                        <!-- 间距 -->
+                        <div class="flex flex-col">
+                            <label for="gap-size" class="mb-2 text-sm font-medium text-gray-300">封面间距 (px)</label>
+                            <input id="gap-size" type="number" value="20" min="0" max="100"
+                                class="h-10 p-2 w-full rounded-md border-gray-700 bg-gray-900 text-white focus:ring-red-500 focus:border-red-500">
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- 博客文章 1 -->
-                    <article>
-                        <h3>第一次浪潮：深入Vaporwave美学</h3>
-                        <p class="post-meta">发布于: 2025.10.28 // 标签: #美学 #复古 #音乐</p>
-                        <p>
-                            蒸汽波不仅仅是一种音乐流派；它是一种对80和90年代消费主义的怀旧和批判。在这篇文章中，我们将深入探讨它的视觉元素——罗马半身像、故障艺术和早期的计算机图形...
-                        </p>
-                        <a href="#" class="read-more-btn">&gt; 读取完整条目</a>
-                    </article>
+                <!-- 3. 操作按钮 -->
+                <div>
+                    <h2 class="text-xl font-semibold mb-4">3. 生成与下载</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="clear-btn"
+                            class="w-full py-3 px-4 rounded-lg bg-gray-600 hover:bg-gray-500 text-white font-semibold transition-colors shadow-md">
+                            清空全部
+                        </button>
+                        <button id="download-btn"
+                            class="w-full py-3 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-lg shadow-red-600/30">
+                            下载海报
+                        </button>
+                    </div>
+                </div>
 
-                    <!-- 博客文章 2 -->
-                    <article>
-                        <h3>代码与阴影：我的第一个Cyberpunk游戏</h3>
-                        <p class="post-meta">发布于: 2025.10.15 // 标签: #游戏开发 #Cyberpunk #日志</p>
-                        <p>
-                            经过六个月的深夜编码和无数杯咖啡，我的第一个项目《霓虹阴影》终于进入了Alpha测试阶段。这是一个关于在反乌托邦城市中航行的故事。开发过程充满了挑战，尤其是在实现动态霓虹灯反射时...
-                        </p>
-                        <a href="#" class="read-more-btn">&gt; 读取完整条目</a>
-                    </article>
+            </div>
 
-                    <!-- 博客文章 3 -->
-                    <article>
-                        <h3>你好，世界！// 系统启动</h3>
-                        <p class="post-meta">发布于: 2025.10.01 // 标签: #个人 #元</p>
-                        <p>
-                            系统已上线。这个空间将是我在数字荒野中的个人终端。我将在这里记录我的想法、项目和发现。连接建立...
-                        </p>
-                        <a href="#" class="read-more-btn">&gt; 读取完整条目</a>
-                    </article>
+            <!-- 右侧：画布预览 -->
+            <div class="flex flex-col items-center">
+                <h2 class="text-xl font-semibold mb-4 text-center">海报预览</h2>
+                <!-- 画布容器，用于保持宽高比 -->
+                <div class="w-full max-w-lg aspect-square bg-gray-800 rounded-xl shadow-lg p-2">
+                    <canvas id="poster-canvas" width="1000" height="1000" class="w-full h-full rounded-lg"></canvas>
+                </div>
+            </div>
 
-                </section>
-            </main>
-
-            <!-- 页脚 -->
-            <footer>
-                <p>// 最后更新: 2025-11-17</p>
-                <p>&copy; 2025 [你的名字]. 版权所有.</p>
-            </footer>
-
-        </div>
+        </main>
     </div>
 
     <script>
-        // 简单的打字机效果
-        document.addEventListener("DOMContentLoaded", function () {
-            const textToType = "SYSTEM BOOTING... WELCOME, USER.";
-            const targetElement = document.getElementById("type-text");
-            let index = 0;
-            const speed = 100; // 打字速度 (ms)
+        document.addEventListener('DOMContentLoaded', () => {
+            // 画布和上下文
+            const canvas = document.getElementById('poster-canvas');
+            const ctx = canvas.getContext('2d');
+            const CANVAS_SIZE = 1000; // 画布基础尺寸
+            canvas.width = CANVAS_SIZE;
+            canvas.height = CANVAS_SIZE;
 
-            function typeWriter() {
-                if (index < textToType.length) {
-                    targetElement.innerHTML += textToType.charAt(index);
-                    index++;
-                    setTimeout(typeWriter, speed);
-                }
+            // DOM 元素
+            const uploadInputs = [
+                document.getElementById('upload-1'),
+                document.getElementById('upload-2'),
+                document.getElementById('upload-3'),
+                document.getElementById('upload-4'),
+            ];
+            const previewImages = [
+                document.getElementById('preview-1'),
+                document.getElementById('preview-2'),
+                document.getElementById('preview-3'),
+                document.getElementById('preview-4'),
+            ];
+            const bgColorInput = document.getElementById('bg-color');
+            const gapSizeInput = document.getElementById('gap-size');
+            const clearBtn = document.getElementById('clear-btn');
+            const downloadBtn = document.getElementById('download-btn');
+
+            // 存储图像数据
+            let imageSlots = { 1: null, 2: null, 3: null, 4: null };
+
+            // 初始化画布
+            drawPoster();
+
+            // --- 事件监听 ---
+
+            // 监听所有文件上传
+            uploadInputs.forEach((input, index) => {
+                input.addEventListener('change', (e) => handleFileChange(e, input.dataset.slot));
+            });
+
+            // 监听自定义选项
+            bgColorInput.addEventListener('input', drawPoster);
+            gapSizeInput.addEventListener('input', drawPoster);
+
+            // 监听按钮
+            clearBtn.addEventListener('click', clearAll);
+            downloadBtn.addEventListener('click', downloadPoster);
+
+            // --- 核心功能函数 ---
+
+            /**
+             * 处理文件上传
+             */
+            function handleFileChange(event, slot) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const dataURL = e.target.result;
+                    imageSlots[slot] = dataURL;
+
+                    // 更新预览图
+                    const previewImg = document.getElementById(`preview-${slot}`);
+                    previewImg.src = dataURL;
+                    previewImg.classList.remove('hidden');
+
+                    // 重新绘制画布
+                    drawPoster();
+                };
+                reader.readAsDataURL(file);
             }
 
-            typeWriter();
+            /**
+             * 绘制海报
+             */
+            async function drawPoster() {
+                const GAP = parseInt(gapSizeInput.value, 10) || 0;
+                const BG_COLOR = bgColorInput.value || '#111827';
+
+                // 1. 绘制背景
+                ctx.fillStyle = BG_COLOR;
+                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+                // 2. 准备加载图像
+                const imagesToLoad = [];
+                for (const slot in imageSlots) {
+                    if (imageSlots[slot]) {
+                        imagesToLoad.push(loadImage(imageSlots[slot], slot));
+                    }
+                }
+
+                if (imagesToLoad.length === 0) {
+                    // 没有图片，绘制提示文字
+                    ctx.fillStyle = '#6B7280';
+                    ctx.font = '30px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('请在左侧上传专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+                    return;
+                }
+
+                const loadedImages = await Promise.all(imagesToLoad);
+
+                // 3. 计算布局
+                // 我们使用一个 2x2 网格布局
+                const imgSize = (CANVAS_SIZE - GAP * 3) / 2; // 每张图的尺寸
+                const pos1 = GAP;
+                const pos2 = GAP * 2 + imgSize;
+
+                const positions = {
+                    1: { x: pos1, y: pos1, w: imgSize, h: imgSize },
+                    2: { x: pos2, y: pos1, w: imgSize, h: imgSize },
+                    3: { x: pos1, y: pos2, w: imgSize, h: imgSize },
+                    4: { x: pos2, y: pos2, w: imgSize, h: imgSize },
+                };
+
+                // 4. 绘制图像
+                loadedImages.forEach(({ img, slot }) => {
+                    const pos = positions[slot];
+                    if (pos) {
+                        drawCoverImage(img, pos.x, pos.y, pos.w, pos.h);
+                    }
+                });
+            }
+
+            /**
+             * 加载图像
+             * @param {string} src - 图像的 dataURL
+             * @param {string} slot - 插槽编号
+             * @returns {Promise<{img: HTMLImageElement, slot: string}>}
+             */
+            function loadImage(src, slot) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve({ img, slot });
+                    img.onerror = (err) => reject(err);
+                    img.src = src;
+                });
+            }
+
+            /**
+             * 以 "object-fit: cover" 的方式绘制图像
+             * (裁剪图像以填充目标矩形)
+             */
+            function drawCoverImage(img, dx, dy, dWidth, dHeight) {
+                const sWidth = img.width;
+                const sHeight = img.height;
+                const sRatio = sWidth / sHeight;
+                const dRatio = dWidth / dHeight;
+
+                let sx = 0, sy = 0, sw = sWidth, sh = sHeight;
+
+                if (sRatio > dRatio) {
+                    // 图像比目标框更宽
+                    sw = sHeight * dRatio;
+                    sx = (sWidth - sw) / 2;
+                } else {
+                    // 图像比目标框更高
+                    sh = sWidth / dRatio;
+                    sy = (sHeight - sh) / 2;
+                }
+
+                ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dWidth, dHeight);
+            }
+
+            /**
+             * 清空所有
+             */
+            function clearAll() {
+                // 重置数据
+                imageSlots = { 1: null, 2: null, 3: null, 4: null };
+
+                // 清空预览图
+                previewImages.forEach((img) => {
+                    img.src = '';
+                    img.classList.add('hidden');
+                });
+
+                // 重置文件输入框 (通过重置表单或父元素实现，这里用简单方法)
+                uploadInputs.forEach((input) => {
+                    input.value = null; // 这不总有效，但对change事件足够
+                });
+
+                // 重置自定义选项
+                bgColorInput.value = '#111827';
+                gapSizeInput.value = '20';
+
+                // 重新绘制画布
+                drawPoster();
+            }
+
+            /**
+             * 下载海报
+             */
+            function downloadPoster() {
+                const link = document.createElement('a');
+                link.download = 'album-poster.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
         });
     </script>
+
 </body>
 
 </html>
