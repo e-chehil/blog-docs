@@ -425,7 +425,8 @@
                     paddingValueDisplay.textContent = state.padding || '180';
 
                     // 3. 应用布局
-                    const layoutRadio = document.getElementById(state.layout || 'template-grid-3x3');
+                    const layoutValue = state.layout || 'grid-3x3';
+                    const layoutRadio = document.getElementById('template-' + layoutValue);
                     if (layoutRadio) layoutRadio.checked = true;
 
                     // 4. 异步加载所有图片
