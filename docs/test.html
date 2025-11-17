@@ -4,13 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑封面拼图海报生成器</title>
+    <title>酷炫专辑海报 V2</title>
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 使用 Inter 字体 */
         body {
             font-family: 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        }
+
+        /* 毛玻璃/玻璃拟态效果 */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.05);
+            /* 更暗的背景 */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* 隐藏文件输入的默认按钮 */
@@ -24,220 +33,310 @@
             cursor: pointer;
         }
 
-        /* 预览图的容器 */
-        .slot-preview {
-            position: relative;
-            aspect-ratio: 1 / 1;
-            border: 2px dashed #4B5563;
-            /* dark:border-gray-700 -> border-gray-600 */
-            background-color: #1F2937;
-            /* dark:bg-gray-800 -> bg-gray-900 */
-            color: #9CA3AF;
-            /* dark:text-gray-400 -> text-gray-500 */
-            transition: all 0.2s ease-in-out;
+        /* 自定义美化模板选择器 (Radio) */
+        .template-selector input[type="radio"] {
+            display: none;
         }
 
-        .slot-preview:hover {
+        .template-selector label {
+            cursor: pointer;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: #9CA3AF;
+            /* text-gray-400 */
+        }
+
+        .template-selector input[type="radio"]:checked+label {
+            background-color: #C81E1E;
+            /* 亮红色 */
+            color: #FFFFFF;
             border-color: #EF4444;
             /* red-500 */
-            color: #F9FAFB;
-            /* dark:text-gray-100 -> text-gray-200 */
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .template-selector label:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 自定义美化范围滑块 (Range) */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #EF4444;
+            /* red-500 */
+            cursor: pointer;
+            border: 2px solid #FFF;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #EF4444;
+            /* red-500 */
+            cursor: pointer;
+            border: 2px solid #FFF;
         }
     </style>
 </head>
 
-<body class="bg-gray-900 text-gray-100 min-h-screen p-4 md:p-8">
+<body class="bg-gradient-to-br from-gray-900 via-gray-900 to-red-900 text-gray-100 min-h-screen p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
         <!-- 标题 -->
         <header class="text-center mb-8">
             <h1
-                class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-700">
-                专辑封面拼图海报生成器
+                class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">
+                酷炫专辑海报 V2
             </h1>
             <p class="text-gray-400 mt-2">
-                上传 1-4 张专辑封面，创作你的专属音乐海报
+                选择模板、上传封面、添加文字，创作你的专属海报
             </p>
         </header>
 
-        <!-- 主内容区：左侧控制 + 右侧预览 -->
-        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- 主内容区：响应式布局 -->
+        <main class="flex flex-col md:flex-row gap-6 md:gap-8">
 
-            <!-- 左侧：控制面板 -->
-            <div class="flex flex-col gap-6 p-6 bg-gray-800 rounded-xl shadow-lg">
-                <!-- 1. 上传区域 -->
-                <div>
-                    <h2 class="text-xl font-semibold mb-4">1. 上传封面</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- 插槽 1 -->
-                        <div id="slot-container-1"
-                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
-                            <img id="preview-1"
-                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览1">
-                            <div class="flex flex-col items-center z-0">
-                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                <span class="text-sm">插槽 1</span>
-                            </div>
-                            <input type="file" accept="image/*" id="upload-1" data-slot="1">
+            <!-- 左侧/下方：控制面板 -->
+            <aside class="w-full md:w-1/3 lg:w-1/3 shrink-0">
+                <div
+                    class="glass-panel rounded-xl shadow-lg p-5 md:p-6 flex flex-col gap-6 sticky top-8 max-h-[90vh] overflow-y-auto">
+
+                    <!-- 1. 海报文本 -->
+                    <div class="flex flex-col gap-4">
+                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">1. 海报文本</h2>
+                        <div>
+                            <label for="poster-title" class="text-sm font-medium text-gray-300 mb-1 block">标题</label>
+                            <input type="text" id="poster-title" placeholder="例如：我的本周最爱"
+                                class="w-full h-10 px-3 rounded-md bg-gray-900/50 border border-gray-700 text-white focus:ring-red-500 focus:border-red-500 transition">
                         </div>
-                        <!-- 插槽 2 -->
-                        <div id="slot-container-2"
-                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
-                            <img id="preview-2"
-                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览2">
-                            <div class="flex flex-col items-center z-0">
-                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                <span class="text-sm">插槽 2</span>
-                            </div>
-                            <input type="file" accept="image/*" id="upload-2" data-slot="2">
-                        </div>
-                        <!-- 插槽 3 -->
-                        <div id="slot-container-3"
-                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
-                            <img id="preview-3"
-                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览3">
-                            <div class="flex flex-col items-center z-0">
-                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                <span class="text-sm">插槽 3</span>
-                            </div>
-                            <input type="file" accept="image/*" id="upload-3" data-slot="3">
-                        </div>
-                        <!-- 插槽 4 -->
-                        <div id="slot-container-4"
-                            class="slot-preview rounded-lg flex items-center justify-center text-center p-4">
-                            <img id="preview-4"
-                                class="absolute inset-0 w-full h-full object-cover rounded-lg z-10 hidden" alt="预览4">
-                            <div class="flex flex-col items-center z-0">
-                                <svg class="w-10 h-10 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                </svg>
-                                <span class="text-sm">插槽 4</span>
-                            </div>
-                            <input type="file" accept="image/*" id="upload-4" data-slot="4">
+                        <div>
+                            <label for="poster-sharer" class="text-sm font-medium text-gray-300 mb-1 block">分享人</label>
+                            <input type="text" id="poster-sharer" placeholder="例如：Shared by @你的昵称"
+                                class="w-full h-10 px-3 rounded-md bg-gray-900/50 border border-gray-700 text-white focus:ring-red-500 focus:border-red-500 transition">
                         </div>
                     </div>
-                </div>
 
-                <!-- 2. 自定义选项 -->
-                <div>
-                    <h2 class="text-xl font-semibold mb-4">2. 自定义海报</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <!-- 背景色 -->
+                    <!-- 2. 选择模板 -->
+                    <div>
+                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2 mb-4">2. 选择模板</h2>
+                        <div class="grid grid-cols-3 gap-3 template-selector">
+                            <!-- 模板: Grid -->
+                            <div>
+                                <input type="radio" name="template" id="template-grid" value="grid" checked>
+                                <label for="template-grid">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
+                                        </path>
+                                    </svg>
+                                    网格
+                                </label>
+                            </div>
+                            <!-- 模板: Hero -->
+                            <div>
+                                <input type="radio" name="template" id="template-hero" value="hero">
+                                <label for="template-hero">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4h10v10H4zM16 4h4v4h-4zM16 10h4v4h-4z"></path>
+                                    </svg>
+                                    英雄
+                                </label>
+                            </div>
+                            <!-- 模板: Film -->
+                            <div>
+                                <input type="radio" name="template" id="template-film" value="film">
+                                <label for="template-film">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4h16v6H4zM4 14h16v6H4z"></path>
+                                    </svg>
+                                    胶片
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. 上传封面 -->
+                    <div>
+                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2 mb-4">3. 上传封面</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- 插槽 1-4 -->
+                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                                id="slot-container-1">
+                                <img id="preview-1"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览1">
+                                <div class="flex flex-col items-center z-0">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    <span class="text-xs mt-1">插槽 1</span>
+                                </div>
+                                <input type="file" accept="image/*" id="upload-1" data-slot="1">
+                            </div>
+                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                                id="slot-container-2">
+                                <img id="preview-2"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览2">
+                                <div class="flex flex-col items-center z-0"><svg class="w-8 h-8" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg><span class="text-xs mt-1">插槽 2</span></div>
+                                <input type="file" accept="image/*" id="upload-2" data-slot="2">
+                            </div>
+                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                                id="slot-container-3">
+                                <img id="preview-3"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览3">
+                                <div class="flex flex-col items-center z-0"><svg class="w-8 h-8" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg><span class="text-xs mt-1">插槽 3</span></div>
+                                <input type="file" accept="image/*" id="upload-3" data-slot="3">
+                            </div>
+                            <div class="relative aspect-square bg-gray-900/50 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center text-center text-gray-500 hover:border-red-500 hover:text-red-400 transition"
+                                id="slot-container-4">
+                                <img id="preview-4"
+                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
+                                    alt="预览4">
+                                <div class="flex flex-col items-center z-0"><svg class="w-8 h-8" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg><span class="text-xs mt-1">插槽 4</span></div>
+                                <input type="file" accept="image/*" id="upload-4" data-slot="4">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. 样式和操作 -->
+                    <div class="flex flex-col gap-4">
+                        <h2 class="text-lg font-semibold text-white border-b border-gray-700 pb-2">4. 样式与操作</h2>
                         <div class="flex flex-col">
-                            <label for="bg-color" class="mb-2 text-sm font-medium text-gray-300">背景颜色</label>
-                            <div class="relative">
-                                <input id="bg-color" type="color" value="#111827"
-                                    class="p-2 h-10 w-full rounded-md border-gray-700 bg-gray-900 cursor-pointer appearance-none border-none">
-                            </div>
+                            <label for="bg-color" class="text-sm font-medium text-gray-300 mb-2">背景颜色</label>
+                            <input id="bg-color" type="color" value="#111827"
+                                class="w-full h-10 p-1 rounded-md bg-gray-900/50 border-gray-700 cursor-pointer appearance-none border">
                         </div>
-                        <!-- 间距 -->
                         <div class="flex flex-col">
-                            <label for="gap-size" class="mb-2 text-sm font-medium text-gray-300">封面间距 (px)</label>
-                            <input id="gap-size" type="number" value="20" min="0" max="100"
-                                class="h-10 p-2 w-full rounded-md border-gray-700 bg-gray-900 text-white focus:ring-red-500 focus:border-red-500">
+                            <label for="gap-size" class="text-sm font-medium text-gray-300 mb-2">封面间距: <span
+                                    id="gap-value">15</span>px</label>
+                            <input id="gap-size" type="range" value="15" min="0" max="50" class="w-full">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <button id="clear-btn"
+                                class="w-full py-3 px-4 rounded-lg bg-gray-600 hover:bg-gray-500 text-white font-semibold transition-colors shadow-md">
+                                清空
+                            </button>
+                            <button id="download-btn"
+                                class="w-full py-3 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-lg shadow-red-600/30">
+                                下载海报
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- 3. 操作按钮 -->
-                <div>
-                    <h2 class="text-xl font-semibold mb-4">3. 生成与下载</h2>
-                    <div class="grid grid-cols-2 gap-4">
-                        <button id="clear-btn"
-                            class="w-full py-3 px-4 rounded-lg bg-gray-600 hover:bg-gray-500 text-white font-semibold transition-colors shadow-md">
-                            清空全部
-                        </button>
-                        <button id="download-btn"
-                            class="w-full py-3 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-lg shadow-red-600/30">
-                            下载海报
-                        </button>
-                    </div>
                 </div>
+            </aside>
 
-            </div>
-
-            <!-- 右侧：画布预览 -->
-            <div class="flex flex-col items-center">
-                <h2 class="text-xl font-semibold mb-4 text-center">海报预览</h2>
-                <!-- 画布容器，用于保持宽高比 -->
-                <div class="w-full max-w-lg aspect-square bg-gray-800 rounded-xl shadow-lg p-2">
-                    <canvas id="poster-canvas" width="1000" height="1000" class="w-full h-full rounded-lg"></canvas>
+            <!-- 右侧/上方：画布预览 -->
+            <section class="w-full md:w-2/3 lg:w-2/3">
+                <div class="w-full glass-panel rounded-xl shadow-lg p-2 sticky top-8">
+                    <canvas id="poster-canvas" width="1000" height="1000"
+                        class="w-full h-auto rounded-lg aspect-square"></canvas>
                 </div>
-            </div>
+            </section>
 
         </main>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 画布和上下文
+            // --- 全局状态 ---
+            const CANVAS_SIZE = 1000;
             const canvas = document.getElementById('poster-canvas');
             const ctx = canvas.getContext('2d');
-            const CANVAS_SIZE = 1000; // 画布基础尺寸
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            // DOM 元素
-            const uploadInputs = [
-                document.getElementById('upload-1'),
-                document.getElementById('upload-2'),
-                document.getElementById('upload-3'),
-                document.getElementById('upload-4'),
-            ];
-            const previewImages = [
-                document.getElementById('preview-1'),
-                document.getElementById('preview-2'),
-                document.getElementById('preview-3'),
-                document.getElementById('preview-4'),
-            ];
+            let imageSlots = { 1: null, 2: null, 3: null, 4: null };
+            let loadedImages = {}; // 存储加载的 Image 对象
+
+            // --- DOM 元素 ---
+            const textTitle = document.getElementById('poster-title');
+            const textSharer = document.getElementById('poster-sharer');
+            const templateRadios = document.querySelectorAll('input[name="template"]');
             const bgColorInput = document.getElementById('bg-color');
             const gapSizeInput = document.getElementById('gap-size');
+            const gapValueDisplay = document.getElementById('gap-value');
+            const uploadInputs = document.querySelectorAll('input[type="file"]');
             const clearBtn = document.getElementById('clear-btn');
             const downloadBtn = document.getElementById('download-btn');
 
-            // 存储图像数据
-            let imageSlots = { 1: null, 2: null, 3: null, 4: null };
-
-            // 初始化画布
+            // --- 初始化 ---
             drawPoster();
 
-            // --- 事件监听 ---
-
-            // 监听所有文件上传
-            uploadInputs.forEach((input, index) => {
+            // --- 事件监听器 ---
+            [textTitle, textSharer, bgColorInput, gapSizeInput].forEach(el => {
+                el.addEventListener('input', drawPoster);
+            });
+            templateRadios.forEach(radio => {
+                radio.addEventListener('change', drawPoster);
+            });
+            gapSizeInput.addEventListener('input', () => {
+                gapValueDisplay.textContent = gapSizeInput.value;
+            });
+            uploadInputs.forEach(input => {
                 input.addEventListener('change', (e) => handleFileChange(e, input.dataset.slot));
             });
-
-            // 监听自定义选项
-            bgColorInput.addEventListener('input', drawPoster);
-            gapSizeInput.addEventListener('input', drawPoster);
-
-            // 监听按钮
             clearBtn.addEventListener('click', clearAll);
             downloadBtn.addEventListener('click', downloadPoster);
 
-            // --- 核心功能函数 ---
+            // --- 核心函数 ---
 
             /**
              * 处理文件上传
              */
             function handleFileChange(event, slot) {
                 const file = event.target.files[0];
-                if (!file) return;
+                if (!file) {
+                    // 如果取消了文件选择
+                    imageSlots[slot] = null;
+                    loadedImages[slot] = null;
+                    const previewImg = document.getElementById(`preview-${slot}`);
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
+                    drawPoster();
+                    return;
+                }
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -249,127 +348,204 @@
                     previewImg.src = dataURL;
                     previewImg.classList.remove('hidden');
 
-                    // 重新绘制画布
-                    drawPoster();
+                    // 预加载 Image 对象
+                    loadImage(dataURL, slot).then(() => {
+                        drawPoster(); // 图像加载后重绘
+                    });
                 };
                 reader.readAsDataURL(file);
             }
 
             /**
-             * 绘制海报
-             */
-            async function drawPoster() {
-                const GAP = parseInt(gapSizeInput.value, 10) || 0;
-                const BG_COLOR = bgColorInput.value || '#111827';
-
-                // 1. 绘制背景
-                ctx.fillStyle = BG_COLOR;
-                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-                // 2. 准备加载图像
-                const imagesToLoad = [];
-                for (const slot in imageSlots) {
-                    if (imageSlots[slot]) {
-                        imagesToLoad.push(loadImage(imageSlots[slot], slot));
-                    }
-                }
-
-                if (imagesToLoad.length === 0) {
-                    // 没有图片，绘制提示文字
-                    ctx.fillStyle = '#6B7280';
-                    ctx.font = '30px Inter';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('请在左侧上传专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
-                    return;
-                }
-
-                const loadedImages = await Promise.all(imagesToLoad);
-
-                // 3. 计算布局
-                // 我们使用一个 2x2 网格布局
-                const imgSize = (CANVAS_SIZE - GAP * 3) / 2; // 每张图的尺寸
-                const pos1 = GAP;
-                const pos2 = GAP * 2 + imgSize;
-
-                const positions = {
-                    1: { x: pos1, y: pos1, w: imgSize, h: imgSize },
-                    2: { x: pos2, y: pos1, w: imgSize, h: imgSize },
-                    3: { x: pos1, y: pos2, w: imgSize, h: imgSize },
-                    4: { x: pos2, y: pos2, w: imgSize, h: imgSize },
-                };
-
-                // 4. 绘制图像
-                loadedImages.forEach(({ img, slot }) => {
-                    const pos = positions[slot];
-                    if (pos) {
-                        drawCoverImage(img, pos.x, pos.y, pos.w, pos.h);
-                    }
-                });
-            }
-
-            /**
-             * 加载图像
-             * @param {string} src - 图像的 dataURL
-             * @param {string} slot - 插槽编号
-             * @returns {Promise<{img: HTMLImageElement, slot: string}>}
+             * 异步加载图像并存入 loadedImages
              */
             function loadImage(src, slot) {
                 return new Promise((resolve, reject) => {
                     const img = new Image();
-                    img.onload = () => resolve({ img, slot });
-                    img.onerror = (err) => reject(err);
+                    img.onload = () => {
+                        loadedImages[slot] = img;
+                        resolve(img);
+                    };
+                    img.onerror = (err) => {
+                        loadedImages[slot] = null;
+                        reject(err);
+                    };
                     img.src = src;
                 });
             }
 
             /**
-             * 以 "object-fit: cover" 的方式绘制图像
-             * (裁剪图像以填充目标矩形)
+             * 主绘制函数
+             */
+            async function drawPoster() {
+                // 1. 获取所有设置
+                const settings = {
+                    title: textTitle.value || "我的音乐周报",
+                    sharer: textSharer.value || "Shared by Netease Music Fan",
+                    template: document.querySelector('input[name="template"]:checked').value,
+                    bgColor: bgColorInput.value || '#111827',
+                    gap: parseInt(gapSizeInput.value, 10) || 0,
+                };
+
+                // 2. 获取所有已加载的图像
+                const activeImages = Object.values(loadedImages).filter(img => img !== null);
+
+                // 3. 绘制背景
+                ctx.fillStyle = settings.bgColor;
+                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+                // 4. 根据模板绘制
+                ctx.save();
+                // 在模板绘制区域应用内边距 (使用 gap 作为 padding)
+                ctx.translate(settings.gap, settings.gap);
+                const drawAreaSize = CANVAS_SIZE - settings.gap * 2;
+
+                switch (settings.template) {
+                    case 'grid':
+                        drawGridTemplate(activeImages, settings, drawAreaSize);
+                        break;
+                    case 'hero':
+                        drawHeroTemplate(activeImages, settings, drawAreaSize);
+                        break;
+                    case 'film':
+                        drawFilmTemplate(activeImages, settings, drawAreaSize);
+                        break;
+                }
+                ctx.restore(); // 恢复 transform
+
+                // 5. 绘制文本 (在所有图像之上)
+                drawText(settings);
+            }
+
+            // --- 模板绘制函数 ---
+
+            /** 模板1: 网格 (2x2) */
+            function drawGridTemplate(images, settings, size) {
+                const gap = settings.gap;
+                const imgSize = (size - gap) / 2;
+                const positions = [
+                    { x: 0, y: 0 },
+                    { x: imgSize + gap, y: 0 },
+                    { x: 0, y: imgSize + gap },
+                    { x: imgSize + gap, y: imgSize + gap },
+                ];
+                images.slice(0, 4).forEach((img, i) => {
+                    drawCoverImage(img, positions[i].x, positions[i].y, imgSize, imgSize);
+                });
+            }
+
+            /** 模板2: 英雄 (1大, 2小) */
+            function drawHeroTemplate(images, settings, size) {
+                if (images.length === 0) return;
+                const gap = settings.gap;
+                const heroSize = size * 0.66 - (gap / 2);
+                const smallSize = (size - heroSize - gap);
+
+                // 绘制主图
+                if (images[0]) {
+                    drawCoverImage(images[0], 0, 0, heroSize, size);
+                }
+                // 绘制小图
+                if (images[1]) {
+                    drawCoverImage(images[1], heroSize + gap, 0, smallSize, smallSize);
+                }
+                if (images[2]) {
+                    drawCoverImage(images[2], heroSize + gap, smallSize + gap, smallSize, smallSize);
+                }
+            }
+
+            /** 模板3: 胶片 (1x3) */
+            function drawFilmTemplate(images, settings, size) {
+                if (images.length === 0) return;
+                const gap = settings.gap;
+                const imgCount = Math.min(images.length, 3); // 最多3张
+                const imgHeight = (size - (gap * (imgCount - 1))) / imgCount;
+
+                images.slice(0, imgCount).forEach((img, i) => {
+                    const yPos = i * (imgHeight + gap);
+                    drawCoverImage(img, 0, yPos, size, imgHeight);
+                });
+            }
+
+            /** 绘制文本 */
+            function drawText(settings) {
+                const padding = settings.gap + 30; // 文本内边距
+                ctx.fillStyle = '#FFFFFF';
+
+                // 绘制标题
+                ctx.font = 'bold 50px Inter';
+                ctx.textAlign = 'left';
+                wrapText(ctx, settings.title, padding, padding + 40, CANVAS_SIZE - padding * 2, 60);
+
+                // 绘制分享人
+                ctx.font = '24px Inter';
+                ctx.textAlign = 'right';
+                ctx.fillText(settings.sharer, CANVAS_SIZE - padding, CANVAS_SIZE - padding);
+            }
+
+
+            /**
+             * (辅助) 绘制封面 (object-fit: cover)
              */
             function drawCoverImage(img, dx, dy, dWidth, dHeight) {
                 const sWidth = img.width;
                 const sHeight = img.height;
                 const sRatio = sWidth / sHeight;
                 const dRatio = dWidth / dHeight;
-
                 let sx = 0, sy = 0, sw = sWidth, sh = sHeight;
 
-                if (sRatio > dRatio) {
-                    // 图像比目标框更宽
+                if (sRatio > dRatio) { // 图像更宽
                     sw = sHeight * dRatio;
                     sx = (sWidth - sw) / 2;
-                } else {
-                    // 图像比目标框更高
+                } else { // 图像更高
                     sh = sWidth / dRatio;
                     sy = (sHeight - sh) / 2;
                 }
-
                 ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dWidth, dHeight);
+            }
+
+            /**
+             * (辅助) 文本换行
+             */
+            function wrapText(context, text, x, y, maxWidth, lineHeight) {
+                let words = text.split(' ');
+                let line = '';
+                for (let n = 0; n < words.length; n++) {
+                    let testLine = line + words[n] + ' ';
+                    let metrics = context.measureText(testLine);
+                    let testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        context.fillText(line, x, y);
+                        line = words[n] + ' ';
+                        y += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                context.fillText(line, x, y);
             }
 
             /**
              * 清空所有
              */
             function clearAll() {
-                // 重置数据
                 imageSlots = { 1: null, 2: null, 3: null, 4: null };
+                loadedImages = {};
 
-                // 清空预览图
-                previewImages.forEach((img) => {
-                    img.src = '';
-                    img.classList.add('hidden');
+                uploadInputs.forEach((input, index) => {
+                    input.value = null;
+                    const previewImg = document.getElementById(`preview-${index + 1}`);
+                    previewImg.src = '';
+                    previewImg.classList.add('hidden');
                 });
 
-                // 重置文件输入框 (通过重置表单或父元素实现，这里用简单方法)
-                uploadInputs.forEach((input) => {
-                    input.value = null; // 这不总有效，但对change事件足够
-                });
-
-                // 重置自定义选项
+                textTitle.value = '';
+                textSharer.value = '';
                 bgColorInput.value = '#111827';
-                gapSizeInput.value = '20';
+                gapSizeInput.value = '15';
+                gapValueDisplay.textContent = '15';
+                document.getElementById('template-grid').checked = true;
 
-                // 重新绘制画布
                 drawPoster();
             }
 
@@ -378,7 +554,7 @@
              */
             function downloadPoster() {
                 const link = document.createElement('a');
-                link.download = 'album-poster.png';
+                link.download = 'my-music-poster.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }
