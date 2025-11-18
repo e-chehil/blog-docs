@@ -423,20 +423,16 @@
                         images: sourceUrls // 只保存可分享的 URL
                     };
 
-                    // 1. 将 state 转换成 JSON 字符串
                     const jsonString = JSON.stringify(state);
-
-                    // 2. 健壮的 UTF-8 -> Base64 编码
-                    // (防止 'btoa' 在遇到中文字符时出错)
+                    // 健壮的 UTF-8 -> Base64 编码
                     const utf8State = unescape(encodeURIComponent(jsonString));
                     const base64State = btoa(utf8State);
 
-                    // 3. 创建新的 URL
                     const params = new URLSearchParams();
                     params.set('data', base64State);
                     const newUrl = `${window.location.pathname}?${params.toString()}`;
 
-                    // 4. 更新 URL (不刷新页面)
+                    // 更新 URL (不刷新页面)
                     window.history.pushState({ path: newUrl }, '', newUrl);
 
                 } catch (e) {
@@ -453,38 +449,35 @@
                     const base64State = params.get('data');
 
                     if (!base64State) {
-                        // 没有 data 参数，正常绘制
                         drawPoster();
                         return;
                     }
 
                     showNeteaseMessage('正在从链接加载配置...', 'loading');
 
-                    // 1. 健壮的 Base64 -> UTF-8 解码
+                    // 健壮的 Base64 -> UTF-8 解码
                     const jsonString = decodeURIComponent(escape(atob(base64State)));
                     const state = JSON.parse(jsonString);
 
-                    // 2. 应用文本和设置
+                    // 应用文本和设置
                     textTitle.value = state.title || '';
                     textSharer.value = state.sharer || '';
                     bgColorInput.value = state.bgColor || '#F4F4F8';
                     paddingInput.value = state.padding || '180';
                     paddingValueDisplay.textContent = state.padding || '180';
 
-                    // 3. 应用布局
+                    // 应用布局
                     const layoutValue = state.layout || 'grid-3x3';
                     const layoutRadio = document.getElementById('template-' + layoutValue);
                     if (layoutRadio) layoutRadio.checked = true;
 
-                    // 4. 异步加载所有图片
+                    // 异步加载所有图片
                     const imageLoadPromises = [];
                     if (state.images) {
                         for (let i = 1; i <= 9; i++) {
                             const url = state.images[i];
                             if (url) {
-                                // 4a. 恢复状态
                                 sourceUrls[i] = url;
-                                // 4b. 更新 UI 预览
                                 const previewImg = document.getElementById(`preview-${i}`);
                                 if (previewImg) {
                                     previewImg.src = url;
@@ -494,13 +487,12 @@
                                 if (deleteBtn) {
                                     deleteBtn.classList.remove('hidden');
                                 }
-                                // 4c. 加载图片到画布
                                 imageLoadPromises.push(loadImage(url, i));
                             }
                         }
                     }
 
-                    // 5. 等待所有图片加载（或失败）
+                    // 等待所有图片加载（或失败）
                     await Promise.allSettled(imageLoadPromises);
 
                     showNeteaseMessage('配置加载完毕!', 'success');
@@ -510,7 +502,6 @@
                     console.error("从 URL 加载状态失败:", e);
                     showNeteaseMessage('链接解析失败!', 'error');
                 } finally {
-                    // 无论成功与否，最后都重绘一次
                     drawPoster();
                 }
             }
@@ -518,11 +509,10 @@
             // --- 初始化 ---
             noisePatternCanvas = createNoisePattern(); // 创建噪点图案
             populateSlotSelector();
-            // 启动时从 URL 加载状态，而不是直接绘制
             loadStateFromUrl();
 
 
-            // --- 更新事件监听器，加入 updateUrl() ---
+            // --- 事件监听器 ---
             [textTitle, textSharer, bgColorInput, paddingInput].forEach(el => {
                 el.addEventListener('input', () => {
                     drawPoster();
@@ -545,8 +535,8 @@
             downloadBtn.addEventListener('click', downloadPoster);
             deleteBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    e.preventDefault(); // 防止触发文件选择器
-                    e.stopPropagation(); // 停止冒泡
+                    e.preventDefault();
+                    e.stopPropagation();
                     clearSlot(btn.dataset.slot);
                 });
             });
@@ -573,12 +563,11 @@
                 const data = imageData.data;
 
                 for (let i = 0; i < data.length; i += 4) {
-                    // 0-255 的全范围灰度噪点
                     const noise = Math.random() * 255;
-                    data[i] = noise;   // R
-                    data[i + 1] = noise; // G
-                    data[i + 2] = noise; // B
-                    data[i + 3] = 255;   // A
+                    data[i] = noise;
+                    data[i + 1] = noise;
+                    data[i + 2] = noise;
+                    data[i + 3] = 255;
                 }
                 ctx.putImageData(imageData, 0, 0);
                 return canvas;
@@ -593,15 +582,13 @@
                     previewImg.src = '';
                     previewImg.classList.add('hidden');
                 }
-
                 const deleteBtn = document.getElementById(`delete-${slot}`);
                 if (deleteBtn) {
                     deleteBtn.classList.add('hidden');
                 }
-
                 const fileInput = document.getElementById(`upload-${slot}`);
                 if (fileInput) {
-                    fileInput.value = null; // 清除文件输入
+                    fileInput.value = null;
                 }
 
                 drawPoster();
@@ -618,7 +605,44 @@
             }
 
             /**
-             * 代理 + OG:Image 提取逻辑
+             * 辅助函数: 处理找到的图片URL
+             * (更新UI, 加载图片, 重绘, 更新URL, 递增插槽)
+             */
+            async function processImageUrl(url, slot) {
+                // 1. 存储可分享的 URL
+                sourceUrls[slot] = url;
+
+                // 2. 更新 UI 预览
+                const previewImg = document.getElementById(`preview-${slot}`);
+                if (previewImg) {
+                    previewImg.src = url;
+                    previewImg.classList.remove('hidden');
+                }
+                const deleteBtn = document.getElementById(`delete-${slot}`);
+                if (deleteBtn) {
+                    deleteBtn.classList.remove('hidden');
+                }
+                const fileInput = document.getElementById(`upload-${slot}`);
+                if (fileInput) fileInput.value = null; // 清除文件输入
+
+                // 3. 异步加载图片到画布
+                await loadImage(url, slot);
+
+                // 4. 重绘并更新 URL
+                drawPoster();
+                updateUrl();
+
+                // 5. 自动递增插槽
+                let currentSlot = parseInt(neteaseSlotSelect.value, 10);
+                let nextSlot = currentSlot + 1;
+                if (nextSlot > 9) {
+                    nextSlot = 1; // 如果超过9, 循环回1
+                }
+                neteaseSlotSelect.value = nextSlot.toString();
+            }
+
+            /**
+             * 核心: 网易云链接提取 (三层降级策略)
              */
             async function handleNeteaseFetch() {
                 const rawInput = neteaseUrlInput.value.trim();
@@ -632,57 +656,83 @@
 
                 try {
                     const urlRegex = /(https?:\/\/[^\s"'()]+)/;
-
                     const match = rawInput.match(urlRegex);
                     if (!match) throw new Error('未在输入内容中找到有效的URL。');
 
                     let songUrl = match[0].replace("/#/", "/");
-                    showNeteaseMessage('识别到URL, 正在解析...', 'loading');
+                    let hdUrl = null;
 
-                    const html = await fetchWithProxies(songUrl);
-                    showNeteaseMessage('解析HTML, 查找封面...', 'loading');
+                    // --- 优先1: API 方法 (通过歌曲ID) ---
+                    try {
+                        // 匹配 ...song?id=123... 或 ...song/123...
+                        const idRegex = /song\?id=(\d+)|song\/(\d+)/;
+                        const idMatch = songUrl.match(idRegex);
+                        const songId = idMatch ? (idMatch[1] || idMatch[2]) : null;
 
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const ogImageTag = doc.querySelector("meta[property='og:image']");
-                    if (!ogImageTag) throw new Error('无法在此页面找到封面图片(og:image)。');
+                        if (songId) {
+                            showNeteaseMessage('识别到ID, 尝试 API...', 'loading');
+                            const apiUrl = `https://music.163.com/api/song/detail?ids=[${songId}]`;
+                            const apiResponseText = await fetchWithProxies(apiUrl);
+                            const apiResponse = JSON.parse(apiResponseText);
 
-                    let imageUrl = ogImageTag.getAttribute('content');
-                    if (!imageUrl) throw new Error('找到了图片标签(og:image)，但内容为空。');
-
-                    const baseUrl = imageUrl.split('?')[0];
-                    const hdUrl = `${baseUrl}?param=3000y3000`;
-
-                    // 存储可分享的 URL
-                    sourceUrls[targetSlot] = hdUrl;
-
-                    const previewImg = document.getElementById(`preview-${targetSlot}`);
-                    if (previewImg) {
-                        previewImg.src = hdUrl;
-                        previewImg.classList.remove('hidden');
+                            // 检查API响应是否有效
+                            if (apiResponse?.songs?.[0]?.album?.picUrl) {
+                                let imageUrl = apiResponse.songs[0].album.picUrl;
+                                hdUrl = `${imageUrl.split('?')[0]}?param=3000y3000`;
+                                showNeteaseMessage('API 提取成功!', 'loading');
+                            } else {
+                                showNeteaseMessage('API 未找到图片, 降级...', 'loading');
+                            }
+                        } else {
+                            showNeteaseMessage('非标准链接, 尝试 HTML...', 'loading');
+                        }
+                    } catch (apiError) {
+                        console.warn("API 提取失败:", apiError);
+                        showNeteaseMessage('API 失败, 降级 HTML...', 'loading');
                     }
-                    const deleteBtn = document.getElementById(`delete-${targetSlot}`);
-                    if (deleteBtn) {
-                        deleteBtn.classList.remove('hidden');
+
+                    // --- 优先2: HTML og:image 方法 (如果 API 失败) ---
+                    if (!hdUrl) {
+                        showNeteaseMessage('解析HTML, 查找 og:image...', 'loading');
+                        const html = await fetchWithProxies(songUrl);
+
+                        try {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const ogImageTag = doc.querySelector("meta[property='og:image']");
+                            if (ogImageTag) {
+                                let imageUrl = ogImageTag.getAttribute('content');
+                                if (imageUrl) {
+                                    hdUrl = `${imageUrl.split('?')[0]}?param=3000y3000`;
+                                    showNeteaseMessage('og:image 提取成功!', 'loading');
+                                }
+                            }
+                        } catch (parseError) {
+                            console.warn("DOM parsing failed:", parseError);
+                            // 即使解析失败，也继续尝试正则
+                        }
+
+                        // --- 优先3: HTML 正则暴力匹配 (如果 og:image 失败) ---
+                        if (!hdUrl) {
+                            showNeteaseMessage('og:image 失败, 尝试正则...', 'loading');
+                            // 匹配 p1.music.126.net, p2.music.126.net 等
+                            const jpgRegex = /(https?:\/\/p\d+\.music\.126\.net\/[^\s"'()]+?\.jpg)/;
+                            const jpgMatch = html.match(jpgRegex);
+
+                            if (jpgMatch && jpgMatch[0]) {
+                                hdUrl = `${jpgMatch[0].split('?')[0]}?param=3000y3000`;
+                                showNeteaseMessage('正则提取成功!', 'loading');
+                            } else {
+                                throw new Error('所有方法均失败, 未找到封面。');
+                            }
+                        }
                     }
-                    const fileInput = document.getElementById(`upload-${targetSlot}`);
-                    if (fileInput) fileInput.value = null;
 
-                    await loadImage(hdUrl, targetSlot);
-
-                    // 重绘并更新 URL
-                    drawPoster();
-                    updateUrl();
+                    // --- 统一处理成功 ---
+                    await processImageUrl(hdUrl, targetSlot);
 
                     showNeteaseMessage(`成功提取到插槽 ${targetSlot}！`, 'success');
                     neteaseUrlInput.value = '';
-
-                    let currentSlot = parseInt(neteaseSlotSelect.value, 10);
-                    let nextSlot = currentSlot + 1;
-                    if (nextSlot > 9) {
-                        nextSlot = 1; // 如果超过9, 循环回1
-                    }
-                    neteaseSlotSelect.value = nextSlot.toString();
 
                 } catch (err) {
                     console.error("提取失败:", err);
@@ -749,7 +799,7 @@
                     // dataURL 不存入 sourceUrls
                     loadImage(dataURL, slot).then(() => {
                         drawPoster();
-                        updateUrl(); // 添加了图片，更新 URL (虽然这张图不会被分享)
+                        updateUrl();
                     });
                 };
                 reader.readAsDataURL(file);
@@ -764,12 +814,11 @@
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
                         loadedImages[slot] = img;
-                        resolve(img); // 成功时只 resolve
+                        resolve(img);
                     };
                     img.onerror = (err) => {
                         console.error(`Failed to load image for slot ${slot}:`, src, err);
                         loadedImages[slot] = null;
-                        // 即使加载失败也清除源 URL，并重绘
                         sourceUrls[slot] = null;
                         const previewImg = document.getElementById(`preview-${slot}`);
                         if (previewImg) {
@@ -782,7 +831,7 @@
                         }
                         drawPoster();
                         updateUrl();
-                        reject(err); // 失败时 reject
+                        reject(err);
                     };
                     img.src = src;
                 });
@@ -806,10 +855,7 @@
                     }
                 }
 
-                // 1. 获取所有对比色
                 const textColors = getContrastingTextColors(settings.bgColor);
-
-                // 2. 将颜色传递给 background
                 drawBackground(settings.bgColor, activeImages.length === 0, textColors);
 
                 const TOP_TEXT_ZONE_HEIGHT = 450;
@@ -826,7 +872,6 @@
                     case 'grid-3x3': drawGrid3x3Layout(activeImages, contentBox); break;
                 }
 
-                // 3. 将颜色传递给 text
                 drawText(settings, textColors);
             }
 
@@ -844,20 +889,16 @@
                 // 叠加纸纹
                 if (noisePatternCanvas) {
                     ctx.save();
-                    // 'overlay' 模式，适合叠加中性灰(128)的噪点
                     ctx.globalCompositeOperation = 'overlay';
-                    // 透明度控制纹理强度
                     ctx.globalAlpha = 0.15;
                     ctx.fillStyle = ctx.createPattern(noisePatternCanvas, 'repeat');
                     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
                     ctx.restore();
                 }
 
-                // 确保 textColors 存在，如果不存在则获取默认值
                 const colors = textColors || getContrastingTextColors(color);
 
                 if (showHint) {
-                    // 使用动态的提示颜色
                     ctx.fillStyle = colors.hint;
                     ctx.font = '90px "STDongGuanTi", sans-serif';
                     ctx.textAlign = 'center';
@@ -866,14 +907,12 @@
             }
 
             // --- 辅助函数: Hex to RGB ---
-            // 把 hex 转成 { r, g, b } (0-255)
             function hexToRgb(hex) {
                 hex = hex.replace('#', '');
                 if (hex.length === 3) {
                     hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
                 }
                 if (hex.length !== 6) {
-                    // 返回无效值以便捕获
                     return { r: NaN, g: NaN, b: NaN };
                 }
                 const r = parseInt(hex.substr(0, 2), 16);
@@ -885,12 +924,9 @@
             // --- 辅助函数: sRGB -> 相对亮度 (WCAG) ---
             function getRelativeLuminance({ r, g, b }) {
                 const srgb = [r, g, b].map(v => v / 255);
-
                 const [R, G, B] = srgb.map(v =>
                     v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
                 );
-
-                // 相对亮度
                 return 0.2126 * R + 0.7152 * G + 0.0722 * B;
             }
 
@@ -907,47 +943,28 @@
              * @returns {{main: string, secondary: string, hint: string}}
              */
             function getContrastingTextColors(bgColor) {
-                // 默认 (浅色背景)
                 const defaultColors = { main: '#111827', secondary: '#374151', hint: '#4B5563' };
 
                 try {
-                    if (!bgColor) {
-                        return defaultColors;
-                    }
-
+                    if (!bgColor) return defaultColors;
                     const bgRgb = hexToRgb(bgColor);
-                    // 如果颜色无效，返回默认值
-                    if (isNaN(bgRgb.r)) {
-                        return defaultColors;
-                    }
+                    if (isNaN(bgRgb.r)) return defaultColors;
 
                     const bgL = getRelativeLuminance(bgRgb);
-
-                    const whiteL = 1; // #FFFFFF
-                    const blackL = 0; // #000000
-
+                    const whiteL = 1;
+                    const blackL = 0;
                     const contrastWithWhite = getContrastRatio(bgL, whiteL);
                     const contrastWithBlack = getContrastRatio(bgL, blackL);
 
-                    // 3. 返回对比色 (使用 WCAG 逻辑判断)
                     if (contrastWithBlack >= contrastWithWhite) {
                         // 背景偏亮 -> 文字用深色系
-                        return {
-                            main: '#111827',      // 主标题 (gray-900)
-                            secondary: '#374151', // 副标题 (gray-700)
-                            hint: '#4B5563'       // 提示文字 (gray-600)
-                        };
+                        return { main: '#111827', secondary: '#374151', hint: '#4B5563' };
                     } else {
                         // 背景偏暗 -> 文字用浅色系
-                        return {
-                            main: '#F9FAFB',      // gray-50
-                            secondary: '#E5E7EB',    // gray-200
-                            hint: '#9CA3AF'       // gray-400
-                        };
+                        return { main: '#F9FAFB', secondary: '#E5E7EB', hint: '#9CA3AF' };
                     }
                 } catch (e) {
                     console.error("解析颜色失败:", bgColor, e);
-                    // 发生错误时返回默认值
                     return defaultColors;
                 }
             }
@@ -1053,19 +1070,17 @@
              * 清空所有
              */
             function clearAll() {
-                // 重置所有状态
                 sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
                 loadedImages = {};
 
                 uploadInputs.forEach((input, index) => {
                     input.value = null;
-                    const slot = index + 1; // 修正索引
+                    const slot = index + 1;
                     const previewImg = document.getElementById(`preview-${slot}`);
                     if (previewImg) {
                         previewImg.src = '';
                         previewImg.classList.add('hidden');
                     }
-                    // 隐藏删除按钮
                     const deleteBtn = document.getElementById(`delete-${slot}`);
                     if (deleteBtn) {
                         deleteBtn.classList.add('hidden');
@@ -1084,8 +1099,6 @@
                 showNeteaseMessage('', 'hidden');
 
                 drawPoster();
-
-                // 清空 URL
                 window.history.pushState({}, '', window.location.pathname);
             }
 
