@@ -652,7 +652,7 @@
                             }
 
                             if (!imageUrl) throw new Error('API 成功，但未找到图片URL。');
-                            
+
                             showNeteaseMessage('API 提取成功！', 'success');
 
                         } catch (apiError) {
@@ -668,14 +668,14 @@
                     if (!imageUrl) {
                         try {
                             showNeteaseMessage(isShortLink ? '解析短链中...' : '尝试HTML解析... (2/3)', 'loading');
-                            
+
                             htmlContent = await fetchWithProxies(targetUrl);
                             showNeteaseMessage('解析HTML, 查找封面...', 'loading');
-                            
+
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(htmlContent, 'text/html');
                             const ogImageTag = doc.querySelector("meta[property='og:image']");
-                            
+
                             imageUrl = ogImageTag?.getAttribute('content');
 
                             if (!imageUrl) {
@@ -694,23 +694,23 @@
                     if (!imageUrl) {
                         try {
                             // 如果策略 2 失败了但获取到了 HTML，则复用
-                            if (!htmlContent) { 
+                            if (!htmlContent) {
                                 showNeteaseMessage('尝试抓取HTML... (3/3)', 'loading');
                                 htmlContent = await fetchWithProxies(targetUrl);
                             }
                             showNeteaseMessage('尝试暴力搜索... (3/3)', 'loading');
 
                             // 优先匹配网易云 CDN (p1.music.126.net/...)
-                            const jpgRegex = /(https?:\/\/p\d+\.music\.126\.net\/[^"']+\.jpg)/;
+                            const jpgRegex = /(https?:\/\/[p-z]\d?\.music\.126\.net\/[^"'\s)]+)/i;
                             const regexMatch = htmlContent.match(jpgRegex);
-                            
+
                             imageUrl = regexMatch?.[0];
 
                             if (!imageUrl) {
                                 throw new Error('已尝试所有方法，均未找到图片。');
                             }
                             showNeteaseMessage('暴力搜索提取成功！', 'success');
-                            
+
                         } catch (regexError) {
                             console.error("Regex 提取失败:", regexError);
                             // 这是最后的机会，如果还失败，则彻底失败
