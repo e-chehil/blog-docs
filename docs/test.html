@@ -424,15 +424,12 @@
                     };
 
                     const jsonString = JSON.stringify(state);
-                    // 健壮的 UTF-8 -> Base64 编码
                     const utf8State = unescape(encodeURIComponent(jsonString));
                     const base64State = btoa(utf8State);
 
                     const params = new URLSearchParams();
                     params.set('data', base64State);
                     const newUrl = `${window.location.pathname}?${params.toString()}`;
-
-                    // 更新 URL (不刷新页面)
                     window.history.pushState({ path: newUrl }, '', newUrl);
 
                 } catch (e) {
@@ -455,23 +452,19 @@
 
                     showNeteaseMessage('正在从链接加载配置...', 'loading');
 
-                    // 健壮的 Base64 -> UTF-8 解码
                     const jsonString = decodeURIComponent(escape(atob(base64State)));
                     const state = JSON.parse(jsonString);
 
-                    // 应用文本和设置
                     textTitle.value = state.title || '';
                     textSharer.value = state.sharer || '';
                     bgColorInput.value = state.bgColor || '#F4F4F8';
                     paddingInput.value = state.padding || '180';
                     paddingValueDisplay.textContent = state.padding || '180';
 
-                    // 应用布局
                     const layoutValue = state.layout || 'grid-3x3';
                     const layoutRadio = document.getElementById('template-' + layoutValue);
                     if (layoutRadio) layoutRadio.checked = true;
 
-                    // 异步加载所有图片
                     const imageLoadPromises = [];
                     if (state.images) {
                         for (let i = 1; i <= 9; i++) {
@@ -492,9 +485,7 @@
                         }
                     }
 
-                    // 等待所有图片加载（或失败）
                     await Promise.allSettled(imageLoadPromises);
-
                     showNeteaseMessage('配置加载完毕!', 'success');
                     setTimeout(() => showNeteaseMessage('', 'hidden'), 2000);
 
@@ -507,7 +498,7 @@
             }
 
             // --- 初始化 ---
-            noisePatternCanvas = createNoisePattern(); // 创建噪点图案
+            noisePatternCanvas = createNoisePattern();
             populateSlotSelector();
             loadStateFromUrl();
 
@@ -561,7 +552,6 @@
                 const ctx = canvas.getContext('2d');
                 const imageData = ctx.createImageData(size, size);
                 const data = imageData.data;
-
                 for (let i = 0; i < data.length; i += 4) {
                     const noise = Math.random() * 255;
                     data[i] = noise;
@@ -590,7 +580,6 @@
                 if (fileInput) {
                     fileInput.value = null;
                 }
-
                 drawPoster();
                 updateUrl();
             }
@@ -605,44 +594,7 @@
             }
 
             /**
-             * 辅助函数: 处理找到的图片URL
-             * (更新UI, 加载图片, 重绘, 更新URL, 递增插槽)
-             */
-            async function processImageUrl(url, slot) {
-                // 1. 存储可分享的 URL
-                sourceUrls[slot] = url;
-
-                // 2. 更新 UI 预览
-                const previewImg = document.getElementById(`preview-${slot}`);
-                if (previewImg) {
-                    previewImg.src = url;
-                    previewImg.classList.remove('hidden');
-                }
-                const deleteBtn = document.getElementById(`delete-${slot}`);
-                if (deleteBtn) {
-                    deleteBtn.classList.remove('hidden');
-                }
-                const fileInput = document.getElementById(`upload-${slot}`);
-                if (fileInput) fileInput.value = null; // 清除文件输入
-
-                // 3. 异步加载图片到画布
-                await loadImage(url, slot);
-
-                // 4. 重绘并更新 URL
-                drawPoster();
-                updateUrl();
-
-                // 5. 自动递增插槽
-                let currentSlot = parseInt(neteaseSlotSelect.value, 10);
-                let nextSlot = currentSlot + 1;
-                if (nextSlot > 9) {
-                    nextSlot = 1; // 如果超过9, 循环回1
-                }
-                neteaseSlotSelect.value = nextSlot.toString();
-            }
-
-            /**
-             * 核心: 网易云链接提取 (三层降级策略)
+             * 提取网易云封面 (V3 - 已修正 Album 正则)
              */
             async function handleNeteaseFetch() {
                 const rawInput = neteaseUrlInput.value.trim();
@@ -655,90 +607,155 @@
                 showNeteaseMessage('正在识别链接...', 'loading');
 
                 try {
+                    // 1. 在输入中找到 URL
                     const urlRegex = /(https?:\/\/[^\s"'()]+)/;
-                    const match = rawInput.match(urlRegex);
-                    if (!match) throw new Error('未在输入内容中找到有效的URL。');
+                    const urlMatch = rawInput.match(urlRegex);
+                    if (!urlMatch) throw new Error('未在输入内容中找到有效的URL。');
 
-                    let songUrl = match[0].replace("/#/", "/");
-                    let hdUrl = null;
+                    let targetUrl = urlMatch[0].replace("/#/", "/"); // 清理 hash 路由
+                    showNeteaseMessage('识别到URL，正在分析...', 'loading');
 
-                    // --- 优先1: API 方法 (通过歌曲ID) ---
-                    try {
-                        // 匹配 ...song?id=123... 或 ...song/123...
-                        const idRegex = /song\?id=(\d+)|song\/(\d+)/;
-                        const idMatch = songUrl.match(idRegex);
-                        const songId = idMatch ? (idMatch[1] || idMatch[2]) : null;
+                    let imageUrl = null;
+                    let htmlContent = null; // 存储 HTML 内容以便复用
 
-                        if (songId) {
-                            showNeteaseMessage('识别到ID, 尝试 API...', 'loading');
-                            const apiUrl = `https://music.163.com/api/song/detail?ids=[${songId}]`;
-                            const apiResponseText = await fetchWithProxies(apiUrl);
-                            const apiResponse = JSON.parse(apiResponseText);
+                    // 2. 分析 URL
+                    // (修正) 匹配 song/album 和 ?id=ID /ID/ 两种格式
+                    const idRegex = /(song|album)(?:\?id=|\/)(\d+)/;
+                    const idMatch = targetUrl.match(idRegex);
+                    const isShortLink = targetUrl.includes('163.fm');
 
-                            // 检查API响应是否有效
-                            if (apiResponse?.songs?.[0]?.album?.picUrl) {
-                                let imageUrl = apiResponse.songs[0].album.picUrl;
-                                hdUrl = `${imageUrl.split('?')[0]}?param=3000y3000`;
-                                showNeteaseMessage('API 提取成功!', 'loading');
-                            } else {
-                                showNeteaseMessage('API 未找到图片, 降级...', 'loading');
-                            }
-                        } else {
-                            showNeteaseMessage('非标准链接, 尝试 HTML...', 'loading');
-                        }
-                    } catch (apiError) {
-                        console.warn("API 提取失败:", apiError);
-                        showNeteaseMessage('API 失败, 降级 HTML...', 'loading');
-                    }
-
-                    // --- 优先2: HTML og:image 方法 (如果 API 失败) ---
-                    if (!hdUrl) {
-                        showNeteaseMessage('解析HTML, 查找 og:image...', 'loading');
-                        const html = await fetchWithProxies(songUrl);
-
+                    // --- 策略 1: API (最优先) ---
+                    // (前提: 不是短链接，且能匹配到 song/album ID)
+                    if (idMatch && !isShortLink) {
                         try {
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(html, 'text/html');
-                            const ogImageTag = doc.querySelector("meta[property='og:image']");
-                            if (ogImageTag) {
-                                let imageUrl = ogImageTag.getAttribute('content');
-                                if (imageUrl) {
-                                    hdUrl = `${imageUrl.split('?')[0]}?param=3000y3000`;
-                                    showNeteaseMessage('og:image 提取成功!', 'loading');
-                                }
-                            }
-                        } catch (parseError) {
-                            console.warn("DOM parsing failed:", parseError);
-                            // 即使解析失败，也继续尝试正则
-                        }
+                            const resourceType = idMatch[1]; // 'song' 或 'album'
+                            const id = idMatch[2];
+                            showNeteaseMessage('发现ID，尝试API... (1/3)', 'loading');
 
-                        // --- 优先3: HTML 正则暴力匹配 (如果 og:image 失败) ---
-                        if (!hdUrl) {
-                            showNeteaseMessage('og:image 失败, 尝试正则...', 'loading');
-                            // 匹配 p1.music.126.net, p2.music.126.net 等
-                            const jpgRegex = /(https?:\/\/p\d+\.music\.126\.net\/[^\s"'()]+?\.jpg)/;
-                            const jpgMatch = html.match(jpgRegex);
-
-                            if (jpgMatch && jpgMatch[0]) {
-                                hdUrl = `${jpgMatch[0].split('?')[0]}?param=3000y3000`;
-                                showNeteaseMessage('正则提取成功!', 'loading');
-                            } else {
-                                throw new Error('所有方法均失败, 未找到封面。');
+                            let apiUrl;
+                            if (resourceType === 'song') {
+                                apiUrl = `https://music.163.com/api/song/detail?ids=${id}`;
+                            } else { // 'album'
+                                apiUrl = `https://music.163.com/api/album/${id}`;
                             }
+
+                            const jsonString = await fetchWithProxies(apiUrl);
+                            const data = JSON.parse(jsonString);
+
+                            if (resourceType === 'song') {
+                                imageUrl = data?.songs?.[0]?.album?.picUrl;
+                            } else { // 'album'
+                                imageUrl = data?.album?.picUrl;
+                            }
+
+                            if (!imageUrl) throw new Error('API 成功，但未找到图片URL。');
+                            
+                            showNeteaseMessage('API 提取成功！', 'success');
+
+                        } catch (apiError) {
+                            console.warn("API 提取失败:", apiError.message);
+                            // API 失败，降级到策略 2，不抛出错误
                         }
                     }
 
-                    // --- 统一处理成功 ---
-                    await processImageUrl(hdUrl, targetSlot);
+                    // --- 策略 2: HTML 'og:image' 解析 (次优先) ---
+                    // (前提: 策略 1 未执行或失败)
+                    if (!imageUrl) {
+                        try {
+                            showNeteaseMessage(isShortLink ? '解析短链中...' : '尝试HTML解析... (2/3)', 'loading');
+                            
+                            htmlContent = await fetchWithProxies(targetUrl);
+                            showNeteaseMessage('解析HTML, 查找封面...', 'loading');
+                            
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(htmlContent, 'text/html');
+                            const ogImageTag = doc.querySelector("meta[property='og:image']");
+                            
+                            imageUrl = ogImageTag?.getAttribute('content');
+
+                            if (!imageUrl) {
+                                throw new Error('无法在此页面找到封面图片(og:image)。');
+                            }
+                            showNeteaseMessage('HTML og:image 提取成功！', 'success');
+
+                        } catch (htmlError) {
+                            console.warn("HTML 'og:image' 提取失败:", htmlError.message);
+                            // HTML 解析失败，降级到策略 3，不抛出错误
+                        }
+                    }
+
+                    // --- 策略 3: Regex 暴力搜索 (保底) ---
+                    // (前提: 策略 1 和 2 均失败)
+                    if (!imageUrl) {
+                        try {
+                            // 如果策略 2 失败了但获取到了 HTML，则复用
+                            if (!htmlContent) { 
+                                showNeteaseMessage('尝试抓取HTML... (3/3)', 'loading');
+                                htmlContent = await fetchWithProxies(targetUrl);
+                            }
+                            showNeteaseMessage('尝试暴力搜索... (3/3)', 'loading');
+
+                            // 优先匹配网易云 CDN (p1.music.126.net/...)
+                            const jpgRegex = /(https?:\/\/p\d+\.music\.126\.net\/[^"']+\.jpg)/;
+                            const regexMatch = htmlContent.match(jpgRegex);
+                            
+                            imageUrl = regexMatch?.[0];
+
+                            if (!imageUrl) {
+                                throw new Error('已尝试所有方法，均未找到图片。');
+                            }
+                            showNeteaseMessage('暴力搜索提取成功！', 'success');
+                            
+                        } catch (regexError) {
+                            console.error("Regex 提取失败:", regexError);
+                            // 这是最后的机会，如果还失败，则彻底失败
+                            throw regexError;
+                        }
+                    }
+
+                    // --- 统一处理成功获取的 imageUrl ---
+                    const baseUrl = imageUrl.split('?')[0];
+                    const hdUrl = `${baseUrl}?param=3000y3000`;
+
+                    // 存储可分享的 URL
+                    sourceUrls[targetSlot] = hdUrl;
+
+                    // 更新 UI 预览
+                    const previewImg = document.getElementById(`preview-${targetSlot}`);
+                    if (previewImg) {
+                        previewImg.src = hdUrl;
+                        previewImg.classList.remove('hidden');
+                    }
+                    const deleteBtn = document.getElementById(`delete-${targetSlot}`);
+                    if (deleteBtn) {
+                        deleteBtn.classList.remove('hidden');
+                    }
+                    const fileInput = document.getElementById(`upload-${targetSlot}`);
+                    if (fileInput) fileInput.value = null;
+
+                    // 异步加载图片
+                    await loadImage(hdUrl, targetSlot);
+
+                    // 重绘并更新 URL
+                    drawPoster();
+                    updateUrl();
 
                     showNeteaseMessage(`成功提取到插槽 ${targetSlot}！`, 'success');
                     neteaseUrlInput.value = '';
 
+                    // 自动跳到下一个插槽
+                    let currentSlot = parseInt(neteaseSlotSelect.value, 10);
+                    let nextSlot = currentSlot + 1;
+                    if (nextSlot > 9) {
+                        nextSlot = 1; // 循环回1
+                    }
+                    neteaseSlotSelect.value = nextSlot.toString();
+
                 } catch (err) {
-                    console.error("提取失败:", err);
+                    // --- 最终失败处理 ---
+                    console.error("提取失败 (所有方法):", err);
                     showNeteaseMessage(err.message || '提取失败，请重试。', 'error');
-                    // 提取失败，清除源
-                    sourceUrls[targetSlot] = null;
+                    sourceUrls[targetSlot] = null; // 确保失败时清除
                 } finally {
                     setNeteaseLoading(false);
                 }
@@ -774,9 +791,7 @@
              */
             function handleFileChange(event, slot) {
                 showNeteaseMessage('', 'hidden');
-
-                // 本地上传的图片无法分享，清除 sourceUrl
-                sourceUrls[slot] = null;
+                sourceUrls[slot] = null; // 本地上传，清除分享 URL
 
                 const file = event.target.files[0];
                 if (!file) {
@@ -796,7 +811,6 @@
                     if (deleteBtn) {
                         deleteBtn.classList.remove('hidden');
                     }
-                    // dataURL 不存入 sourceUrls
                     loadImage(dataURL, slot).then(() => {
                         drawPoster();
                         updateUrl();
@@ -871,22 +885,17 @@
                     case 'grid-2x2': drawGrid2x2Layout(activeImages, contentBox); break;
                     case 'grid-3x3': drawGrid3x3Layout(activeImages, contentBox); break;
                 }
-
                 drawText(settings, textColors);
             }
 
             /**
              * 绘制背景
-             * @param {string} color - 背景色
-             * @param {boolean} showHint - 是否显示提示
-             * @param {object} textColors - 包含 {main, secondary, hint} 的对象
              */
             function drawBackground(color, showHint, textColors) {
                 ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-                // 叠加纸纹
                 if (noisePatternCanvas) {
                     ctx.save();
                     ctx.globalCompositeOperation = 'overlay';
@@ -897,7 +906,6 @@
                 }
 
                 const colors = textColors || getContrastingTextColors(color);
-
                 if (showHint) {
                     ctx.fillStyle = colors.hint;
                     ctx.font = '90px "STDongGuanTi", sans-serif';
@@ -906,7 +914,8 @@
                 }
             }
 
-            // --- 辅助函数: Hex to RGB ---
+            // --- 颜色辅助函数 ---
+
             function hexToRgb(hex) {
                 hex = hex.replace('#', '');
                 if (hex.length === 3) {
@@ -921,7 +930,6 @@
                 return { r, g, b };
             }
 
-            // --- 辅助函数: sRGB -> 相对亮度 (WCAG) ---
             function getRelativeLuminance({ r, g, b }) {
                 const srgb = [r, g, b].map(v => v / 255);
                 const [R, G, B] = srgb.map(v =>
@@ -930,7 +938,6 @@
                 return 0.2126 * R + 0.7152 * G + 0.0722 * B;
             }
 
-            // --- 辅助函数: 计算两个亮度的对比度 ---
             function getContrastRatio(L1, L2) {
                 const light = Math.max(L1, L2);
                 const dark = Math.min(L1, L2);
@@ -938,23 +945,18 @@
             }
 
             /**
-             * 根据背景色自动选择适合的文字颜色（深/浅）
-             * @param {string} bgColor - Hex 格式的背景色
-             * @returns {{main: string, secondary: string, hint: string}}
+             * 根据背景色自动选择适合的文字颜色 (WCAG)
              */
             function getContrastingTextColors(bgColor) {
                 const defaultColors = { main: '#111827', secondary: '#374151', hint: '#4B5563' };
-
                 try {
                     if (!bgColor) return defaultColors;
                     const bgRgb = hexToRgb(bgColor);
                     if (isNaN(bgRgb.r)) return defaultColors;
 
                     const bgL = getRelativeLuminance(bgRgb);
-                    const whiteL = 1;
-                    const blackL = 0;
-                    const contrastWithWhite = getContrastRatio(bgL, whiteL);
-                    const contrastWithBlack = getContrastRatio(bgL, blackL);
+                    const contrastWithBlack = getContrastRatio(bgL, 0);
+                    const contrastWithWhite = getContrastRatio(bgL, 1);
 
                     if (contrastWithBlack >= contrastWithWhite) {
                         // 背景偏亮 -> 文字用深色系
@@ -971,8 +973,6 @@
 
             /**
              * 辅助: 绘制文本
-             * @param {object} settings - 包含 {title, sharer, padding} 的对象
-             * @param {object} textColors - 包含 {main, secondary, hint} 的对象
              */
             function drawText(settings, textColors) {
                 ctx.shadowColor = 'transparent';
