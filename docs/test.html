@@ -4,25 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计 (艺术纹理版)</title>
+    <title>专辑海报设计</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入中文字体 -->
+    <!-- 引入字体 -->
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/488/main/result.css">
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/7/main/result.css">
 
     <style>
         body {
             font-family: "STDongGuanTi", 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
-            background-color: #e5e5e5;
-            /* 背景改深一点，突出中间的画布 */
-            color: #1f2937;
+            background-color: #e7e5e4;
+            /* Stone-200，更有质感的背景 */
+            color: #1c1917;
         }
 
         .light-panel {
             background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            border: 1px solid #e7e5e4;
+            border-radius: 1rem;
+            /* 更圆润的角 */
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.01);
         }
 
         input[type="file"] {
@@ -35,7 +36,7 @@
             cursor: pointer;
         }
 
-        /* 选中态样式优化 */
+        /* 优化的模板选择器 */
         .template-selector input[type="radio"] {
             display: none;
         }
@@ -44,56 +45,68 @@
             cursor: pointer;
             padding: 12px;
             border-radius: 12px;
-            background-color: #f9fafb;
-            border: 2px solid #f3f4f6;
-            transition: all 0.2s ease-in-out;
+            background-color: #fafaf9;
+            /* Stone-50 */
+            border: 2px solid #e7e5e4;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            color: #6b7280;
-            font-weight: 500;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #78716c;
+            height: 100%;
+        }
+
+        .template-selector label svg {
+            transition: transform 0.3s ease;
         }
 
         .template-selector input[type="radio"]:checked+label {
             background-color: #fff1f2;
-            color: #991b1b;
-            border-color: #fca5a5;
-            box-shadow: 0 4px 10px rgba(252, 165, 165, 0.2);
+            color: #9f1239;
+            /* Rose-800 */
+            border-color: #fda4af;
+            box-shadow: 0 4px 12px rgba(251, 113, 133, 0.2);
+        }
+
+        .template-selector input[type="radio"]:checked+label svg {
+            transform: scale(1.1);
+            color: #e11d48;
         }
 
         .template-selector label:hover {
-            border-color: #e5e7eb;
-            background-color: #f3f4f6;
+            background-color: #f5f5f4;
+            border-color: #d6d3d1;
         }
 
         .light-input {
-            background-color: #f9fafb;
-            border: 1px solid #d1d5db;
-            color: #111827;
+            background-color: #fafaf9;
+            border: 1px solid #e7e5e4;
+            color: #1c1917;
             border-radius: 0.5rem;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
         .light-input:focus {
             outline: none;
-            border-color: #ef4444;
+            border-color: #fb7185;
             background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.15);
         }
 
         .light-slot {
-            background-color: #f9fafb;
-            border: 2px dashed #d1d5db;
-            color: #9ca3af;
+            background-color: #fafaf9;
+            border: 2px dashed #e7e5e4;
+            color: #a8a29e;
             transition: all 0.2s ease-in-out;
         }
 
         .light-slot:hover {
-            border-color: #EF4444;
-            color: #ef4444;
-            background-color: #fef2f2;
+            border-color: #fb7185;
+            color: #fb7185;
+            background-color: #fff1f2;
         }
 
         @keyframes spin {
@@ -103,230 +116,265 @@
         }
 
         .loader {
-            border: 2px solid #f3f3f3;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-top: 2px solid #fff;
             border-radius: 50%;
             width: 16px;
             height: 16px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
         #debug-panel {
-            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-            font-size: 12px;
-            background: #18181b;
-            color: #4ade80;
-            padding: 12px;
-            border-radius: 8px;
+            font-family: 'Menlo', 'Monaco', monospace;
+            font-size: 11px;
+            background: #1c1917;
+            color: #86efac;
+            padding: 16px;
+            border-radius: 12px;
             margin-top: 20px;
-            max-height: 240px;
+            max-height: 300px;
             overflow-y: auto;
             display: none;
-            border: 1px solid #333;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #44403c;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
             text-align: left;
-            /* 强制左对齐日志内容 */
+            line-height: 1.5;
         }
 
         .log-entry {
-            margin-bottom: 6px;
-            border-bottom: 1px solid #27272a;
-            padding-bottom: 2px;
+            border-bottom: 1px solid #292524;
+            padding: 4px 0;
             word-break: break-all;
         }
 
         .log-error {
-            color: #f87171;
+            color: #fca5a5;
         }
 
         .log-warn {
-            color: #facc15;
-        }
-
-        .log-info {
-            color: #60a5fa;
+            color: #fcd34d;
         }
 
         .log-success {
-            color: #4ade80;
+            color: #86efac;
+            font-weight: bold;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d6d3d1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a29e;
         }
     </style>
 </head>
 
-<body class="p-4 md:p-8 min-h-screen">
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-[1400px] w-full mx-auto">
         <!-- 标题 -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight"
-                style="font-family: 'STDongGuanTi', serif; color: #991b1b;">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2"
+                style="font-family: 'STDongGuanTi', serif; color: #be123c;">
                 海报工坊
             </h1>
-            <p class="text-gray-500 mt-2 text-sm tracking-wider uppercase" style="font-family: 'Inter', sans-serif;">
-                Aesthetic Poster Generator
+            <p class="text-stone-500 text-xs tracking-[0.2em] uppercase font-medium">
+                Netease Music Poster Generator · Aesthetic Edition
             </p>
         </header>
 
         <!-- 主内容区 -->
-        <main class="flex flex-col md:flex-row gap-6 md:gap-8">
+        <main class="flex flex-col lg:flex-row gap-8 items-start">
 
-            <!-- 画布预览 -->
-            <section class="w-full md:w-2/3 lg:w-2/3">
-                <div class="w-full light-panel p-3 sticky top-8 bg-white">
-                    <!-- 画布本身 -->
-                    <canvas id="poster-canvas" width="3000" height="3000"
-                        class="w-full h-auto rounded-lg aspect-square shadow-md border border-gray-100 cursor-crosshair"
-                        title="右键可保存图片"></canvas>
+            <!-- 左侧：画布预览 -->
+            <section class="w-full lg:w-2/3 flex flex-col items-center">
+                <div class="w-full bg-white p-4 rounded-2xl shadow-xl border border-stone-100">
+                    <!-- 画布容器 -->
+                    <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-stone-100 shadow-inner">
+                        <canvas id="poster-canvas" width="3000" height="3000"
+                            class="w-full h-full object-contain cursor-crosshair"></canvas>
+                    </div>
                 </div>
 
-                <!-- 居中的调试按钮 -->
-                <div class="mt-6 text-center">
+                <!-- 优化后的日志按钮布局 -->
+                <div class="w-full mt-6 flex justify-center">
                     <button id="toggle-debug"
-                        class="text-xs text-gray-400 underline hover:text-red-500 transition-colors opacity-60 hover:opacity-100">
+                        class="text-xs text-stone-400 hover:text-rose-500 transition-colors border-b border-transparent hover:border-rose-500 pb-0.5">
                         遇到问题？点击查看运行日志
                     </button>
                 </div>
-                <div id="debug-panel"></div>
+                <div id="debug-panel" class="w-full max-w-3xl"></div>
             </section>
 
-            <!-- 控制面板 -->
-            <aside class="w-full md:w-1/3 lg:w-1/3 shrink-0">
-                <div class="light-panel p-5 md:p-6 flex flex-col gap-8">
+            <!-- 右侧：控制面板 -->
+            <aside class="w-full lg:w-1/3 flex-shrink-0">
+                <div class="light-panel p-6 flex flex-col gap-8 sticky top-8">
 
-                    <!-- 1. 文本设置 -->
-                    <div class="flex flex-col gap-4">
-                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2">
+                    <!-- 1. 文本内容 -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 text-stone-800 font-bold border-b border-stone-100 pb-3">
                             <span
-                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">1</span>
-                            <h2>文本内容</h2>
+                                class="bg-rose-100 text-rose-600 w-6 h-6 flex items-center justify-center rounded-md text-xs font-extrabold">1</span>
+                            <h2 class="tracking-wide text-sm uppercase">内容设置</h2>
                         </div>
-                        <div>
-                            <label for="poster-title"
-                                class="text-xs font-bold text-gray-500 uppercase mb-1 block">主标题</label>
-                            <input type="text" id="poster-title" placeholder="顔色推歌"
-                                class="w-full h-11 px-3 light-input font-medium">
-                        </div>
-                        <div>
-                            <label for="poster-sharer" class="text-xs font-bold text-gray-500 uppercase mb-1 block">分享人
-                                / 副标题</label>
-                            <input type="text" id="poster-sharer" placeholder="Editor's Choice"
-                                class="w-full h-11 px-3 light-input font-medium">
+                        <div class="space-y-3">
+                            <div>
+                                <label
+                                    class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5 block">主标题</label>
+                                <input type="text" id="poster-title" placeholder="顔色推歌"
+                                    class="w-full h-11 px-4 light-input font-medium text-base">
+                            </div>
+                            <div>
+                                <label
+                                    class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5 block">分享人
+                                    / 副标题</label>
+                                <input type="text" id="poster-sharer" placeholder="Editor's Choice"
+                                    class="w-full h-11 px-4 light-input font-medium text-base">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 2. 布局选择 -->
+                    <!-- 2. 版式布局 -->
                     <div>
-                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2 mb-4">
+                        <div
+                            class="flex items-center gap-2 text-stone-800 font-bold border-b border-stone-100 pb-3 mb-4">
                             <span
-                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">2</span>
-                            <h2>版式布局</h2>
+                                class="bg-rose-100 text-rose-600 w-6 h-6 flex items-center justify-center rounded-md text-xs font-extrabold">2</span>
+                            <h2 class="tracking-wide text-sm uppercase">版式布局</h2>
                         </div>
-                        <div class="grid grid-cols-3 gap-3 template-selector">
+                        <div class="grid grid-cols-3 gap-3 template-selector h-24">
                             <div>
                                 <input type="radio" name="template" id="template-hero" value="hero">
                                 <label for="template-hero">
-                                    <div
-                                        class="w-8 h-8 bg-gray-200 rounded-sm flex items-center justify-center overflow-hidden">
-                                        <div class="w-4 h-4 bg-gray-400 rounded-sm"></div>
-                                    </div>
-                                    精选 (3图)
+                                    <!-- 自定义 SVG 图标：精选 -->
+                                    <svg class="w-8 h-8 text-current" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="2" y="2" width="12" height="20" rx="2" opacity="1" />
+                                        <rect x="16" y="2" width="6" height="9" rx="2" opacity="0.6" />
+                                        <rect x="16" y="13" width="6" height="9" rx="2" opacity="0.6" />
+                                    </svg>
+                                    精选 (3)
                                 </label>
                             </div>
                             <div>
                                 <input type="radio" name="template" id="template-grid-2x2" value="grid-2x2">
                                 <label for="template-grid-2x2">
-                                    <div class="grid grid-cols-2 gap-0.5 w-6 h-6">
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                    </div>
-                                    网格 (4图)
+                                    <!-- 自定义 SVG 图标：网格4 -->
+                                    <svg class="w-8 h-8 text-current" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="2" y="2" width="9" height="9" rx="2" opacity="0.8" />
+                                        <rect x="13" y="2" width="9" height="9" rx="2" opacity="0.8" />
+                                        <rect x="2" y="13" width="9" height="9" rx="2" opacity="0.8" />
+                                        <rect x="13" y="13" width="9" height="9" rx="2" opacity="0.8" />
+                                    </svg>
+                                    网格 (4)
                                 </label>
                             </div>
                             <div>
                                 <input type="radio" name="template" id="template-grid-3x3" value="grid-3x3" checked>
                                 <label for="template-grid-3x3">
-                                    <div class="grid grid-cols-3 gap-0.5 w-6 h-6">
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                        <div class="bg-gray-400 rounded-[1px]"></div>
-                                    </div>
-                                    九宫 (9图)
+                                    <!-- 自定义 SVG 图标：网格9 -->
+                                    <svg class="w-8 h-8 text-current" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="2" y="2" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                        <rect x="9.25" y="2" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                        <rect x="16.5" y="2" width="5.5" height="5.5" rx="1" opacity="0.7" />
+
+                                        <rect x="2" y="9.25" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                        <rect x="9.25" y="9.25" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                        <rect x="16.5" y="9.25" width="5.5" height="5.5" rx="1" opacity="0.7" />
+
+                                        <rect x="2" y="16.5" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                        <rect x="9.25" y="16.5" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                        <rect x="16.5" y="16.5" width="5.5" height="5.5" rx="1" opacity="0.7" />
+                                    </svg>
+                                    九宫 (9)
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3. 封面获取 -->
+                    <!-- 3. 封面源 -->
                     <div>
-                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2 mb-4">
+                        <div
+                            class="flex items-center gap-2 text-stone-800 font-bold border-b border-stone-100 pb-3 mb-4">
                             <span
-                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">3</span>
-                            <h2>封面源</h2>
+                                class="bg-rose-100 text-rose-600 w-6 h-6 flex items-center justify-center rounded-md text-xs font-extrabold">3</span>
+                            <h2 class="tracking-wide text-sm uppercase">封面提取</h2>
                         </div>
 
-                        <div
-                            class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
-                            <label for="netease-url-input" class="text-xs font-bold text-gray-500 uppercase">网易云链接 /
-                                文本</label>
-                            <input type="text" id="netease-url-input" placeholder="粘贴分享链接，自动识别..."
-                                class="w-full h-10 px-3 light-input text-sm">
-                            <div class="flex gap-2">
-                                <select id="netease-slot-select"
-                                    class="flex-grow h-10 px-3 light-input text-sm focus:ring-0 bg-white">
-                                    <!-- Options generated via JS -->
-                                </select>
-                                <button id="netease-fetch-btn"
-                                    class="py-2 px-5 rounded-lg bg-gray-900 hover:bg-black text-white font-semibold transition-all shadow-md text-sm whitespace-nowrap flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                    style="min-width: 80px;">
-                                    <span id="netease-btn-text">提取封面</span>
-                                    <div id="netease-loader" class="loader hidden"></div>
-                                </button>
+                        <div class="flex flex-col gap-3 mb-5 p-4 bg-stone-50/50 rounded-xl border border-stone-200/60">
+                            <label for="netease-url-input"
+                                class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">网易云分享链接</label>
+                            <div class="flex flex-col gap-2">
+                                <input type="text" id="netease-url-input" placeholder="粘贴链接，支持歌单/专辑/单曲..."
+                                    class="w-full h-10 px-3 light-input text-sm bg-white">
+                                <div class="flex gap-2">
+                                    <select id="netease-slot-select"
+                                        class="w-1/3 h-10 px-3 light-input text-xs focus:ring-0 bg-white cursor-pointer font-medium text-stone-600">
+                                        <!-- JS生成 -->
+                                    </select>
+                                    <button id="netease-fetch-btn"
+                                        class="w-2/3 h-10 rounded-lg bg-stone-900 hover:bg-black text-white font-bold text-xs tracking-wide transition-all shadow-lg shadow-stone-900/10 flex items-center justify-center disabled:bg-stone-300 disabled:cursor-not-allowed">
+                                        <span id="netease-btn-text">立即提取</span>
+                                        <div id="netease-loader" class="loader hidden"></div>
+                                    </button>
+                                </div>
                             </div>
-                            <div id="netease-msg" class="text-xs text-center hidden font-medium"></div>
+                            <div id="netease-msg" class="text-xs text-center hidden font-medium py-1"></div>
                         </div>
 
                         <div class="grid grid-cols-3 gap-3" id="slots-grid">
-                            <!-- Slots Generated by JS -->
+                            <!-- JS 生成九宫格 -->
                         </div>
                     </div>
 
-                    <!-- 4. 风格调整 -->
-                    <div class="flex flex-col gap-4">
-                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2">
+                    <!-- 4. 风格参数 -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-2 text-stone-800 font-bold border-b border-stone-100 pb-3">
                             <span
-                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">4</span>
-                            <h2>风格微调</h2>
-                        </div>
-                        <div class="flex flex-col">
-                            <label for="bg-color" class="text-xs font-bold text-gray-500 uppercase mb-2">纸张基色</label>
-                            <div class="flex gap-2 items-center">
-                                <input id="bg-color" type="color" value="#F4F4F8"
-                                    class="w-10 h-10 p-0.5 rounded-lg border-2 border-gray-200 cursor-pointer">
-                                <span class="text-xs text-gray-400">点击色块更换</span>
-                            </div>
-                        </div>
-                        <div class="flex flex-col">
-                            <label for="poster-padding"
-                                class="text-xs font-bold text-gray-500 uppercase mb-2">留白大小</label>
-                            <input id="poster-padding" type="range" value="180" min="60" max="450"
-                                class="w-full accent-gray-800 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                class="bg-rose-100 text-rose-600 w-6 h-6 flex items-center justify-center rounded-md text-xs font-extrabold">4</span>
+                            <h2 class="tracking-wide text-sm uppercase">风格微调</h2>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-4 border-t border-gray-100 pt-6">
+                        <div class="flex items-center justify-between">
+                            <label for="bg-color" class="text-xs font-bold text-stone-500 uppercase">纸张色调</label>
+                            <div class="flex items-center gap-3">
+                                <span id="color-hex" class="text-xs font-mono text-stone-400">#F4F4F8</span>
+                                <div
+                                    class="relative overflow-hidden w-12 h-8 rounded-lg border border-stone-200 shadow-sm">
+                                    <input id="bg-color" type="color" value="#F4F4F8"
+                                        class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer p-0 border-0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <label for="poster-padding"
+                                    class="text-xs font-bold text-stone-500 uppercase">画面留白</label>
+                                <span id="padding-val" class="text-xs font-mono text-stone-400">180px</span>
+                            </div>
+                            <input id="poster-padding" type="range" value="180" min="60" max="450"
+                                class="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-rose-600">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-4">
                             <button id="clear-btn"
-                                class="w-full py-3 px-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold transition-colors shadow-sm text-sm">
+                                class="w-full py-3 px-4 rounded-xl bg-white border border-stone-200 hover:bg-stone-50 hover:border-stone-300 text-stone-600 font-bold text-xs transition-all">
                                 重置画布
                             </button>
                             <button id="download-btn"
-                                class="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all shadow-lg shadow-red-600/20 text-sm tracking-wide">
+                                class="w-full py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs tracking-widest uppercase transition-all shadow-lg shadow-rose-600/30">
                                 下载 PNG
                             </button>
                         </div>
@@ -339,33 +387,29 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 全局配置 ---
             const CANVAS_SIZE = 3000;
-            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url="; // 使用私有 Worker
+            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url="; // 私有 Worker
 
-            // 状态
             let sourceUrls = {};
             let loadedImages = {};
             let noisePatternCanvas = null;
 
-            // DOM
             const canvas = document.getElementById('poster-canvas');
             const ctx = canvas.getContext('2d');
             const debugPanel = document.getElementById('debug-panel');
             const toggleDebugBtn = document.getElementById('toggle-debug');
 
-            // --- 初始化 ---
             initSlots();
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            // --- 日志工具 ---
+            // --- 日志系统 ---
             function log(msg, type = 'info') {
                 const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
                 console.log(`[${time}] ${msg}`);
                 const div = document.createElement('div');
                 div.className = `log-entry log-${type}`;
-                div.innerHTML = `<span class="opacity-50 text-[10px] mr-2">${time}</span>${msg}`;
+                div.innerHTML = `<span class="opacity-40 text-[10px] mr-2 font-mono">${time}</span>${msg}`;
                 debugPanel.appendChild(div);
                 debugPanel.scrollTop = debugPanel.scrollHeight;
             }
@@ -374,14 +418,13 @@
                 debugPanel.style.display = debugPanel.style.display === 'block' ? 'none' : 'block';
             });
 
-            // --- 核心请求函数 ---
+            // --- 核心网络请求 ---
             async function fetchViaWorker(targetUrl) {
                 const finalUrl = `${PROXY_ENDPOINT}${encodeURIComponent(targetUrl)}`;
-                log(`请求: ${targetUrl.substring(0, 40)}...`);
-
+                log(`REQ: ${targetUrl.substring(0, 30)}...`);
                 try {
                     const controller = new AbortController();
-                    const id = setTimeout(() => controller.abort(), 20000);
+                    const id = setTimeout(() => controller.abort(), 25000);
                     const resp = await fetch(finalUrl, { signal: controller.signal });
                     clearTimeout(id);
                     const text = await resp.text();
@@ -391,7 +434,7 @@
                 }
             }
 
-            // --- 提取逻辑 ---
+            // --- 提取逻辑 (Mobile Spoofing) ---
             async function handleExtract() {
                 const input = document.getElementById('netease-url-input');
                 const slotSelect = document.getElementById('netease-slot-select');
@@ -414,7 +457,7 @@
                     if (!urlMatch) throw new Error("未找到链接");
                     let targetUrl = urlMatch[0].replace(/\/$/, "");
 
-                    log(`正在抓取页面...`, 'info');
+                    log(`正在分析页面结构...`, 'info');
                     const htmlRes = await fetchViaWorker(targetUrl);
                     const htmlContent = htmlRes.text;
 
@@ -424,16 +467,17 @@
                     const workerMarkerMatch = htmlContent.match(/<!-- REAL_URL: (.*?) -->/);
                     if (workerMarkerMatch) {
                         const realUrl = workerMarkerMatch[1];
-                        log(`识别跳转: ${realUrl}`, 'success');
+                        log(`跳转至: ${realUrl}`, 'success');
                         const idMatch = realUrl.match(/(song|album|playlist)(?:\/|\?id=)(\d+)/);
                         if (idMatch) {
                             realType = idMatch[1]; realId = idMatch[2];
+                            log(`ID: ${realType}/${realId}`, 'info');
                         }
                     }
 
-                    // 2. API (Concurrent if ID found)
+                    // 2. API 并发
                     if (realId && realType && !imageUrl) {
-                        log(`尝试 API 获取高清图...`, 'info');
+                        log(`尝试调用官方接口...`, 'info');
                         try {
                             let apiUrl = "";
                             if (realType === 'song') apiUrl = `https://music.163.com/api/song/detail?ids=[${realId}]`;
@@ -449,14 +493,14 @@
                                         if (realType === 'song' && data.songs?.[0]?.album?.picUrl) imageUrl = data.songs[0].album.picUrl;
                                         else if (realType === 'album' && data.album?.picUrl) imageUrl = data.album.picUrl;
                                         else if (realType === 'playlist' && data.result?.coverImgUrl) imageUrl = data.result.coverImgUrl;
-                                        if (imageUrl) log('API 成功', 'success');
+                                        if (imageUrl) log('API 提取成功 (高清)', 'success');
                                     }
                                 } catch (e) { }
                             }
                         } catch (e) { }
                     }
 
-                    // 3. DOM
+                    // 3. DOM 解析
                     if (!imageUrl && htmlContent) {
                         try {
                             const parser = new DOMParser();
@@ -470,14 +514,14 @@
                         } catch (e) { }
                     }
 
-                    // 4. Regex (Safe)
+                    // 4. 正则兜底
                     if (!imageUrl && htmlContent) {
                         const jpgRegex = /(https?:\/\/[p-z]\d?\.music\.126\.net\/(?!.*(?:obj\/|style\/|web2\/|img\/|default\/|core_|pt_))[^"'\s)]+)/i;
                         const m = htmlContent.match(jpgRegex);
                         if (m) imageUrl = m[0];
                     }
 
-                    if (!imageUrl) throw new Error("无法提取封面");
+                    if (!imageUrl) throw new Error("无法提取封面，请检查链接有效性");
 
                     const hdUrl = imageUrl.split('?')[0] + '?param=3000y3000';
                     const slot = slotSelect.value;
@@ -490,13 +534,13 @@
                     slotSelect.value = next;
 
                     msgBox.textContent = "提取成功！";
-                    msgBox.className = "text-xs text-center mt-1 block text-green-600";
+                    msgBox.className = "text-xs text-center mt-1 block text-emerald-600 font-bold";
                     msgBox.classList.remove('hidden');
 
                 } catch (err) {
                     log(err.message, 'error');
-                    msgBox.textContent = "提取失败";
-                    msgBox.className = "text-xs text-center mt-1 block text-red-500";
+                    msgBox.textContent = "提取失败 (查看日志)";
+                    msgBox.className = "text-xs text-center mt-1 block text-rose-500 font-bold";
                     msgBox.classList.remove('hidden');
                 } finally {
                     btn.disabled = false;
@@ -505,62 +549,65 @@
                 }
             }
 
-            // --- 初始化插槽 ---
-            function initSlots() {
-                const grid = document.getElementById('slots-grid');
-                const select = document.getElementById('netease-slot-select');
-                for (let i = 1; i <= 9; i++) {
-                    const opt = document.createElement('option');
-                    opt.value = i; opt.textContent = `插槽 ${i}`; select.appendChild(opt);
-                    const div = document.createElement('div');
-                    div.className = "relative aspect-square light-slot rounded-lg flex items-center justify-center text-center overflow-hidden group bg-white border-gray-200";
-                    div.innerHTML = `
-                        <img id="preview-${i}" class="absolute inset-0 w-full h-full object-cover z-10 hidden transition-transform duration-300 group-hover:scale-105">
-                        <div class="z-0 text-xs text-gray-300 pointer-events-none font-bold">${i}</div>
-                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-5 h-5 bg-black/50 hover:bg-red-500 text-white rounded-full z-20 hidden items-center justify-center transition-colors text-xs">&times;</button>
-                        <input type="file" accept="image/*" data-slot="${i}" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFile(this)">
-                    `;
-                    grid.appendChild(div);
+            // --- 绘图逻辑 (艺术化升级) ---
+
+            // 1. 纸张纹理生成器 (替换原有的简单线条)
+            function drawOrganicTexture(ctx, width, height) {
+                ctx.save();
+
+                // A. 微观颗粒 (Micro-Speckles)
+                ctx.globalAlpha = 0.08;
+                ctx.fillStyle = '#000';
+                for (let i = 0; i < 4000; i++) {
+                    const x = Math.random() * width;
+                    const y = Math.random() * height;
+                    const size = Math.random() * 1.5;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
                 }
+
+                // B. 短纤维 (Short Fibers) - 模拟再生纸
+                ctx.globalAlpha = 0.06;
+                ctx.strokeStyle = '#1c1917'; // 接近黑色
+                ctx.lineCap = 'round';
+
+                for (let i = 0; i < 300; i++) {
+                    const x = Math.random() * width;
+                    const y = Math.random() * height;
+                    const len = Math.random() * 15 + 5; // 很短
+                    const angle = Math.random() * Math.PI * 2;
+                    const weight = Math.random() * 2 + 0.5;
+
+                    ctx.lineWidth = weight;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + Math.cos(angle) * len, y + Math.sin(angle) * len);
+                    ctx.stroke();
+                }
+
+                // C. 云雾晕染 (Cloudy Blotches) - 模拟不均匀吸墨
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = 0.03;
+
+                for (let i = 0; i < 8; i++) {
+                    const x = Math.random() * width;
+                    const y = Math.random() * height;
+                    const r = Math.random() * 800 + 400;
+
+                    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+                    grad.addColorStop(0, '#000');
+                    grad.addColorStop(1, 'transparent');
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
             }
 
-            window.handleFile = function (input) {
-                const slot = input.dataset.slot;
-                const file = input.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => updateSlotImage(slot, e.target.result, false);
-                reader.readAsDataURL(file);
-            }
-
-            window.clearSlot = function (slot) {
-                delete sourceUrls[slot]; delete loadedImages[slot];
-                document.getElementById(`preview-${slot}`).classList.add('hidden');
-                document.getElementById(`del-${slot}`).classList.add('hidden');
-                document.querySelector(`input[data-slot="${slot}"]`).value = '';
-                draw(); updateUrlState();
-            }
-
-            async function updateSlotImage(slot, url, saveState = true) {
-                if (saveState) sourceUrls[slot] = url;
-                return new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.crossOrigin = "anonymous";
-                    img.onload = () => {
-                        loadedImages[slot] = img;
-                        document.getElementById(`preview-${slot}`).src = url;
-                        document.getElementById(`preview-${slot}`).classList.remove('hidden');
-                        document.getElementById(`del-${slot}`).classList.remove('hidden');
-                        draw();
-                        if (saveState) updateUrlState();
-                        resolve();
-                    };
-                    img.onerror = () => reject();
-                    img.src = url;
-                });
-            }
-
-            // --- 绘画核心 (风格化升级) ---
             function draw() {
                 const bgColor = document.getElementById('bg-color').value;
                 const padding = parseInt(document.getElementById('poster-padding').value);
@@ -568,45 +615,36 @@
                 const sharer = document.getElementById('poster-sharer').value || "Editor's Choice";
                 const layout = document.querySelector('input[name="template"]:checked').value;
 
-                // 1. 基础背景
+                // 1. 基础色
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-                // 2. 纸张肌理 (Paper Texture Layer)
-                // 先画一层不均匀的纸张色斑
-                drawPaperBlotches(ctx, bgColor);
+                // 2. 艺术纹理层 (新)
+                drawOrganicTexture(ctx, CANVAS_SIZE, CANVAS_SIZE);
 
-                // 3. 强效噪点 (Grain) - 使用 overlay 混合模式增强质感
+                // 3. 胶片噪点 (升级版)
                 if (!noisePatternCanvas) noisePatternCanvas = createNoise();
                 ctx.save();
-                ctx.globalCompositeOperation = 'overlay'; // 关键：使用叠加模式
-                ctx.globalAlpha = 0.18; // 提高可见度
+                ctx.globalCompositeOperation = 'soft-light'; // 柔光混合，更自然
+                ctx.globalAlpha = 0.25; // 稍微加重一点
                 ctx.fillStyle = ctx.createPattern(noisePatternCanvas, 'repeat');
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
                 ctx.restore();
 
-                // 4. 纸张纤维 (Fibers)
-                drawPaperFibers(ctx);
-
-                // 5. 边缘暗角 (Vignette) - 增加立体感
-                const gradient = ctx.createRadialGradient(
+                // 4. 边缘暗角 (Vignette)
+                const vignette = ctx.createRadialGradient(
                     CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.4,
-                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.85
+                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.9
                 );
-                gradient.addColorStop(0, 'rgba(0,0,0,0)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0.15)'); // 加深暗角
-                ctx.save();
-                ctx.fillStyle = gradient;
-                ctx.globalCompositeOperation = 'multiply';
+                vignette.addColorStop(0, 'rgba(0,0,0,0)');
+                vignette.addColorStop(1, 'rgba(20,20,20,0.12)'); // 略微偏暖黑
+                ctx.fillStyle = vignette;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                ctx.restore();
 
-                // 计算颜色
-                const isDark = getLuminance(bgColor) < 100; // 阈值调低，更倾向于用深色字
-                // 如果是浅色背景，强制使用深炭灰/黑色，而不是浅灰
-                const mainTextColor = isDark ? '#F9FAFB' : '#111827'; // 近乎纯黑
-                const subTextColor = isDark ? '#D1D5DB' : '#374151'; // 深灰 (Gray-700)
-                const emptyTextColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)';
+                // 颜色计算
+                const isDark = getLuminance(bgColor) < 100;
+                const mainColor = isDark ? '#f5f5f4' : '#1c1917'; // Stone-900 (深炭黑) 而不是 Gray
+                const subColor = isDark ? '#d6d3d1' : '#44403c';  // Stone-700
 
                 const topH = 450; const botH = 300;
                 const area = {
@@ -622,30 +660,28 @@
                     else if (layout === 'grid-2x2') drawGrid(imgs, area, 2);
                     else drawGrid(imgs, area, 3);
                 } else {
-                    ctx.fillStyle = emptyTextColor;
+                    ctx.fillStyle = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
                     ctx.font = '90px "STDongGuanTi"';
                     ctx.textAlign = 'center';
                     ctx.fillText('请添加封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
                 }
 
-                // 6. 绘制文字 (带凸版印刷效果/轻微阴影)
+                // 文字绘制 (Letterpress 效果)
                 ctx.textAlign = 'center';
 
                 // 标题
-                ctx.fillStyle = mainTextColor;
+                ctx.fillStyle = mainColor;
                 ctx.font = 'bold 156px "STDongGuanTi", serif';
-                // 增加一点点 letterpress 效果 (浅色高光)
                 if (!isDark) {
-                    ctx.shadowColor = "rgba(255,255,255,0.6)";
-                    ctx.shadowOffsetX = 2;
+                    ctx.shadowColor = "rgba(255,255,255,0.7)";
+                    ctx.shadowBlur = 1;
                     ctx.shadowOffsetY = 2;
-                    ctx.shadowBlur = 0;
                 }
                 ctx.fillText(title, CANVAS_SIZE / 2, padding + topH / 2 + 50);
-                ctx.shadowColor = "transparent"; // 重置阴影
+                ctx.shadowColor = "transparent"; // Reset
 
                 // 副标题
-                ctx.fillStyle = subTextColor;
+                ctx.fillStyle = subColor;
                 ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)", serif';
                 ctx.fillText(sharer, CANVAS_SIZE / 2, CANVAS_SIZE - padding - botH / 2 + 40);
             }
@@ -677,12 +713,13 @@
             }
 
             function drawImg(img, x, y, s) {
-                const r = 24;
+                const r = 20;
                 ctx.save();
-                // 更加柔和、扩散的阴影
-                ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
-                ctx.shadowBlur = 40;
-                ctx.shadowOffsetY = 20;
+
+                // 阴影优化：更深、更柔
+                ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+                ctx.shadowBlur = 50;
+                ctx.shadowOffsetY = 25;
 
                 ctx.beginPath();
                 ctx.moveTo(x + r, y); ctx.lineTo(x + s - r, y); ctx.quadraticCurveTo(x + s, y, x + s, y + r);
@@ -694,78 +731,23 @@
                 ctx.fillStyle = "#fff";
                 ctx.fill();
                 ctx.clip();
+
                 const min = Math.min(img.width, img.height);
                 ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, x, y, s, s);
                 ctx.restore();
             }
 
-            // 升级版：胶片颗粒噪点
             function createNoise() {
                 const c = document.createElement('canvas');
-                c.width = 300; c.height = 300; // 增大 pattern 尺寸
+                c.width = 256; c.height = 256;
                 const cx = c.getContext('2d');
-                const d = cx.createImageData(300, 300);
+                const d = cx.createImageData(256, 256);
                 for (let i = 0; i < d.data.length; i += 4) {
-                    // 随机灰度，模拟胶片银盐颗粒
-                    const v = Math.random() * 200;
-                    d.data[i] = v;
-                    d.data[i + 1] = v;
-                    d.data[i + 2] = v;
-                    d.data[i + 3] = 255;
+                    const v = Math.random() * 255;
+                    d.data[i] = v; d.data[i + 1] = v; d.data[i + 2] = v; d.data[i + 3] = 255;
                 }
                 cx.putImageData(d, 0, 0);
                 return c;
-            }
-
-            // 新增：纸张斑驳效果
-            function drawPaperBlotches(ctx, bgColor) {
-                ctx.save();
-                ctx.globalCompositeOperation = 'multiply'; // 正片叠底
-                ctx.globalAlpha = 0.05;
-
-                // 随机画一些不规则的大圆斑
-                for (let i = 0; i < 20; i++) {
-                    const x = Math.random() * CANVAS_SIZE;
-                    const y = Math.random() * CANVAS_SIZE;
-                    const r = Math.random() * 400 + 100;
-
-                    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-                    grad.addColorStop(0, '#000');
-                    grad.addColorStop(1, 'transparent');
-
-                    ctx.fillStyle = grad;
-                    ctx.beginPath();
-                    ctx.arc(x, y, r, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-                ctx.restore();
-            }
-
-            // 升级版：纸张纤维
-            function drawPaperFibers(ctx) {
-                ctx.save();
-                ctx.globalAlpha = 0.15; // 提升可见度
-                ctx.strokeStyle = "#000"; // 黑色纤维
-
-                // 画短纤维
-                for (let i = 0; i < 120; i++) {
-                    ctx.lineWidth = Math.random() * 3 + 2; // 2px - 5px 粗细
-                    const x = Math.random() * CANVAS_SIZE;
-                    const y = Math.random() * CANVAS_SIZE;
-                    const len = Math.random() * 40 + 10;
-                    const angle = Math.random() * Math.PI * 2;
-
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
-                    ctx.quadraticCurveTo(
-                        x + Math.cos(angle) * len / 2 + Math.random() * 10,
-                        y + Math.sin(angle) * len / 2 + Math.random() * 10,
-                        x + Math.cos(angle) * len,
-                        y + Math.sin(angle) * len
-                    );
-                    ctx.stroke();
-                }
-                ctx.restore();
             }
 
             function getLuminance(hex) {
@@ -775,6 +757,26 @@
                 return (r * 299 + g * 587 + b * 114) / 1000;
             }
 
+            // UI Bindings
+            function initSlots() {
+                const grid = document.getElementById('slots-grid');
+                const select = document.getElementById('netease-slot-select');
+                for (let i = 1; i <= 9; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i; opt.textContent = `插槽 ${i}`; select.appendChild(opt);
+                    const div = document.createElement('div');
+                    div.className = "relative aspect-square light-slot rounded-lg flex items-center justify-center text-center overflow-hidden group bg-white border-stone-200 shadow-sm";
+                    div.innerHTML = `
+                        <img id="preview-${i}" class="absolute inset-0 w-full h-full object-cover z-10 hidden transition-transform duration-500 group-hover:scale-105">
+                        <div class="z-0 text-xs text-stone-300 font-bold select-none">${i}</div>
+                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-5 h-5 bg-black/60 hover:bg-rose-600 text-white rounded-full z-20 hidden items-center justify-center transition-all text-[10px]">&times;</button>
+                        <input type="file" accept="image/*" data-slot="${i}" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFile(this)">
+                    `;
+                    grid.appendChild(div);
+                }
+            }
+
+            // Update handlers
             function updateUrlState() {
                 const state = {
                     t: document.getElementById('poster-title').value,
@@ -795,31 +797,27 @@
                     const s = JSON.parse(decodeURIComponent(atob(p.get('d'))));
                     if (s.t) document.getElementById('poster-title').value = s.t;
                     if (s.s) document.getElementById('poster-sharer').value = s.s;
-                    if (s.bg) document.getElementById('bg-color').value = s.bg;
-                    if (s.p) document.getElementById('poster-padding').value = s.p;
+                    if (s.bg) { document.getElementById('bg-color').value = s.bg; document.getElementById('color-hex').textContent = s.bg; }
+                    if (s.p) { document.getElementById('poster-padding').value = s.p; document.getElementById('padding-val').textContent = s.p + 'px'; }
                     if (s.l) document.getElementById(`template-${s.l}`).checked = true;
-                    if (s.i) for (let k in s.i) if (s.i[k]) updateSlotImage(k, s.i[k], true);
-                    else draw();
-                } catch (e) { console.error(e); draw(); }
+                    if (s.i) for (let k in s.i) if (s.i[k]) updateSlotImage(k, s.i[k], true); else draw();
+                } catch (e) { draw(); }
             }
 
             document.getElementById('netease-fetch-btn').onclick = handleExtract;
-            document.getElementById('clear-btn').onclick = () => {
-                sourceUrls = {}; loadedImages = {};
-                initSlots(); draw(); updateUrlState();
-            };
+            document.getElementById('clear-btn').onclick = () => { sourceUrls = {}; loadedImages = {}; initSlots(); draw(); updateUrlState(); };
             document.getElementById('download-btn').onclick = () => {
                 const a = document.createElement('a');
-                a.download = `poster-${Date.now()}.png`;
-                a.href = canvas.toDataURL();
-                a.click();
+                a.download = `poster-${Date.now()}.png`; a.href = canvas.toDataURL(); a.click();
             };
             ['poster-title', 'poster-sharer', 'bg-color', 'poster-padding'].forEach(id => {
-                document.getElementById(id).oninput = () => { draw(); updateUrlState(); };
+                document.getElementById(id).oninput = (e) => {
+                    if (id === 'bg-color') document.getElementById('color-hex').textContent = e.target.value.toUpperCase();
+                    if (id === 'poster-padding') document.getElementById('padding-val').textContent = e.target.value + 'px';
+                    draw(); updateUrlState();
+                };
             });
-            document.querySelectorAll('input[name="template"]').forEach(el => {
-                el.onchange = () => { draw(); updateUrlState(); };
-            });
+            document.querySelectorAll('input[name="template"]').forEach(el => el.onchange = () => { draw(); updateUrlState(); });
 
             loadUrlState();
         });
