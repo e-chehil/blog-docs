@@ -4,16 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计 (链接分享状态)</title>
-    <!-- 引入Tailwind CSS -->
+    <title>专辑海报设计 (私有代理终极版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- 引入自定义字体 (STDongGuanTi 和 Zhuque Fangsong) -->
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/488/main/result.css">
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/7/main/result.css">
 
     <style>
-        /* 全局应用新字体 */
         body {
             font-family: "STDongGuanTi", 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
             background-color: #f3f4f6;
@@ -106,6 +102,45 @@
             height: 16px;
             animation: spin 1s linear infinite;
         }
+
+        /* 调试日志样式 */
+        #debug-panel {
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            background: #18181b;
+            color: #4ade80;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 240px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #333;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+            border-bottom: 1px solid #27272a;
+            padding-bottom: 2px;
+            word-break: break-all;
+        }
+
+        .log-error {
+            color: #f87171;
+        }
+
+        .log-warn {
+            color: #facc15;
+        }
+
+        .log-info {
+            color: #60a5fa;
+        }
+
+        .log-success {
+            color: #4ade80;
+        }
     </style>
 </head>
 
@@ -118,7 +153,7 @@
                 专辑海报设计
             </h1>
             <p class="text-gray-600 mt-2" style="font-family: 'Zhuque Fangsong (technical preview)', sans-serif;">
-                链接分享 · 3000px 高清画布
+                专用代理极速版 · 支持短链接
             </p>
         </header>
 
@@ -131,6 +166,12 @@
                     <canvas id="poster-canvas" width="3000" height="3000"
                         class="w-full h-auto rounded-lg aspect-square"></canvas>
                 </div>
+
+                <div class="mt-4 text-right">
+                    <button id="toggle-debug"
+                        class="text-xs text-gray-500 underline hover:text-red-500">如果不工作，点此查看日志</button>
+                </div>
+                <div id="debug-panel"></div>
             </section>
 
             <!-- 控制面板 -->
@@ -156,35 +197,29 @@
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">2. 选择布局</h2>
                         <div class="grid grid-cols-3 gap-3 template-selector">
-                            <!-- 模板: Hero (3) -->
                             <div>
                                 <input type="radio" name="template" id="template-hero" value="hero">
                                 <label for="template-hero">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M4 4H14V14H4V4ZM16 4H20V8H16V4ZM16 10H20V14H16V10Z" />
                                     </svg>
                                     精选 (3图)
                                 </label>
                             </div>
-                            <!-- 模板: Grid (4) -->
                             <div>
                                 <input type="radio" name="template" id="template-grid-2x2" value="grid-2x2">
                                 <label for="template-grid-2x2">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                                         <path
                                             d="M4 4H10V10H4V4ZM14 4H20V10H14V4ZM4 14H10V20H4V14ZM14 14H20V20H14V14Z" />
                                     </svg>
                                     网格 (4图)
                                 </label>
                             </div>
-                            <!-- 模板: Grid (9) -->
                             <div>
                                 <input type="radio" name="template" id="template-grid-3x3" value="grid-3x3" checked>
                                 <label for="template-grid-3x3">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"
-                                        xmlns="http://www.w3.org/2000/svg">
+                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
                                         <path
                                             d="M4 4H8V8H4V4ZM10 4H14V8H10V4ZM16 4H20V8H16V4ZM4 10H8V14H4V10ZM10 10H14V14H10V10ZM16 10H20V14H16V10ZM4 16H8V20H4V16ZM10 16H14V20H10V16ZM16 16H20V20H16V16Z" />
                                     </svg>
@@ -199,13 +234,13 @@
                         <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">3. 上传 / 提取封面
                         </h2>
                         <div class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <label for="netease-url-input" class="text-sm font-medium text-gray-700">从网易云链接提取</label>
-                            <input type="text" id="netease-url-input" placeholder="粘贴歌曲/专辑的分享文本或链接..."
+                            <label for="netease-url-input" class="text-sm font-medium text-gray-700">网易云链接 / 短链接</label>
+                            <input type="text" id="netease-url-input" placeholder="粘贴分享文本，支持短链..."
                                 class="w-full h-10 px-3 light-input">
                             <div class="flex gap-2">
                                 <select id="netease-slot-select"
                                     class="flex-grow h-10 px-3 light-input text-sm focus:ring-0">
-                                    <!-- Options 动态生成 -->
+                                    <!-- Options generated via JS -->
                                 </select>
                                 <button id="netease-fetch-btn"
                                     class="py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-md text-sm whitespace-nowrap flex items-center justify-center disabled:bg-gray-400"
@@ -217,99 +252,8 @@
                             <div id="netease-msg" class="text-xs text-center hidden"></div>
                         </div>
 
-                        <h3 class="text-md font-semibold text-gray-800 mb-3">手动上传 (1-9 张)</h3>
-                        <div class="grid grid-cols-3 gap-3">
-                            <!-- 插槽 1-9 -->
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-1">
-                                <img id="preview-1"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览1">
-                                <button id="delete-1" data-slot="1"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 1</span>
-                                <input type="file" accept="image/*" id="upload-1" data-slot="1">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-2">
-                                <img id="preview-2"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览2">
-                                <button id="delete-2" data-slot="2"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 2</span>
-                                <input type="file" accept="image/*" id="upload-2" data-slot="2">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-3">
-                                <img id="preview-3"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览3">
-                                <button id="delete-3" data-slot="3"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 3</span>
-                                <input type="file" accept="image/*" id="upload-3" data-slot="3">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-4">
-                                <img id="preview-4"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览4">
-                                <button id="delete-4" data-slot="4"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 4</span>
-                                <input type="file" accept="image/*" id="upload-4" data-slot="4">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-5">
-                                <img id="preview-5"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览5">
-                                <button id="delete-5" data-slot="5"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 5</span>
-                                <input type="file" accept="image/*" id="upload-5" data-slot="5">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-6">
-                                <img id="preview-6"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览6">
-                                <button id="delete-6" data-slot="6"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 6</span>
-                                <input type="file" accept="image/*" id="upload-6" data-slot="6">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-7">
-                                <img id="preview-7"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览7">
-                                <button id="delete-7" data-slot="7"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 7</span>
-                                <input type="file" accept="image/*" id="upload-7" data-slot="7">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-8">
-                                <img id="preview-8"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览8">
-                                <button id="delete-8" data-slot="8"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 8</span>
-                                <input type="file" accept="image/*" id="upload-8" data-slot="8">
-                            </div>
-                            <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
-                                id="slot-container-9">
-                                <img id="preview-9"
-                                    class="absolute inset-0 w-full h-full object-cover rounded-md z-10 hidden"
-                                    alt="预览9">
-                                <button id="delete-9" data-slot="9"
-                                    class="delete-btn absolute top-1 right-1 w-5 h-5 bg-black bg-opacity-50 text-white rounded-full z-20 hidden items-center justify-center text-xs leading-none font-bold">&times;</button>
-                                <span class="text-xs z-0">插槽 9</span>
-                                <input type="file" accept="image/*" id="upload-9" data-slot="9">
-                            </div>
+                        <div class="grid grid-cols-3 gap-3" id="slots-grid">
+                            <!-- Slots 1-9 will be generated by JS to keep HTML clean -->
                         </div>
                     </div>
 
@@ -346,781 +290,484 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 全局状态 ---
+            // --- 全局配置 ---
             const CANVAS_SIZE = 3000;
+
+            // ⚠️ 你的 Worker 已经升级为 iPhone 伪装模式，无需其他代理
+            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url=";
+
+            // 状态
+            let sourceUrls = {};
+            let loadedImages = {};
+            let noisePatternCanvas = null;
+
+            // DOM
             const canvas = document.getElementById('poster-canvas');
             const ctx = canvas.getContext('2d');
+            const debugPanel = document.getElementById('debug-panel');
+            const toggleDebugBtn = document.getElementById('toggle-debug');
+
+            // --- 初始化 DOM ---
+            initSlots();
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
-            // sourceUrls 用于存储可分享的源 URL
-            let sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
-            let loadedImages = {}; // 存储加载的 Image 对象
-            let noisePatternCanvas = null; // 用于存储噪点图案
-
-            // --- DOM 元素 ---
-            const textTitle = document.getElementById('poster-title');
-            const textSharer = document.getElementById('poster-sharer');
-            const templateRadios = document.querySelectorAll('input[name="template"]');
-            const bgColorInput = document.getElementById('bg-color');
-            const paddingInput = document.getElementById('poster-padding');
-            const paddingValueDisplay = document.getElementById('padding-value');
-            const uploadInputs = document.querySelectorAll('input[type="file"]');
-            const clearBtn = document.getElementById('clear-btn');
-            const downloadBtn = document.getElementById('download-btn');
-            const neteaseUrlInput = document.getElementById('netease-url-input');
-            const neteaseSlotSelect = document.getElementById('netease-slot-select');
-            const neteaseFetchBtn = document.getElementById('netease-fetch-btn');
-            const neteaseBtnText = document.getElementById('netease-btn-text');
-            const neteaseLoader = document.getElementById('netease-loader');
-            const neteaseMsg = document.getElementById('netease-msg');
-            const deleteBtns = document.querySelectorAll('.delete-btn');
-
-            const CORS_PROXIES = [
-                "https://music-api.chehil.icu/?url=",
-                "https://netease-proxy.echehil.workers.dev/?url=",
-                "https://api.allorigins.win/raw?url=",
-                "https://corsproxy.io/?",
-                "https://api.codetabs.com/v1/proxy?quest="
-            ];
-
-            async function fetchWithProxies(targetUrl) {
-                let lastError = null;
-
-                for (const base of CORS_PROXIES) {
-                    try {
-                        const proxyUrl = `${base}${encodeURIComponent(targetUrl)}`;
-                        const resp = await fetch(proxyUrl);
-
-                        if (!resp.ok) {
-                            throw new Error(`网络错误 (代理 ${base}): ${resp.status}`);
-                        }
-
-                        return await resp.text();
-                    } catch (e) {
-                        console.warn("代理失败:", base, e);
-                        lastError = e;
-                    }
-                }
-
-                throw lastError || new Error("所有代理都请求失败");
+            // --- 日志工具 ---
+            function log(msg, type = 'info') {
+                console.log(`[${type.toUpperCase()}] ${msg}`);
+                const div = document.createElement('div');
+                div.className = `log-entry log-${type}`;
+                div.textContent = `> ${msg}`;
+                debugPanel.appendChild(div);
+                debugPanel.scrollTop = debugPanel.scrollHeight;
             }
 
-            // --- 状态更新函数 ---
+            toggleDebugBtn.addEventListener('click', () => {
+                debugPanel.style.display = debugPanel.style.display === 'block' ? 'none' : 'block';
+            });
 
-            /**
-             * 将当前所有配置编码到 URL
-             * (使用 Base64 压缩以支持中文和长 URL)
-             */
-            function updateUrl() {
+            // --- 核心请求函数 ---
+            async function fetchViaWorker(targetUrl) {
+                const finalUrl = `${PROXY_ENDPOINT}${encodeURIComponent(targetUrl)}`;
+                log(`请求 Worker: ${finalUrl}`);
+
                 try {
-                    const state = {
-                        title: textTitle.value,
-                        sharer: textSharer.value,
-                        layout: document.querySelector('input[name="template"]:checked').value,
-                        bgColor: bgColorInput.value,
-                        padding: paddingInput.value,
-                        images: sourceUrls // 只保存可分享的 URL
+                    const controller = new AbortController();
+                    // 20秒超时
+                    const id = setTimeout(() => controller.abort(), 20000);
+
+                    const resp = await fetch(finalUrl, { signal: controller.signal });
+                    clearTimeout(id);
+
+                    // 即使 403 也可能是因为 Worker 透传了状态码，但内容可能是有效的 HTML，所以不直接抛错
+                    const text = await resp.text();
+                    log(`Worker 响应: ${resp.status} (${text.length} bytes)`, 'info');
+
+                    return {
+                        ok: resp.ok,
+                        status: resp.status,
+                        text: text
                     };
-
-                    const jsonString = JSON.stringify(state);
-                    const utf8State = unescape(encodeURIComponent(jsonString));
-                    const base64State = btoa(utf8State);
-
-                    const params = new URLSearchParams();
-                    params.set('data', base64State);
-                    const newUrl = `${window.location.pathname}?${params.toString()}`;
-                    window.history.pushState({ path: newUrl }, '', newUrl);
-
                 } catch (e) {
-                    console.error("更新 URL 失败:", e);
+                    throw new Error(e.name === 'AbortError' ? "请求超时，请重试" : e.message);
                 }
             }
 
-            /**
-             * 页面加载时，从 URL 解码并加载状态
-             */
-            async function loadStateFromUrl() {
-                try {
-                    const params = new URLSearchParams(window.location.search);
-                    const base64State = params.get('data');
+            // --- 提取逻辑 (集成了调试成功的最新逻辑) ---
+            async function handleExtract() {
+                const input = document.getElementById('netease-url-input');
+                const slotSelect = document.getElementById('netease-slot-select');
+                const btn = document.getElementById('netease-fetch-btn');
+                const loader = document.getElementById('netease-loader');
+                const btnText = document.getElementById('netease-btn-text');
+                const msgBox = document.getElementById('netease-msg');
 
-                    if (!base64State) {
-                        drawPoster();
-                        return;
-                    }
+                const rawText = input.value.trim();
+                if (!rawText) return alert('请输入链接');
 
-                    showNeteaseMessage('正在从链接加载配置...', 'loading');
-
-                    const jsonString = decodeURIComponent(escape(atob(base64State)));
-                    const state = JSON.parse(jsonString);
-
-                    textTitle.value = state.title || '';
-                    textSharer.value = state.sharer || '';
-                    bgColorInput.value = state.bgColor || '#F4F4F8';
-                    paddingInput.value = state.padding || '180';
-                    paddingValueDisplay.textContent = state.padding || '180';
-
-                    const layoutValue = state.layout || 'grid-3x3';
-                    const layoutRadio = document.getElementById('template-' + layoutValue);
-                    if (layoutRadio) layoutRadio.checked = true;
-
-                    const imageLoadPromises = [];
-                    if (state.images) {
-                        for (let i = 1; i <= 9; i++) {
-                            const url = state.images[i];
-                            if (url) {
-                                sourceUrls[i] = url;
-                                const previewImg = document.getElementById(`preview-${i}`);
-                                if (previewImg) {
-                                    previewImg.src = url;
-                                    previewImg.classList.remove('hidden');
-                                }
-                                const deleteBtn = document.getElementById(`delete-${i}`);
-                                if (deleteBtn) {
-                                    deleteBtn.classList.remove('hidden');
-                                }
-                                imageLoadPromises.push(loadImage(url, i));
-                            }
-                        }
-                    }
-
-                    await Promise.allSettled(imageLoadPromises);
-                    showNeteaseMessage('配置加载完毕!', 'success');
-                    setTimeout(() => showNeteaseMessage('', 'hidden'), 2000);
-
-                } catch (e) {
-                    console.error("从 URL 加载状态失败:", e);
-                    showNeteaseMessage('链接解析失败!', 'error');
-                } finally {
-                    drawPoster();
-                }
-            }
-
-            // --- 初始化 ---
-            noisePatternCanvas = createNoisePattern();
-            populateSlotSelector();
-            loadStateFromUrl();
-
-
-            // --- 事件监听器 ---
-            [textTitle, textSharer, bgColorInput, paddingInput].forEach(el => {
-                el.addEventListener('input', () => {
-                    drawPoster();
-                    updateUrl();
-                });
-            });
-            templateRadios.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    drawPoster();
-                    updateUrl();
-                });
-            });
-            paddingInput.addEventListener('input', () => {
-                paddingValueDisplay.textContent = paddingInput.value;
-            });
-            uploadInputs.forEach(input => {
-                input.addEventListener('change', (e) => handleFileChange(e, input.dataset.slot));
-            });
-            clearBtn.addEventListener('click', clearAll);
-            downloadBtn.addEventListener('click', downloadPoster);
-            deleteBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    clearSlot(btn.dataset.slot);
-                });
-            });
-
-            neteaseFetchBtn.addEventListener('click', handleNeteaseFetch);
-            neteaseUrlInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleNeteaseFetch();
-            });
-
-
-            // --- 核心函数 ---
-
-            /**
-            * 创建一个 200x200 的噪点图案
-            * @returns {HTMLCanvasElement}
-            */
-            function createNoisePattern() {
-                const size = 200;
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                const imageData = ctx.createImageData(size, size);
-                const data = imageData.data;
-                for (let i = 0; i < data.length; i += 4) {
-                    const noise = Math.random() * 255;
-                    data[i] = noise;
-                    data[i + 1] = noise;
-                    data[i + 2] = noise;
-                    data[i + 3] = 255;
-                }
-                ctx.putImageData(imageData, 0, 0);
-                return canvas;
-            }
-
-            function clearSlot(slot) {
-                sourceUrls[slot] = null;
-                loadedImages[slot] = null;
-
-                const previewImg = document.getElementById(`preview-${slot}`);
-                if (previewImg) {
-                    previewImg.src = '';
-                    previewImg.classList.add('hidden');
-                }
-                const deleteBtn = document.getElementById(`delete-${slot}`);
-                if (deleteBtn) {
-                    deleteBtn.classList.add('hidden');
-                }
-                const fileInput = document.getElementById(`upload-${slot}`);
-                if (fileInput) {
-                    fileInput.value = null;
-                }
-                drawPoster();
-                updateUrl();
-            }
-
-            function populateSlotSelector() {
-                for (let i = 1; i <= 9; i++) {
-                    const option = document.createElement('option');
-                    option.value = i;
-                    option.textContent = `到插槽 ${i}`;
-                    neteaseSlotSelect.appendChild(option);
-                }
-            }
-
-            /**
-             * 提取网易云封面 (V2 - 三级降级策略)
-             */
-            async function handleNeteaseFetch() {
-                const rawInput = neteaseUrlInput.value.trim();
-                const targetSlot = neteaseSlotSelect.value;
-                if (!rawInput) {
-                    showNeteaseMessage('请输入分享文本或URL', 'error');
-                    return;
-                }
-                setNeteaseLoading(true);
-                showNeteaseMessage('正在识别链接...', 'loading');
+                // UI Loading
+                btn.disabled = true;
+                loader.classList.remove('hidden');
+                btnText.classList.add('hidden');
+                msgBox.classList.add('hidden');
+                debugPanel.innerHTML = ''; // 清空旧日志
 
                 try {
-                    // 1. 在输入中找到 URL
-                    const urlRegex = /(https?:\/\/[^\s"'()]+)/;
-                    const urlMatch = rawInput.match(urlRegex);
-                    if (!urlMatch) throw new Error('未在输入内容中找到有效的URL。');
+                    // 1. 提取 URL
+                    const urlMatch = rawText.match(/(https?:\/\/[^\s"'()]+)/);
+                    if (!urlMatch) throw new Error("未找到链接");
+                    let targetUrl = urlMatch[0].replace(/\/$/, "");
 
-                    let targetUrl = urlMatch[0].replace("/#/", "/").replace(/\/$/, "");
-                    showNeteaseMessage('识别到URL，正在分析...', 'loading');
+                    // 2. 请求 Worker (此时 Worker 伪装成 iPhone，可能会被重定向到移动版)
+                    log(`正在抓取页面 (模拟移动端)...`, 'info');
+                    const htmlRes = await fetchViaWorker(targetUrl);
+                    const htmlContent = htmlRes.text;
 
+                    let realId = null;
+                    let realType = null;
                     let imageUrl = null;
-                    let htmlContent = null;
 
-                    // 2. 分析 URL
-                    const idRegex = /(song|album|playlist)(?:\/|\?id=)(\d+)/;
-                    const idMatch = targetUrl.match(idRegex);
-                    const shortLinkDomains = ['163.fm', '163cn.tv', 't.cn'];
-                    const isShortLink = shortLinkDomains.some(domain => targetUrl.includes(domain));
-
-                    // --- 策略 1: API (最优先) ---
-                    // (前提: 不是短链接，且能匹配到 song/album ID)
-                    if (idMatch && !isShortLink) {
-                        try {
-                            const resourceType = idMatch[1];
-                            const id = idMatch[2];
-                            showNeteaseMessage(`发现${resourceType} ID: ${id}，尝试API... (1/3)`, 'loading');
-
-                            let apiUrl;
-                            if (resourceType === 'song') {
-                                apiUrl = `https://music.163.com/api/song/detail?ids=${id}`;
-                            } else if (resourceType === 'album') {
-                                apiUrl = `https://music.163.com/api/album/${id}`;
-                            } else {
-                                // 如果通过某种方式匹配到了 playlist 等其他类型，暂时跳过 API
-                                throw new Error('暂不支持此类型的API提取');
-                            }
-
-                            const jsonString = await fetchWithProxies(apiUrl);
-                            const data = JSON.parse(jsonString);
-
-                            if (resourceType === 'song') {
-                                imageUrl = data?.songs?.[0]?.album?.picUrl;
-                            } else {
-                                imageUrl = data?.album?.picUrl;
-                            }
-
-                            if (!imageUrl) throw new Error('API 成功，但未找到图片URL。');
-
-                            showNeteaseMessage('API 提取成功！', 'success');
-
-                        } catch (apiError) {
-                            console.warn("API 提取失败:", apiError.message);
-                            // API 失败，降级到策略 2，不抛出错误
+                    // --- 步骤 A: 分析 Worker 回传的真实 URL (重定向后) ---
+                    const workerMarkerMatch = htmlContent.match(/<!-- REAL_URL: (.*?) -->/);
+                    if (workerMarkerMatch) {
+                        const realUrl = workerMarkerMatch[1];
+                        log(`Worker 最终跳转: ${realUrl}`, 'success');
+                        // 尝试解析 ID
+                        const idMatch = realUrl.match(/(song|album|playlist)(?:\/|\?id=)(\d+)/);
+                        if (idMatch) {
+                            realType = idMatch[1];
+                            realId = idMatch[2];
+                            log(`解析 ID: ${realType}/${realId}`, 'info');
                         }
-                    } else if (isShortLink) {
-                        console.log("检测到短链接，跳过 API 策略，直接进行 HTML 解析");
                     }
 
-                    // --- 策略 2: HTML 'og:image' 解析 (次优先) ---
-                    // (前提: 策略 1 未执行或失败)
-                    if (!imageUrl) {
+                    // --- 步骤 B: 并发尝试 API (如果拿到了 ID) ---
+                    // API 走的是 PC 伪装逻辑，可能和 HTML 结果不同
+                    if (realId && realType && !imageUrl) {
+                        log(`尝试请求 API...`, 'info');
                         try {
-                            showNeteaseMessage(isShortLink ? '解析短链中...' : '尝试HTML解析... (2/3)', 'loading');
+                            let apiUrl = "";
+                            if (realType === 'song') apiUrl = `https://music.163.com/api/song/detail?ids=[${realId}]`;
+                            else if (realType === 'album') apiUrl = `https://music.163.com/api/album/${realId}`;
+                            else if (realType === 'playlist') apiUrl = `https://music.163.com/api/playlist/detail?id=${realId}`;
 
-                            htmlContent = await fetchWithProxies(targetUrl);
-                            showNeteaseMessage('解析HTML, 查找封面...', 'loading');
+                            if (apiUrl) {
+                                const apiRes = await fetchViaWorker(apiUrl);
+                                // 清理 Worker 注释
+                                let jsonText = apiRes.text.replace(/<!-- REAL_URL:[\s\S]*?-->/g, '').trim();
 
+                                try {
+                                    const data = JSON.parse(jsonText);
+                                    if (data.code === 200) {
+                                        if (realType === 'song' && data.songs?.[0]?.album?.picUrl) imageUrl = data.songs[0].album.picUrl;
+                                        else if (realType === 'album' && data.album?.picUrl) imageUrl = data.album.picUrl;
+                                        else if (realType === 'playlist' && data.result?.coverImgUrl) imageUrl = data.result.coverImgUrl;
+
+                                        if (imageUrl) log('API 提取成功！', 'success');
+                                    } else {
+                                        log(`API 返回 Code ${data.code}，可能是风控`, 'warn');
+                                    }
+                                } catch (e) {
+                                    log('API 返回的不是 JSON', 'warn');
+                                }
+                            }
+                        } catch (e) {
+                            log(`API 请求失败: ${e.message}`, 'warn');
+                        }
+                    }
+
+                    // --- 步骤 C: DOM 解析 (移动端页面结构) ---
+                    if (!imageUrl && htmlContent) {
+                        log('尝试解析 HTML...', 'info');
+                        try {
                             const parser = new DOMParser();
-                            const doc = parser.parseFromString(htmlContent, 'text/html');
-                            const ogImageTag = doc.querySelector("meta[property='og:image']");
+                            const doc = parser.parseFromString(htmlContent, "text/html");
 
-                            imageUrl = ogImageTag?.getAttribute('content');
-
-                            if (!imageUrl) {
-                                throw new Error('无法在此页面找到封面图片(og:image)。');
+                            // 1. 标准 og:image
+                            const ogImage = doc.querySelector('meta[property="og:image"]');
+                            if (ogImage && ogImage.content) {
+                                imageUrl = ogImage.content;
+                                log('DOM (Meta) 提取成功', 'success');
                             }
-                            showNeteaseMessage('HTML og:image 提取成功！', 'success');
 
-                        } catch (htmlError) {
-                            console.warn("HTML 'og:image' 提取失败:", htmlError.message);
-                            // HTML 解析失败，降级到策略 3，不抛出错误
+                            // 2. 移动端 link image_src
+                            if (!imageUrl) {
+                                const linkImg = doc.querySelector('link[rel="image_src"]');
+                                if (linkImg && linkImg.href) {
+                                    imageUrl = linkImg.href;
+                                    log('DOM (Link) 提取成功', 'success');
+                                }
+                            }
+                        } catch (e) {
+                            log('DOM 解析出错', 'warn');
                         }
                     }
 
-                    // --- 策略 3: Regex 暴力搜索 (保底) ---
-                    // (前提: 策略 1 和 2 均失败)
-                    if (!imageUrl) {
-                        try {
-                            // 如果策略 2 失败了但获取到了 HTML，则复用
-                            if (!htmlContent) {
-                                showNeteaseMessage('尝试抓取HTML... (3/3)', 'loading');
-                                htmlContent = await fetchWithProxies(targetUrl);
-                            }
-                            showNeteaseMessage('尝试暴力搜索... (3/3)', 'loading');
-
-                            // 优先匹配网易云 CDN (p1.music.126.net/...)
-                            const jpgRegex = /(https?:\/\/[p-z]\d?\.music\.126\.net\/[^"'\s)]+)/i;
-                            const regexMatch = htmlContent.match(jpgRegex);
-
-                            imageUrl = regexMatch?.[0];
-
-                            if (!imageUrl) {
-                                throw new Error('已尝试所有方法，均未找到图片。');
-                            }
-                            showNeteaseMessage('暴力搜索提取成功！', 'success');
-
-                        } catch (regexError) {
-                            console.error("Regex 提取失败:", regexError);
-                            // 这是最后的机会，如果还失败，则彻底失败
-                            throw regexError;
+                    // --- 步骤 D: 暴力正则 (终极兜底，带黑名单过滤) ---
+                    if (!imageUrl && htmlContent) {
+                        log('启动暴力正则 (带智能过滤)...', 'info');
+                        // 排除包含 obj, style, web2, img, default 等系统目录的图片
+                        const jpgRegex = /(https?:\/\/[p-z]\d?\.music\.126\.net\/(?!.*(?:obj\/|style\/|web2\/|img\/|default\/|core_|pt_))[^"'\s)]+)/i;
+                        const m = htmlContent.match(jpgRegex);
+                        if (m) {
+                            imageUrl = m[0];
+                            log('正则提取成功 (已过滤无效图)', 'success');
                         }
                     }
 
-                    // --- 统一处理成功获取的 imageUrl ---
-                    const baseUrl = imageUrl.split('?')[0];
-                    const hdUrl = `${baseUrl}?param=3000y3000`;
+                    if (!imageUrl) throw new Error("无法提取封面，请检查链接是否有效或已被深度风控");
 
-                    // 存储可分享的 URL
-                    sourceUrls[targetSlot] = hdUrl;
+                    // 成功！
+                    const hdUrl = imageUrl.split('?')[0] + '?param=3000y3000';
+                    const slot = slotSelect.value;
 
-                    // 更新 UI 预览
-                    const previewImg = document.getElementById(`preview-${targetSlot}`);
-                    if (previewImg) {
-                        previewImg.src = hdUrl;
-                        previewImg.classList.remove('hidden');
-                    }
-                    const deleteBtn = document.getElementById(`delete-${targetSlot}`);
-                    if (deleteBtn) {
-                        deleteBtn.classList.remove('hidden');
-                    }
-                    const fileInput = document.getElementById(`upload-${targetSlot}`);
-                    if (fileInput) fileInput.value = null;
+                    log(`最终结果: ${hdUrl}`, 'success');
 
-                    // 异步加载图片
-                    await loadImage(hdUrl, targetSlot);
+                    await updateSlotImage(slot, hdUrl);
+                    input.value = '';
 
-                    // 重绘并更新 URL
-                    drawPoster();
-                    updateUrl();
+                    // 自动切到下一个
+                    let next = parseInt(slot) + 1;
+                    if (next > 9) next = 1;
+                    slotSelect.value = next;
 
-                    showNeteaseMessage(`成功提取到插槽 ${targetSlot}！`, 'success');
-                    neteaseUrlInput.value = '';
-
-                    // 自动跳到下一个插槽
-                    let currentSlot = parseInt(neteaseSlotSelect.value, 10);
-                    let nextSlot = currentSlot + 1;
-                    if (nextSlot > 9) {
-                        nextSlot = 1; // 循环回1
-                    }
-                    neteaseSlotSelect.value = nextSlot.toString();
+                    msgBox.textContent = "提取成功！";
+                    msgBox.className = "text-xs text-center mt-1 block text-green-600";
+                    msgBox.classList.remove('hidden');
 
                 } catch (err) {
-                    // --- 最终失败处理 ---
-                    console.error("提取失败 (所有方法):", err);
-                    showNeteaseMessage(err.message || '提取失败，请重试。', 'error');
-                    sourceUrls[targetSlot] = null; // 确保失败时清除
+                    log(`流程终止: ${err.message}`, 'error');
+                    msgBox.textContent = "提取失败，请查看日志";
+                    msgBox.className = "text-xs text-center mt-1 block text-red-500";
+                    msgBox.classList.remove('hidden');
                 } finally {
-                    setNeteaseLoading(false);
+                    btn.disabled = false;
+                    loader.classList.add('hidden');
+                    btnText.classList.remove('hidden');
                 }
             }
 
+            // --- 核心绘图与交互 ---
 
-            function setNeteaseLoading(isLoading) {
-                if (isLoading) {
-                    neteaseFetchBtn.disabled = true;
-                    neteaseBtnText.classList.add('hidden');
-                    neteaseLoader.classList.remove('hidden');
-                } else {
-                    neteaseFetchBtn.disabled = false;
-                    neteaseBtnText.classList.remove('hidden');
-                    neteaseLoader.classList.add('hidden');
+            function initSlots() {
+                const grid = document.getElementById('slots-grid');
+                const select = document.getElementById('netease-slot-select');
+
+                for (let i = 1; i <= 9; i++) {
+                    // 生成下拉菜单
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `到插槽 ${i}`;
+                    select.appendChild(opt);
+
+                    // 生成九宫格UI
+                    const div = document.createElement('div');
+                    div.className = "relative aspect-square light-slot rounded-lg flex items-center justify-center text-center overflow-hidden group";
+                    div.innerHTML = `
+                        <img id="preview-${i}" class="absolute inset-0 w-full h-full object-cover z-10 hidden">
+                        <div class="z-0 text-xs text-gray-400 pointer-events-none">插槽 ${i}</div>
+                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-6 h-6 bg-black/50 hover:bg-red-600 text-white rounded-full z-20 hidden items-center justify-center transition-colors">&times;</button>
+                        <input type="file" accept="image/*" data-slot="${i}" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFile(this)">
+                    `;
+                    grid.appendChild(div);
                 }
             }
 
-            function showNeteaseMessage(message, type = 'loading') {
-                if (type === 'hidden') {
-                    neteaseMsg.classList.add('hidden');
-                    return;
-                }
-                neteaseMsg.textContent = message;
-                neteaseMsg.classList.remove('hidden', 'text-gray-500', 'text-green-600', 'text-red-500');
-                if (type === 'error') neteaseMsg.classList.add('text-red-500');
-                else if (type === 'success') neteaseMsg.classList.add('text-green-600');
-                else neteaseMsg.classList.add('text-gray-500');
-            }
-
-            /**
-             * 处理文件上传
-             */
-            function handleFileChange(event, slot) {
-                showNeteaseMessage('', 'hidden');
-                sourceUrls[slot] = null; // 本地上传，清除分享 URL
-
-                const file = event.target.files[0];
-                if (!file) {
-                    clearSlot(slot);
-                    return;
-                }
-
+            window.handleFile = function (input) {
+                const slot = input.dataset.slot;
+                const file = input.files[0];
+                if (!file) return;
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    const dataURL = e.target.result;
-                    const previewImg = document.getElementById(`preview-${slot}`);
-                    if (previewImg) {
-                        previewImg.src = dataURL;
-                        previewImg.classList.remove('hidden');
-                    }
-                    const deleteBtn = document.getElementById(`delete-${slot}`);
-                    if (deleteBtn) {
-                        deleteBtn.classList.remove('hidden');
-                    }
-                    loadImage(dataURL, slot).then(() => {
-                        drawPoster();
-                        updateUrl();
-                    });
-                };
+                reader.onload = (e) => updateSlotImage(slot, e.target.result, false); // false = 不存URL状态
                 reader.readAsDataURL(file);
             }
 
-            /**
-             * 异步加载图像
-             */
-            function loadImage(src, slot) {
+            window.clearSlot = function (slot) {
+                delete sourceUrls[slot];
+                delete loadedImages[slot];
+                document.getElementById(`preview-${slot}`).classList.add('hidden');
+                document.getElementById(`del-${slot}`).classList.add('hidden');
+                document.querySelector(`input[data-slot="${slot}"]`).value = '';
+                draw();
+                updateUrlState();
+            }
+
+            async function updateSlotImage(slot, url, saveState = true) {
+                if (saveState) sourceUrls[slot] = url;
+
                 return new Promise((resolve, reject) => {
                     const img = new Image();
                     img.crossOrigin = "anonymous";
                     img.onload = () => {
                         loadedImages[slot] = img;
-                        resolve(img);
+                        document.getElementById(`preview-${slot}`).src = url;
+                        document.getElementById(`preview-${slot}`).classList.remove('hidden');
+                        document.getElementById(`del-${slot}`).classList.remove('hidden');
+                        draw();
+                        if (saveState) updateUrlState();
+                        resolve();
                     };
-                    img.onerror = (err) => {
-                        console.error(`Failed to load image for slot ${slot}:`, src, err);
-                        loadedImages[slot] = null;
-                        sourceUrls[slot] = null;
-                        const previewImg = document.getElementById(`preview-${slot}`);
-                        if (previewImg) {
-                            previewImg.src = '';
-                            previewImg.classList.add('hidden');
-                        }
-                        const deleteBtn = document.getElementById(`delete-${slot}`);
-                        if (deleteBtn) {
-                            deleteBtn.classList.add('hidden');
-                        }
-                        drawPoster();
-                        updateUrl();
-                        reject(err);
+                    img.onerror = () => {
+                        log(`图片加载失败: ${url}`, 'error');
+                        reject();
                     };
-                    img.src = src;
+                    img.src = url;
                 });
             }
 
-            /**
-             * 主绘制函数
-             */
-            function drawPoster() {
-                const settings = {
-                    title: textTitle.value || "顔色推歌",
-                    sharer: textSharer.value || "填表人：",
-                    template: document.querySelector('input[name="template"]:checked').value,
-                    bgColor: bgColorInput.value || '#F4F4F8',
-                    padding: parseInt(paddingInput.value, 10) || 180,
-                };
-                const activeImages = [];
-                for (let i = 1; i <= 9; i++) {
-                    if (loadedImages[i]) {
-                        activeImages.push(loadedImages[i]);
-                    }
-                }
+            function draw() {
+                // 基础设置
+                const bgColor = document.getElementById('bg-color').value;
+                const padding = parseInt(document.getElementById('poster-padding').value);
+                const title = document.getElementById('poster-title').value || "顔色推歌";
+                const sharer = document.getElementById('poster-sharer').value || "填表人：";
+                const layout = document.querySelector('input[name="template"]:checked').value;
 
-                const textColors = getContrastingTextColors(settings.bgColor);
-                drawBackground(settings.bgColor, activeImages.length === 0, textColors);
-
-                const TOP_TEXT_ZONE_HEIGHT = 450;
-                const BOTTOM_TEXT_ZONE_HEIGHT = 300;
-                const contentBox = {
-                    x: settings.padding,
-                    y: settings.padding + TOP_TEXT_ZONE_HEIGHT,
-                    width: CANVAS_SIZE - settings.padding * 2,
-                    height: CANVAS_SIZE - (settings.padding * 2) - TOP_TEXT_ZONE_HEIGHT - BOTTOM_TEXT_ZONE_HEIGHT
-                };
-                switch (settings.template) {
-                    case 'hero': drawHeroLayout(activeImages, contentBox); break;
-                    case 'grid-2x2': drawGrid2x2Layout(activeImages, contentBox); break;
-                    case 'grid-3x3': drawGrid3x3Layout(activeImages, contentBox); break;
-                }
-                drawText(settings, textColors);
-            }
-
-            /**
-             * 绘制背景
-             */
-            function drawBackground(color, showHint, textColors) {
-                ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                ctx.fillStyle = color;
+                // 绘制背景
+                ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-                if (noisePatternCanvas) {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'overlay';
-                    ctx.globalAlpha = 0.15;
-                    ctx.fillStyle = ctx.createPattern(noisePatternCanvas, 'repeat');
-                    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-                    ctx.restore();
-                }
+                // 噪点
+                if (!noisePatternCanvas) noisePatternCanvas = createNoise();
+                ctx.save();
+                ctx.globalCompositeOperation = 'overlay';
+                ctx.globalAlpha = 0.15;
+                ctx.fillStyle = ctx.createPattern(noisePatternCanvas, 'repeat');
+                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                ctx.restore();
 
-                const colors = textColors || getContrastingTextColors(color);
-                if (showHint) {
-                    ctx.fillStyle = colors.hint;
-                    ctx.font = '90px "STDongGuanTi", sans-serif';
+                // 颜色策略
+                const isDark = getLuminance(bgColor) < 128;
+                const textColor = isDark ? '#F9FAFB' : '#111827';
+                const subColor = isDark ? '#D1D5DB' : '#4B5563';
+
+                // 布局区域
+                const topH = 450;
+                const botH = 300;
+                const area = {
+                    x: padding,
+                    y: padding + topH,
+                    w: CANVAS_SIZE - padding * 2,
+                    h: CANVAS_SIZE - padding * 2 - topH - botH
+                };
+
+                // 图片列表
+                const imgs = [];
+                for (let i = 1; i <= 9; i++) if (loadedImages[i]) imgs.push(loadedImages[i]);
+
+                // 绘制图片
+                if (imgs.length > 0) {
+                    if (layout === 'hero') drawHero(imgs, area);
+                    else if (layout === 'grid-2x2') drawGrid(imgs, area, 2);
+                    else drawGrid(imgs, area, 3);
+                } else {
+                    ctx.fillStyle = subColor;
+                    ctx.font = '90px "STDongGuanTi"';
                     ctx.textAlign = 'center';
-                    ctx.fillText('请在侧边栏上传或提取专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+                    ctx.fillText('请添加封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
                 }
-            }
 
-            // --- 颜色辅助函数 ---
-
-            function hexToRgb(hex) {
-                hex = hex.replace('#', '');
-                if (hex.length === 3) {
-                    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-                }
-                if (hex.length !== 6) {
-                    return { r: NaN, g: NaN, b: NaN };
-                }
-                const r = parseInt(hex.substr(0, 2), 16);
-                const g = parseInt(hex.substr(2, 2), 16);
-                const b = parseInt(hex.substr(4, 2), 16);
-                return { r, g, b };
-            }
-
-            function getRelativeLuminance({ r, g, b }) {
-                const srgb = [r, g, b].map(v => v / 255);
-                const [R, G, B] = srgb.map(v =>
-                    v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
-                );
-                return 0.2126 * R + 0.7152 * G + 0.0722 * B;
-            }
-
-            function getContrastRatio(L1, L2) {
-                const light = Math.max(L1, L2);
-                const dark = Math.min(L1, L2);
-                return (light + 0.05) / (dark + 0.05);
-            }
-
-            /**
-             * 根据背景色自动选择适合的文字颜色 (WCAG)
-             */
-            function getContrastingTextColors(bgColor) {
-                const defaultColors = { main: '#111827', secondary: '#374151', hint: '#4B5563' };
-                try {
-                    if (!bgColor) return defaultColors;
-                    const bgRgb = hexToRgb(bgColor);
-                    if (isNaN(bgRgb.r)) return defaultColors;
-
-                    const bgL = getRelativeLuminance(bgRgb);
-                    const contrastWithBlack = getContrastRatio(bgL, 0);
-                    const contrastWithWhite = getContrastRatio(bgL, 1);
-
-                    if (contrastWithBlack >= contrastWithWhite) {
-                        // 背景偏亮 -> 文字用深色系
-                        return { main: '#111827', secondary: '#374151', hint: '#4B5563' };
-                    } else {
-                        // 背景偏暗 -> 文字用浅色系
-                        return { main: '#F9FAFB', secondary: '#E5E7EB', hint: '#9CA3AF' };
-                    }
-                } catch (e) {
-                    console.error("解析颜色失败:", bgColor, e);
-                    return defaultColors;
-                }
-            }
-
-            /**
-             * 辅助: 绘制文本
-             */
-            function drawText(settings, textColors) {
-                ctx.shadowColor = 'transparent';
-                ctx.shadowBlur = 0;
-                const padding = settings.padding;
-                const TOP_TEXT_ZONE_HEIGHT = 450;
-                const BOTTOM_TEXT_ZONE_HEIGHT = 300;
-
-                const { main, secondary } = textColors || getContrastingTextColors(settings.bgColor);
-
-                // 标题
-                ctx.fillStyle = main;
-                ctx.font = 'bold 156px "STDongGuanTi", "Noto Serif SC", serif';
+                // 绘制文字
                 ctx.textAlign = 'center';
-                const titleY = padding + (TOP_TEXT_ZONE_HEIGHT / 2) + 45;
-                ctx.fillText(settings.title, CANVAS_SIZE / 2, titleY);
+                ctx.fillStyle = textColor;
+                ctx.font = 'bold 156px "STDongGuanTi"';
+                ctx.fillText(title, CANVAS_SIZE / 2, padding + topH / 2 + 50);
 
-                // 分享人
-                ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)", "Noto Sans SC", sans-serif';
-                ctx.fillStyle = secondary;
-                ctx.textAlign = 'center';
-                const sharerY = (CANVAS_SIZE - padding - BOTTOM_TEXT_ZONE_HEIGHT) + (BOTTOM_TEXT_ZONE_HEIGHT / 2) + 30;
-                ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
+                ctx.fillStyle = subColor;
+                ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)"';
+                ctx.fillText(sharer, CANVAS_SIZE / 2, CANVAS_SIZE - padding - botH / 2 + 40);
             }
 
-            // --- 布局绘制函数 ---
-
-            function drawHeroLayout(images, box) {
+            // 布局算法
+            function drawHero(imgs, rect) {
+                if (!imgs[0]) return;
                 const gap = 60;
-                if (!images[0]) return;
-                const heroSize = box.height;
-                const smallSize = (box.height - gap) / 2;
-                const totalWidth = heroSize + gap + smallSize;
-                const startX = box.x + (box.width - totalWidth) / 2;
-                drawSquareCover(images[0], startX, box.y, heroSize);
-                if (images[1]) drawSquareCover(images[1], startX + heroSize + gap, box.y, smallSize);
-                if (images[2]) drawSquareCover(images[2], startX + heroSize + gap, box.y + smallSize + gap, smallSize);
+                const mainS = rect.h;
+                const subS = (rect.h - gap) / 2;
+                const totalW = mainS + gap + subS;
+                const startX = rect.x + (rect.w - totalW) / 2;
+
+                drawImg(imgs[0], startX, rect.y, mainS);
+                if (imgs[1]) drawImg(imgs[1], startX + mainS + gap, rect.y, subS);
+                if (imgs[2]) drawImg(imgs[2], startX + mainS + gap, rect.y + subS + gap, subS);
             }
 
-            function drawGrid2x2Layout(images, box) {
+            function drawGrid(imgs, rect, cols) {
                 const gap = 60;
-                let size = (box.width - gap) / 2;
-                if (size * 2 + gap > box.height) size = (box.height - gap) / 2;
-                const startX = box.x + (box.width - (size * 2 + gap)) / 2;
-                const startY = box.y + (box.height - (size * 2 + gap)) / 2;
-                if (images[0]) drawSquareCover(images[0], startX, startY, size);
-                if (images[1]) drawSquareCover(images[1], startX + size + gap, startY, size);
-                if (images[2]) drawSquareCover(images[2], startX, startY + size + gap, size);
-                if (images[3]) drawSquareCover(images[3], startX + size + gap, startY + size + gap, size);
-            }
+                let size = (rect.w - (cols - 1) * gap) / cols;
+                // 高度约束
+                if (size * cols + (cols - 1) * gap > rect.h) {
+                    size = (rect.h - (cols - 1) * gap) / cols;
+                }
+                const totalSize = size * cols + (cols - 1) * gap;
+                const sx = rect.x + (rect.w - totalSize) / 2;
+                const sy = rect.y + (rect.h - totalSize) / 2;
 
-            function drawGrid3x3Layout(images, box) {
-                const gap = 60;
-                let size = (box.width - gap * 2) / 3;
-                if (size * 3 + gap * 2 > box.height) size = (box.height - gap * 2) / 3;
-                const totalWidth = size * 3 + gap * 2;
-                const totalHeight = size * 3 + gap * 2;
-                const startX = box.x + (box.width - totalWidth) / 2;
-                const startY = box.y + (box.height - totalHeight) / 2;
-                for (let i = 0; i < 9; i++) {
-                    if (images[i]) {
-                        const row = Math.floor(i / 3);
-                        const col = i % 3;
-                        const x = startX + col * (size + gap);
-                        const y = startY + row * (size + gap);
-                        drawSquareCover(images[i], x, y, size);
-                    }
+                const limit = cols * cols;
+                for (let i = 0; i < Math.min(imgs.length, limit); i++) {
+                    const r = Math.floor(i / cols);
+                    const c = i % cols;
+                    drawImg(imgs[i], sx + c * (size + gap), sy + r * (size + gap), size);
                 }
             }
 
-            function drawSquareCover(img, dx, dy, dSize) {
-                if (!img || !img.width || !img.height) return;
-                const sMin = Math.min(img.width, img.height);
-                const sx = (img.width - sMin) / 2;
-                const sy = (img.height - sMin) / 2;
-                const cornerRadius = 24;
+            function drawImg(img, x, y, s) {
+                const r = 24;
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(dx + cornerRadius, dy);
-                ctx.lineTo(dx + dSize - cornerRadius, dy);
-                ctx.quadraticCurveTo(dx + dSize, dy, dx + dSize, dy + cornerRadius);
-                ctx.lineTo(dx + dSize, dy + dSize - cornerRadius);
-                ctx.quadraticCurveTo(dx + dSize, dy + dSize, dx + dSize - cornerRadius, dy + dSize);
-                ctx.lineTo(dx + cornerRadius, dy + dSize);
-                ctx.quadraticCurveTo(dx, dy + dSize, dx, dy + dSize - cornerRadius);
-                ctx.lineTo(dx, dy + cornerRadius);
-                ctx.quadraticCurveTo(dx, dy, dx + cornerRadius, dy);
+                ctx.moveTo(x + r, y); ctx.lineTo(x + s - r, y); ctx.quadraticCurveTo(x + s, y, x + s, y + r);
+                ctx.lineTo(x + s, y + s - r); ctx.quadraticCurveTo(x + s, y + s, x + s - r, y + s);
+                ctx.lineTo(x + r, y + s); ctx.quadraticCurveTo(x, y + s, x, y + s - r);
+                ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
                 ctx.closePath();
                 ctx.clip();
-                ctx.drawImage(img, sx, sy, sMin, sMin, dx, dy, dSize, dSize);
+
+                const min = Math.min(img.width, img.height);
+                ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, x, y, s, s);
                 ctx.restore();
             }
 
-            /**
-             * 清空所有
-             */
-            function clearAll() {
-                sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
-                loadedImages = {};
-
-                uploadInputs.forEach((input, index) => {
-                    input.value = null;
-                    const slot = index + 1;
-                    const previewImg = document.getElementById(`preview-${slot}`);
-                    if (previewImg) {
-                        previewImg.src = '';
-                        previewImg.classList.add('hidden');
-                    }
-                    const deleteBtn = document.getElementById(`delete-${slot}`);
-                    if (deleteBtn) {
-                        deleteBtn.classList.add('hidden');
-                    }
-                });
-
-                textTitle.value = '';
-                textSharer.value = '';
-                bgColorInput.value = '#F4F4F8';
-                paddingInput.value = '180';
-                paddingValueDisplay.textContent = '180';
-                document.getElementById('template-grid-3x3').checked = true;
-
-                neteaseUrlInput.value = '';
-                neteaseSlotSelect.value = '1';
-                showNeteaseMessage('', 'hidden');
-
-                drawPoster();
-                window.history.pushState({}, '', window.location.pathname);
-            }
-
-            function downloadPoster() {
-                try {
-                    const link = document.createElement('a');
-                    link.download = `${textTitle.value || 'music-poster'}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                } catch (e) {
-                    console.error("下载失败:", e);
-                    showNeteaseMessage('下载失败 (可能CORS错误)', 'error');
+            // 工具函数
+            function createNoise() {
+                const c = document.createElement('canvas');
+                c.width = 200; c.height = 200;
+                const cx = c.getContext('2d');
+                const d = cx.createImageData(200, 200);
+                for (let i = 0; i < d.data.length; i += 4) {
+                    const v = Math.random() * 255;
+                    d.data[i] = d.data[i + 1] = d.data[i + 2] = v;
+                    d.data[i + 3] = 255;
                 }
+                cx.putImageData(d, 0, 0);
+                return c;
             }
+
+            function getLuminance(hex) {
+                const r = parseInt(hex.substr(1, 2), 16);
+                const g = parseInt(hex.substr(3, 2), 16);
+                const b = parseInt(hex.substr(5, 2), 16);
+                return (r * 299 + g * 587 + b * 114) / 1000;
+            }
+
+            // URL State 管理
+            function updateUrlState() {
+                const state = {
+                    t: document.getElementById('poster-title').value,
+                    s: document.getElementById('poster-sharer').value,
+                    bg: document.getElementById('bg-color').value,
+                    p: document.getElementById('poster-padding').value,
+                    l: document.querySelector('input[name="template"]:checked').value,
+                    i: sourceUrls
+                };
+                const str = btoa(encodeURIComponent(JSON.stringify(state)));
+                window.history.replaceState({}, '', `?d=${str}`);
+            }
+
+            function loadUrlState() {
+                const p = new URLSearchParams(window.location.search);
+                if (!p.get('d')) { draw(); return; }
+                try {
+                    const s = JSON.parse(decodeURIComponent(atob(p.get('d'))));
+                    if (s.t) document.getElementById('poster-title').value = s.t;
+                    if (s.s) document.getElementById('poster-sharer').value = s.s;
+                    if (s.bg) document.getElementById('bg-color').value = s.bg;
+                    if (s.p) document.getElementById('poster-padding').value = s.p;
+                    if (s.l) document.getElementById(`template-${s.l}`).checked = true;
+
+                    if (s.i) {
+                        for (let k in s.i) {
+                            if (s.i[k]) updateSlotImage(k, s.i[k], true);
+                        }
+                    } else {
+                        draw();
+                    }
+                } catch (e) { console.error(e); draw(); }
+            }
+
+            // Bindings
+            document.getElementById('netease-fetch-btn').onclick = handleExtract;
+            document.getElementById('clear-btn').onclick = () => {
+                sourceUrls = {}; loadedImages = {};
+                initSlots(); // rebuild slots
+                draw();
+                updateUrlState();
+            };
+            document.getElementById('download-btn').onclick = () => {
+                const a = document.createElement('a');
+                a.download = `poster-${Date.now()}.png`;
+                a.href = canvas.toDataURL();
+                a.click();
+            };
+            ['poster-title', 'poster-sharer', 'bg-color', 'poster-padding'].forEach(id => {
+                document.getElementById(id).oninput = () => { draw(); updateUrlState(); };
+            });
+            document.querySelectorAll('input[name="template"]').forEach(el => {
+                el.onchange = () => { draw(); updateUrlState(); };
+            });
+
+            loadUrlState();
         });
     </script>
-
 </body>
 
 </html>
