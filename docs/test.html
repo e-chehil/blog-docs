@@ -376,10 +376,11 @@
             const deleteBtns = document.querySelectorAll('.delete-btn');
 
             const CORS_PROXIES = [
+                "https://music-api.chehil.icu",
                 "https://netease-proxy.echehil.workers.dev/?url=",
-                "https://corsproxy.io/?",
-                "https://api.codetabs.com/v1/proxy?quest=",
                 "https://api.allorigins.win/raw?url=",
+                "https://corsproxy.io/?",
+                "https://api.codetabs.com/v1/proxy?quest="
             ];
 
             async function fetchWithProxies(targetUrl) {
@@ -924,8 +925,6 @@
                 const TOP_TEXT_ZONE_HEIGHT = 450;
                 const BOTTOM_TEXT_ZONE_HEIGHT = 300;
 
-                // (修复) 1. 直接使用传入的 textColors
-                // (如果未传入，则获取默认值，以防万一)
                 const { main, secondary } = textColors || getContrastingTextColors(settings.bgColor);
 
                 // 标题
