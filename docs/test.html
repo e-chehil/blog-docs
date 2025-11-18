@@ -3,325 +3,283 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>海报工坊</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/488/main/result.css">
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/7/main/result.css">
 
     <style>
+        :root {
+            --stone-50: #fafaf9;
+            --stone-100: #f5f5f4;
+            --stone-200: #e7e5e4;
+            --stone-300: #d6d3d1;
+            --stone-800: #292524;
+            --rose-500: #f43f5e;
+            --rose-600: #e11d48;
+        }
+
         body {
             font-family: "STDongGuanTi", 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
-            background-color: #e7e5e4;
-            /* Stone-200: 温暖的高级灰背景 */
+            background-color: #e5e5e5;
             color: #1c1917;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 隐藏滚动条但保留功能 */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
-
-        .light-panel {
-            background-color: #ffffff;
-            border: 1px solid #e7e5e4;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.08);
-        }
-
-        .template-selector input[type="radio"] {
+        /* 隐藏滚动条但允许滚动 */
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
+        /* 模拟 iOS 风格的面板 */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 布局选择器 */
+        .template-selector input[type="radio"] { display: none; }
         .template-selector label {
             cursor: pointer;
-            padding: 14px;
-            border-radius: 12px;
-            background-color: #fafaf9;
-            border: 2px solid #e7e5e4;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.75rem;
-            color: #78716c;
-            letter-spacing: 0.05em;
-            height: 100%;
+            background-color: #fff;
+            border: 2px solid transparent;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-
-        .template-selector label svg {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
         .template-selector input[type="radio"]:checked+label {
             background-color: #fff1f2;
-            color: #be123c;
+            color: var(--rose-600);
             border-color: #fda4af;
-            box-shadow: 0 4px 12px rgba(251, 113, 133, 0.15);
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
+            transform: translateY(-1px);
         }
-
-        .template-selector input[type="radio"]:checked+label svg {
-            transform: scale(1.15);
-            color: #e11d48;
-        }
-
-        .template-selector label:hover {
+        
+        /* 输入框优化 */
+        .art-input {
             background-color: #f5f5f4;
-            border-color: #d6d3d1;
-        }
-
-        .light-input {
-            background-color: #fafaf9;
-            border: 1px solid #e7e5e4;
-            color: #1c1917;
-            border-radius: 8px;
+            border: 1px solid transparent;
             transition: all 0.2s;
-            font-family: 'Inter', sans-serif;
         }
-
-        .light-input:focus {
-            outline: none;
-            border-color: #fb7185;
+        .art-input:focus {
             background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.1);
+            border-color: #fda4af;
+            box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+            outline: none;
         }
 
-        .light-slot {
-            background-color: #fafaf9;
-            border: 2px dashed #e7e5e4;
-            color: #a8a29e;
-            transition: all 0.3s ease;
-        }
-
-        .light-slot:hover {
-            border-color: #fb7185;
-            color: #fb7185;
-            background-color: #fff1f2;
-            transform: translateY(-2px);
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
+        /* 加载动画 */
+        @keyframes spin { to { transform: rotate(360deg); } }
         .loader {
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255,255,255,0.3);
             border-top: 2px solid #fff;
             border-radius: 50%;
-            width: 16px;
-            height: 16px;
+            width: 16px; height: 16px;
             animation: spin 0.8s linear infinite;
         }
     </style>
 </head>
 
-<body class="p-6 md:p-10 min-h-screen flex flex-col items-center">
+<body class="min-h-screen py-8 px-4 md:px-8 flex justify-center">
 
-    <div class="max-w-[1500px] w-full mx-auto">
-        <!-- 顶部 Logo -->
-        <header class="text-center mb-12">
-            <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-stone-800 mb-3"
-                style="font-family: 'STDongGuanTi', serif; text-shadow: 2px 2px 0px rgba(0,0,0,0.05);">
+    <div class="w-full max-w-[1200px]">
+        
+        <!-- 顶部标题 -->
+        <header class="text-center mb-10 md:mb-14">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-stone-800 mb-2" 
+                style="font-family: 'STDongGuanTi', serif;">
                 海报工坊
             </h1>
-            <p class="text-stone-400 text-[10px] md:text-xs tracking-[0.3em] uppercase font-medium">
+            <p class="text-stone-400 text-[10px] tracking-[0.3em] uppercase font-medium">
                 Aesthetic Poster Generator
             </p>
         </header>
 
-        <!-- 主布局：左右结构 -->
-        <!-- items-start 是关键，让 sticky 生效 -->
-        <main class="flex flex-col lg:flex-row gap-10 items-start relative">
+        <!-- 核心布局：移动端垂直，桌面端水平 -->
+        <main class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start relative">
 
-            <!-- 左侧：画布预览 (Sticky 核心区域) -->
-            <!-- sticky top-8 让它在滚动时吸顶 -->
-            <section class="w-full lg:w-2/3 sticky top-8 transition-all duration-500">
-                <div class="w-full bg-white p-4 rounded-2xl shadow-2xl border border-stone-200/60">
-                    <div
-                        class="relative w-full aspect-square rounded-xl overflow-hidden bg-stone-100 cursor-crosshair group">
+            <!-- 左侧：画布预览 (桌面端 Sticky) -->
+            <!-- lg:w-[55%] 给画布留更多空间，lg:sticky lg:top-8 实现悬浮 -->
+            <section class="w-full lg:w-[58%] lg:sticky lg:top-8 z-10">
+                <div class="w-full glass-panel p-3 md:p-4 rounded-2xl md:rounded-3xl">
+                    <div class="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-stone-100 shadow-inner cursor-crosshair group">
                         <canvas id="poster-canvas" width="3000" height="3000"
-                            class="w-full h-full object-contain shadow-inner transition-transform duration-700 ease-out"></canvas>
-
-                        <!-- 悬停提示 -->
-                        <div
-                            class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-md pointer-events-none">
-                            右键保存图片
+                            class="w-full h-full object-contain"></canvas>
+                        
+                        <!-- 简单的提示 -->
+                        <div class="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                            <span class="bg-black/50 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full shadow-lg">长按或右键保存图片</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 右侧：控制面板 (可滚动) -->
-            <aside class="w-full lg:w-1/3 flex-shrink-0 min-w-[350px]">
-                <div class="light-panel p-6 flex flex-col gap-8 bg-white/80 backdrop-blur-xl border-stone-100">
+            <!-- 右侧：控制面板 -->
+            <aside class="w-full lg:w-[42%] flex-shrink-0">
+                <div class="glass-panel p-5 md:p-8 rounded-2xl md:rounded-3xl flex flex-col gap-8">
 
-                    <!-- 1. 文本内容 -->
-                    <div class="space-y-5">
-                        <div class="flex items-center justify-between border-b border-stone-100 pb-2">
-                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">CONTENT</h2>
-                            <span
-                                class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">01</span>
+                    <!-- 1. 文本设置 -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">01</div>
+                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">内容 Content</h2>
                         </div>
-                        <div class="space-y-3">
+                        <div class="space-y-3 pl-2">
                             <div>
-                                <label class="text-xs font-medium text-stone-500 mb-1.5 block">主标题</label>
+                                <label class="text-xs font-medium text-stone-500 mb-1.5 block ml-1">主标题</label>
                                 <input type="text" id="poster-title" placeholder="顔色推歌"
-                                    class="w-full h-12 px-4 light-input font-bold text-lg text-stone-800 placeholder-stone-300">
+                                    class="w-full h-12 px-4 art-input rounded-xl font-bold text-stone-800 text-lg placeholder-stone-300">
                             </div>
                             <div>
-                                <label class="text-xs font-medium text-stone-500 mb-1.5 block">副标题 / 分享人</label>
+                                <label class="text-xs font-medium text-stone-500 mb-1.5 block ml-1">副标题 / 分享人</label>
                                 <input type="text" id="poster-sharer" placeholder="Editor's Choice"
-                                    class="w-full h-12 px-4 light-input font-medium text-stone-600 placeholder-stone-300">
+                                    class="w-full h-12 px-4 art-input rounded-xl font-medium text-stone-600 placeholder-stone-300">
                             </div>
                         </div>
                     </div>
 
-                    <!-- 2. 版式布局 -->
-                    <div>
-                        <div class="flex items-center justify-between border-b border-stone-100 pb-2 mb-4">
-                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">LAYOUT</h2>
-                            <span
-                                class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">02</span>
+                    <!-- 2. 布局选择 -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">02</div>
+                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">布局 Layout</h2>
                         </div>
-                        <div class="grid grid-cols-3 gap-3 template-selector h-28">
+                        <div class="grid grid-cols-3 gap-3 template-selector pl-2">
                             <div>
                                 <input type="radio" name="template" id="template-hero" value="hero">
-                                <label for="template-hero">
-                                    <svg class="w-8 h-8 text-stone-300" viewBox="0 0 24 24" fill="currentColor">
-                                        <rect x="3" y="3" width="10" height="18" rx="1.5" />
-                                        <rect x="15" y="3" width="6" height="8" rx="1.5" opacity="0.5" />
-                                        <rect x="15" y="13" width="6" height="8" rx="1.5" opacity="0.5" />
+                                <label for="template-hero" class="rounded-xl py-4 flex flex-col items-center gap-2">
+                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="4" y="3" width="9" height="18" rx="1.5"/>
+                                        <rect x="14.5" y="3" width="5.5" height="8" rx="1.5" opacity="0.5"/>
+                                        <rect x="14.5" y="13" width="5.5" height="8" rx="1.5" opacity="0.5"/>
                                     </svg>
-                                    精选
+                                    <span class="text-xs font-bold">精选</span>
                                 </label>
                             </div>
                             <div>
                                 <input type="radio" name="template" id="template-grid-2x2" value="grid-2x2">
-                                <label for="template-grid-2x2">
-                                    <svg class="w-8 h-8 text-stone-300" viewBox="0 0 24 24" fill="currentColor">
-                                        <rect x="3" y="3" width="8" height="8" rx="1.5" />
-                                        <rect x="13" y="3" width="8" height="8" rx="1.5" />
-                                        <rect x="3" y="13" width="8" height="8" rx="1.5" />
-                                        <rect x="13" y="13" width="8" height="8" rx="1.5" />
+                                <label for="template-grid-2x2" class="rounded-xl py-4 flex flex-col items-center gap-2">
+                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="3" y="3" width="8" height="8" rx="1.5"/>
+                                        <rect x="13" y="3" width="8" height="8" rx="1.5"/>
+                                        <rect x="3" y="13" width="8" height="8" rx="1.5"/>
+                                        <rect x="13" y="13" width="8" height="8" rx="1.5"/>
                                     </svg>
-                                    四宫格
+                                    <span class="text-xs font-bold">四格</span>
                                 </label>
                             </div>
                             <div>
                                 <input type="radio" name="template" id="template-grid-3x3" value="grid-3x3" checked>
-                                <label for="template-grid-3x3">
-                                    <svg class="w-8 h-8 text-stone-300" viewBox="0 0 24 24" fill="currentColor">
-                                        <rect x="3" y="3" width="5" height="5" rx="1" />
-                                        <rect x="9.5" y="3" width="5" height="5" rx="1" />
-                                        <rect x="16" y="3" width="5" height="5" rx="1" />
-                                        <rect x="3" y="9.5" width="5" height="5" rx="1" />
-                                        <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
-                                        <rect x="16" y="9.5" width="5" height="5" rx="1" />
-                                        <rect x="3" y="16" width="5" height="5" rx="1" />
-                                        <rect x="9.5" y="16" width="5" height="5" rx="1" />
-                                        <rect x="16" y="16" width="5" height="5" rx="1" />
+                                <label for="template-grid-3x3" class="rounded-xl py-4 flex flex-col items-center gap-2">
+                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="3" y="3" width="5" height="5" rx="1"/>
+                                        <rect x="9.5" y="3" width="5" height="5" rx="1"/>
+                                        <rect x="16" y="3" width="5" height="5" rx="1"/>
+                                        <rect x="3" y="9.5" width="5" height="5" rx="1"/>
+                                        <rect x="9.5" y="9.5" width="5" height="5" rx="1"/>
+                                        <rect x="16" y="9.5" width="5" height="5" rx="1"/>
+                                        <rect x="3" y="16" width="5" height="5" rx="1"/>
+                                        <rect x="9.5" y="16" width="5" height="5" rx="1"/>
+                                        <rect x="16" y="16" width="5" height="5" rx="1"/>
                                     </svg>
-                                    九宫格
+                                    <span class="text-xs font-bold">九宫</span>
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3. 封面源 -->
-                    <div>
-                        <div class="flex items-center justify-between border-b border-stone-100 pb-2 mb-4">
-                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">SOURCE</h2>
-                            <span
-                                class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">03</span>
+                    <!-- 3. 提取封面 -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">03</div>
+                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">资源 Source</h2>
                         </div>
-
-                        <div class="flex flex-col gap-3 mb-5 p-1">
-                            <div class="flex flex-col gap-2">
-                                <input type="text" id="netease-url-input" placeholder="粘贴网易云音乐链接 (支持分享文本)"
-                                    class="w-full h-11 px-4 light-input text-sm bg-white shadow-sm">
-                                <div class="flex gap-2">
+                        
+                        <div class="pl-2 space-y-3">
+                            <div class="p-1 bg-white rounded-2xl border border-stone-200 shadow-sm">
+                                <input type="text" id="netease-url-input" placeholder="粘贴网易云链接..."
+                                    class="w-full h-11 px-4 text-sm bg-transparent border-none focus:ring-0 placeholder-stone-400 text-stone-700">
+                                <div class="flex gap-1 p-1 border-t border-stone-100">
                                     <select id="netease-slot-select"
-                                        class="w-1/3 h-11 px-3 light-input text-xs font-bold text-stone-500 bg-white cursor-pointer">
+                                        class="w-[100px] h-10 px-2 text-xs font-bold text-stone-500 bg-stone-50 rounded-lg border-none focus:ring-0 cursor-pointer hover:bg-stone-100 transition-colors">
                                         <!-- JS -->
                                     </select>
                                     <button id="netease-fetch-btn"
-                                        class="w-2/3 h-11 rounded-lg bg-stone-800 hover:bg-black text-white font-bold text-xs tracking-wider transition-all shadow-xl shadow-stone-400/20 flex items-center justify-center disabled:bg-stone-300 disabled:cursor-not-allowed">
+                                        class="flex-grow h-10 rounded-lg bg-stone-800 hover:bg-black text-white font-bold text-xs tracking-wide transition-all shadow-md flex items-center justify-center disabled:bg-stone-300 disabled:cursor-not-allowed">
                                         <span id="netease-btn-text">提取高清封面</span>
                                         <div id="netease-loader" class="loader hidden"></div>
                                     </button>
                                 </div>
                             </div>
-                            <div id="netease-msg" class="text-xs text-center hidden font-bold py-1"></div>
-                        </div>
+                            <div id="netease-msg" class="text-xs text-center hidden font-bold py-1 bg-stone-100 rounded-lg"></div>
 
-                        <div class="grid grid-cols-3 gap-3" id="slots-grid">
-                            <!-- JS Slots -->
+                            <!-- 手动上传槽位 -->
+                            <div class="grid grid-cols-3 gap-3 mt-2" id="slots-grid">
+                                <!-- JS Generated -->
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 4. 风格参数 -->
+                    <!-- 4. 风格微调 -->
                     <div class="space-y-6">
-                        <div class="flex items-center justify-between border-b border-stone-100 pb-2">
-                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">STYLE</h2>
-                            <span
-                                class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-full">04</span>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">04</div>
+                            <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">风格 Style</h2>
                         </div>
-
-                        <div class="flex items-center justify-between group">
-                            <label for="bg-color"
-                                class="text-xs font-bold text-stone-500 uppercase group-hover:text-rose-500 transition-colors">纸张基色</label>
-                            <div class="flex items-center gap-3">
-                                <span id="color-hex"
-                                    class="text-[10px] font-mono text-stone-300 uppercase tracking-wider">#F4F4F8</span>
-                                <div
-                                    class="relative overflow-hidden w-8 h-8 rounded-full border-2 border-white shadow-md ring-1 ring-stone-100 cursor-pointer hover:scale-110 transition-transform">
-                                    <input id="bg-color" type="color" value="#F4F4F8"
-                                        class="absolute -top-4 -left-4 w-16 h-16 cursor-pointer p-0 border-0">
+                        
+                        <div class="pl-2 space-y-5">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-bold text-stone-500 uppercase">纸张基色</label>
+                                <div class="flex items-center gap-3">
+                                    <span id="color-hex" class="text-[10px] font-mono text-stone-300 uppercase">#F4F4F8</span>
+                                    <div class="relative w-8 h-8 rounded-full shadow-md ring-2 ring-white overflow-hidden cursor-pointer hover:scale-110 transition-transform">
+                                        <input id="bg-color" type="color" value="#F4F4F8"
+                                            class="absolute -top-4 -left-4 w-16 h-16 p-0 border-0 cursor-pointer">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="space-y-3 group">
-                            <div class="flex justify-between">
-                                <label for="poster-padding"
-                                    class="text-xs font-bold text-stone-500 uppercase group-hover:text-rose-500 transition-colors">画面留白</label>
-                                <span id="padding-val" class="text-[10px] font-mono text-stone-400">180px</span>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <label class="text-xs font-bold text-stone-500 uppercase">留白控制</label>
+                                    <span id="padding-val" class="text-[10px] font-mono text-stone-400">180px</span>
+                                </div>
+                                <input id="poster-padding" type="range" value="180" min="60" max="450" 
+                                    class="w-full h-1.5 bg-stone-200 rounded-full appearance-none cursor-pointer accent-rose-500 hover:accent-rose-600">
                             </div>
-                            <input id="poster-padding" type="range" value="180" min="60" max="450"
-                                class="w-full h-1.5 bg-stone-200 rounded-full appearance-none cursor-pointer accent-stone-800 hover:accent-rose-600 transition-colors">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3 pt-6">
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-stone-100">
                             <button id="clear-btn"
-                                class="w-full py-3.5 px-4 rounded-xl bg-white border border-stone-200 hover:border-stone-300 hover:bg-stone-50 text-stone-500 font-bold text-xs transition-all uppercase tracking-wider">
+                                class="w-full py-3.5 rounded-xl bg-stone-50 hover:bg-stone-100 text-stone-500 font-bold text-xs transition-all border border-stone-200">
                                 重置
                             </button>
                             <button id="download-btn"
-                                class="w-full py-3.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs tracking-widest uppercase transition-all shadow-lg shadow-rose-600/30 hover:shadow-rose-600/40 hover:-translate-y-0.5">
+                                class="w-full py-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs tracking-widest uppercase transition-all shadow-lg shadow-rose-600/30 hover:-translate-y-0.5 active:translate-y-0">
                                 保存海报
                             </button>
                         </div>
                     </div>
 
                 </div>
+                
+                <footer class="mt-8 text-center pb-10">
+                    <p class="text-stone-300 text-[10px] font-medium">Designed for Music Lovers</p>
+                </footer>
             </aside>
         </main>
-
-        <footer class="mt-20 pb-10 text-center">
-            <div class="w-12 h-1 bg-stone-200 mx-auto rounded-full mb-6"></div>
-            <p class="text-stone-400 text-xs font-medium">Made with &hearts; for Music Lovers</p>
-        </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const CANVAS_SIZE = 3000;
-            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url="; // 你的私有 Worker
+            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url="; 
 
             let sourceUrls = {};
             let loadedImages = {};
@@ -405,7 +363,7 @@
                                     else if (realType === 'playlist' && data.result?.coverImgUrl) imageUrl = data.result.coverImgUrl;
                                 }
                             }
-                        } catch (e) { }
+                        } catch (e) {}
                     }
 
                     // 3. DOM
@@ -419,7 +377,7 @@
                                 const linkImg = doc.querySelector('link[rel="image_src"]');
                                 if (linkImg && linkImg.href) imageUrl = linkImg.href;
                             }
-                        } catch (e) { }
+                        } catch (e) {}
                     }
 
                     // 4. Regex
@@ -434,13 +392,13 @@
                     const hdUrl = imageUrl.split('?')[0] + '?param=3000y3000';
                     await updateSlotImage(slotSelect.value, hdUrl);
                     input.value = '';
-
+                    
                     let next = parseInt(slotSelect.value) + 1;
                     if (next > 9) next = 1;
                     slotSelect.value = next;
 
                     msgBox.textContent = "提取成功";
-                    msgBox.className = "text-xs text-center mt-1 block text-emerald-600";
+                    msgBox.className = "text-xs text-center mt-1 block text-emerald-600 font-bold";
                     msgBox.classList.remove('hidden');
 
                 } catch (err) {
@@ -480,20 +438,20 @@
 
                 // 4. 边缘暗角 (Vignette)
                 const vig = ctx.createRadialGradient(
-                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.4,
-                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.95
+                    CANVAS_SIZE/2, CANVAS_SIZE/2, CANVAS_SIZE*0.4, 
+                    CANVAS_SIZE/2, CANVAS_SIZE/2, CANVAS_SIZE*0.95
                 );
                 vig.addColorStop(0, 'rgba(0,0,0,0)');
                 vig.addColorStop(1, 'rgba(20,20,25,0.08)'); // 极淡的冷黑
                 ctx.fillStyle = vig;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-                // 文字颜色策略：深色油墨
+                // 颜色策略：深色油墨
                 const isDarkBg = getLuminance(bgColor) < 90;
                 // 浅背景下使用炭黑和深褐灰，深背景下使用米白
-                const inkMain = isDarkBg ? '#f5f5f4' : '#1c1917';
-                const inkSub = isDarkBg ? '#a8a29e' : '#44403c';
-
+                const inkMain = isDarkBg ? '#ffffff' : '#1c1917'; 
+                const inkSub = isDarkBg ? '#e5e5e5' : '#44403c';
+                
                 const topH = 450; const botH = 300;
                 const area = {
                     x: padding, y: padding + topH,
@@ -516,7 +474,7 @@
 
                 // 5. 文字绘制 (Letterpress Effect)
                 ctx.textAlign = 'center';
-
+                
                 // Title
                 ctx.fillStyle = inkMain;
                 ctx.font = 'bold 156px "STDongGuanTi", serif';
@@ -528,7 +486,7 @@
                     ctx.shadowOffsetX = 0;
                 }
                 ctx.fillText(title, CANVAS_SIZE / 2, padding + topH / 2 + 50);
-                ctx.shadowColor = "transparent";
+                ctx.shadowColor = "transparent"; 
 
                 // Subtitle
                 ctx.fillStyle = inkSub;
@@ -538,11 +496,11 @@
 
             function drawOrganicTexture(ctx, w, h) {
                 ctx.save();
-
+                
                 // A. 水彩晕染 (Watercolor Washes) - 模拟受潮/不均匀
                 ctx.globalCompositeOperation = 'multiply';
                 ctx.globalAlpha = 0.04;
-                for (let i = 0; i < 5; i++) {
+                for(let i=0; i<5; i++) {
                     const x = Math.random() * w;
                     const y = Math.random() * h;
                     const r = Math.random() * 600 + 300;
@@ -550,7 +508,7 @@
                     g.addColorStop(0, 'rgba(0,0,0,1)');
                     g.addColorStop(1, 'rgba(0,0,0,0)');
                     ctx.fillStyle = g;
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
                 }
 
                 // B. 短绒纤维 (Micro-Fibers) - 模拟纸浆
@@ -558,8 +516,8 @@
                 ctx.globalAlpha = 0.12;
                 ctx.strokeStyle = '#292524'; // 炭黑纤维
                 ctx.lineCap = 'round';
-
-                for (let i = 0; i < 600; i++) {
+                
+                for(let i=0; i<600; i++) {
                     const x = Math.random() * w;
                     const y = Math.random() * h;
                     const len = Math.random() * 8 + 3; // 极短 3-11px
@@ -569,9 +527,9 @@
                     ctx.beginPath();
                     ctx.moveTo(x, y);
                     ctx.quadraticCurveTo(
-                        x + Math.cos(angle) * len / 2 + (Math.random() - 0.5) * 2,
-                        y + Math.sin(angle) * len / 2 + (Math.random() - 0.5) * 2,
-                        x + Math.cos(angle) * len,
+                        x + Math.cos(angle) * len/2 + (Math.random()-0.5)*2,
+                        y + Math.sin(angle) * len/2 + (Math.random()-0.5)*2,
+                        x + Math.cos(angle) * len, 
                         y + Math.sin(angle) * len
                     );
                     ctx.stroke();
@@ -606,24 +564,24 @@
             }
 
             function drawImg(img, x, y, s) {
+                const r = 20;
                 ctx.save();
                 // 柔光阴影
                 ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
                 ctx.shadowBlur = 40;
                 ctx.shadowOffsetY = 20;
-
+                
                 ctx.beginPath();
-                const r = 20;
                 ctx.moveTo(x + r, y); ctx.lineTo(x + s - r, y); ctx.quadraticCurveTo(x + s, y, x + s, y + r);
                 ctx.lineTo(x + s, y + s - r); ctx.quadraticCurveTo(x + s, y + s, x + s - r, y + s);
                 ctx.lineTo(x + r, y + s); ctx.quadraticCurveTo(x, y + s, x, y + s - r);
                 ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
                 ctx.closePath();
-
+                
                 ctx.fillStyle = "#fff";
-                ctx.fill();
+                ctx.fill(); 
                 ctx.clip();
-
+                
                 const min = Math.min(img.width, img.height);
                 ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, x, y, s, s);
                 ctx.restore();
@@ -649,7 +607,7 @@
                 return (r * 299 + g * 587 + b * 114) / 1000;
             }
 
-            // --- UI Logic ---
+            // UI Bindings
             function initSlots() {
                 const grid = document.getElementById('slots-grid');
                 const select = document.getElementById('netease-slot-select');
@@ -660,8 +618,8 @@
                     div.className = "relative aspect-square light-slot rounded-xl flex items-center justify-center overflow-hidden group border border-stone-200 bg-stone-50";
                     div.innerHTML = `
                         <img id="preview-${i}" class="absolute inset-0 w-full h-full object-cover z-10 hidden transition-transform duration-500 group-hover:scale-105">
-                        <div class="z-0 text-sm font-bold text-stone-300 select-none">${i}</div>
-                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-6 h-6 bg-stone-900/80 hover:bg-rose-600 text-white rounded-full z-20 hidden items-center justify-center transition-colors text-xs">&times;</button>
+                        <div class="z-0 text-xs font-bold text-stone-300 select-none">${i}</div>
+                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-5 h-5 bg-stone-900/80 hover:bg-rose-600 text-white rounded-full z-20 hidden items-center justify-center transition-all text-[10px] shadow-md">&times;</button>
                         <input type="file" accept="image/*" data-slot="${i}" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFile(this)">
                     `;
                     grid.appendChild(div);
@@ -722,25 +680,25 @@
                 if (!p.get('d')) { draw(); return; }
                 try {
                     const s = JSON.parse(decodeURIComponent(atob(p.get('d'))));
-                    if (s.t) document.getElementById('poster-title').value = s.t;
-                    if (s.s) document.getElementById('poster-sharer').value = s.s;
-                    if (s.bg) { document.getElementById('bg-color').value = s.bg; document.getElementById('color-hex').textContent = s.bg; }
-                    if (s.p) { document.getElementById('poster-padding').value = s.p; document.getElementById('padding-val').textContent = s.p + 'px'; }
-                    if (s.l) document.getElementById(`template-${s.l}`).checked = true;
-                    if (s.i) for (let k in s.i) if (s.i[k]) updateSlotImage(k, s.i[k], true); else draw();
-                } catch (e) { draw(); }
+                    if(s.t) document.getElementById('poster-title').value = s.t;
+                    if(s.s) document.getElementById('poster-sharer').value = s.s;
+                    if(s.bg) { document.getElementById('bg-color').value = s.bg; document.getElementById('color-hex').textContent = s.bg; }
+                    if(s.p) { document.getElementById('poster-padding').value = s.p; document.getElementById('padding-val').textContent = s.p + 'px'; }
+                    if(s.l) document.getElementById(`template-${s.l}`).checked = true;
+                    if(s.i) for(let k in s.i) if(s.i[k]) updateSlotImage(k, s.i[k], true); else draw();
+                } catch(e) { draw(); }
             }
 
             // Events
             document.getElementById('netease-fetch-btn').onclick = handleExtract;
-            document.getElementById('clear-btn').onclick = () => { sourceUrls = {}; loadedImages = {}; initSlots(); draw(); updateUrlState(); };
+            document.getElementById('clear-btn').onclick = () => { sourceUrls={}; loadedImages={}; initSlots(); draw(); updateUrlState(); };
             document.getElementById('download-btn').onclick = () => {
                 const a = document.createElement('a'); a.download = `poster-${Date.now()}.png`; a.href = canvas.toDataURL(); a.click();
             };
             ['poster-title', 'poster-sharer', 'bg-color', 'poster-padding'].forEach(id => {
                 document.getElementById(id).oninput = (e) => {
-                    if (id === 'bg-color') document.getElementById('color-hex').textContent = e.target.value.toUpperCase();
-                    if (id === 'poster-padding') document.getElementById('padding-val').textContent = e.target.value + 'px';
+                    if(id==='bg-color') document.getElementById('color-hex').textContent = e.target.value.toUpperCase();
+                    if(id==='poster-padding') document.getElementById('padding-val').textContent = e.target.value + 'px';
                     draw(); updateUrlState();
                 };
             });
