@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专辑海报设计</title>
+    <title>专辑海报设计 (艺术纹理版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入中文字体 -->
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/488/main/result.css">
@@ -13,7 +13,8 @@
     <style>
         body {
             font-family: "STDongGuanTi", 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
-            background-color: #f3f4f6;
+            background-color: #e5e5e5;
+            /* 背景改深一点，突出中间的画布 */
             color: #1f2937;
         }
 
@@ -21,7 +22,7 @@
             background-color: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
         input[type="file"] {
@@ -34,33 +35,36 @@
             cursor: pointer;
         }
 
+        /* 选中态样式优化 */
         .template-selector input[type="radio"] {
             display: none;
         }
 
         .template-selector label {
             cursor: pointer;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 12px;
             background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
+            border: 2px solid #f3f4f6;
             transition: all 0.2s ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
+            gap: 6px;
+            font-size: 0.85rem;
             color: #6b7280;
+            font-weight: 500;
         }
 
         .template-selector input[type="radio"]:checked+label {
-            background-color: #C81E1E;
-            color: #FFFFFF;
-            border-color: #EF4444;
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+            background-color: #fff1f2;
+            color: #991b1b;
+            border-color: #fca5a5;
+            box-shadow: 0 4px 10px rgba(252, 165, 165, 0.2);
         }
 
         .template-selector label:hover {
+            border-color: #e5e7eb;
             background-color: #f3f4f6;
         }
 
@@ -68,13 +72,15 @@
             background-color: #f9fafb;
             border: 1px solid #d1d5db;
             color: #111827;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s;
         }
 
         .light-input:focus {
             outline: none;
-            border-color: #EF4444;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
 
         .light-slot {
@@ -87,6 +93,7 @@
         .light-slot:hover {
             border-color: #EF4444;
             color: #ef4444;
+            background-color: #fef2f2;
         }
 
         @keyframes spin {
@@ -104,7 +111,6 @@
             animation: spin 1s linear infinite;
         }
 
-        /* 调试日志样式 */
         #debug-panel {
             font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
             font-size: 12px;
@@ -118,6 +124,8 @@
             display: none;
             border: 1px solid #333;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            /* 强制左对齐日志内容 */
         }
 
         .log-entry {
@@ -145,16 +153,17 @@
     </style>
 </head>
 
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 min-h-screen">
 
     <div class="max-w-7xl mx-auto">
         <!-- 标题 -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold" style="font-family: 'STDongGuanTi', serif; color: #C81E1E;">
-                专辑海报设计
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight"
+                style="font-family: 'STDongGuanTi', serif; color: #991b1b;">
+                海报工坊
             </h1>
-            <p class="text-gray-600 mt-2" style="font-family: 'Zhuque Fangsong (technical preview)', sans-serif;">
-                专用代理极速版 · 支持短链接
+            <p class="text-gray-500 mt-2 text-sm tracking-wider uppercase" style="font-family: 'Inter', sans-serif;">
+                Aesthetic Poster Generator
             </p>
         </header>
 
@@ -163,124 +172,162 @@
 
             <!-- 画布预览 -->
             <section class="w-full md:w-2/3 lg:w-2/3">
-                <div class="w-full light-panel p-2 sticky top-8">
+                <div class="w-full light-panel p-3 sticky top-8 bg-white">
+                    <!-- 画布本身 -->
                     <canvas id="poster-canvas" width="3000" height="3000"
-                        class="w-full h-auto rounded-lg aspect-square shadow-sm"></canvas>
+                        class="w-full h-auto rounded-lg aspect-square shadow-md border border-gray-100 cursor-crosshair"
+                        title="右键可保存图片"></canvas>
                 </div>
 
-                <!-- 修改点：这里改为 text-center 实现居中 -->
-                <div class="mt-4 text-center">
+                <!-- 居中的调试按钮 -->
+                <div class="mt-6 text-center">
                     <button id="toggle-debug"
-                        class="text-xs text-gray-400 underline hover:text-red-500 transition-colors">如果不工作，点此查看日志</button>
+                        class="text-xs text-gray-400 underline hover:text-red-500 transition-colors opacity-60 hover:opacity-100">
+                        遇到问题？点击查看运行日志
+                    </button>
                 </div>
                 <div id="debug-panel"></div>
             </section>
 
             <!-- 控制面板 -->
             <aside class="w-full md:w-1/3 lg:w-1/3 shrink-0">
-                <div class="light-panel p-5 md:p-6 flex flex-col gap-6">
+                <div class="light-panel p-5 md:p-6 flex flex-col gap-8">
 
-                    <!-- 1. 海报文本 -->
+                    <!-- 1. 文本设置 -->
                     <div class="flex flex-col gap-4">
-                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">1. 海报文本</h2>
-                        <div>
-                            <label for="poster-title" class="text-sm font-medium text-gray-700 mb-1 block">标题</label>
-                            <input type="text" id="poster-title" placeholder="顔色推歌"
-                                class="w-full h-10 px-3 light-input">
+                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2">
+                            <span
+                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">1</span>
+                            <h2>文本内容</h2>
                         </div>
                         <div>
-                            <label for="poster-sharer" class="text-sm font-medium text-gray-700 mb-1 block">分享人</label>
-                            <input type="text" id="poster-sharer" placeholder="填表人："
-                                class="w-full h-10 px-3 light-input">
+                            <label for="poster-title"
+                                class="text-xs font-bold text-gray-500 uppercase mb-1 block">主标题</label>
+                            <input type="text" id="poster-title" placeholder="顔色推歌"
+                                class="w-full h-11 px-3 light-input font-medium">
+                        </div>
+                        <div>
+                            <label for="poster-sharer" class="text-xs font-bold text-gray-500 uppercase mb-1 block">分享人
+                                / 副标题</label>
+                            <input type="text" id="poster-sharer" placeholder="Editor's Choice"
+                                class="w-full h-11 px-3 light-input font-medium">
                         </div>
                     </div>
 
-                    <!-- 2. 选择布局 -->
+                    <!-- 2. 布局选择 -->
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">2. 选择布局</h2>
+                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2 mb-4">
+                            <span
+                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">2</span>
+                            <h2>版式布局</h2>
+                        </div>
                         <div class="grid grid-cols-3 gap-3 template-selector">
                             <div>
                                 <input type="radio" name="template" id="template-hero" value="hero">
                                 <label for="template-hero">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M4 4H14V14H4V4ZM16 4H20V8H16V4ZM16 10H20V14H16V10Z" />
-                                    </svg>
+                                    <div
+                                        class="w-8 h-8 bg-gray-200 rounded-sm flex items-center justify-center overflow-hidden">
+                                        <div class="w-4 h-4 bg-gray-400 rounded-sm"></div>
+                                    </div>
                                     精选 (3图)
                                 </label>
                             </div>
                             <div>
                                 <input type="radio" name="template" id="template-grid-2x2" value="grid-2x2">
                                 <label for="template-grid-2x2">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M4 4H10V10H4V4ZM14 4H20V10H14V4ZM4 14H10V20H4V14ZM14 14H20V20H14V14Z" />
-                                    </svg>
+                                    <div class="grid grid-cols-2 gap-0.5 w-6 h-6">
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                    </div>
                                     网格 (4图)
                                 </label>
                             </div>
                             <div>
                                 <input type="radio" name="template" id="template-grid-3x3" value="grid-3x3" checked>
                                 <label for="template-grid-3x3">
-                                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M4 4H8V8H4V4ZM10 4H14V8H10V4ZM16 4H20V8H16V4ZM4 10H8V14H4V10ZM10 10H14V14H10V10ZM16 10H20V14H16V10ZM4 16H8V20H4V16ZM10 16H14V20H10V16ZM16 16H20V20H16V16Z" />
-                                    </svg>
+                                    <div class="grid grid-cols-3 gap-0.5 w-6 h-6">
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                        <div class="bg-gray-400 rounded-[1px]"></div>
+                                    </div>
                                     九宫 (9图)
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 3. 上传 / 提取封面 -->
+                    <!-- 3. 封面获取 -->
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4">3. 上传 / 提取封面
-                        </h2>
-                        <div class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <label for="netease-url-input" class="text-sm font-medium text-gray-700">网易云链接 / 短链接</label>
-                            <input type="text" id="netease-url-input" placeholder="粘贴分享文本，支持短链..."
-                                class="w-full h-10 px-3 light-input">
+                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2 mb-4">
+                            <span
+                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">3</span>
+                            <h2>封面源</h2>
+                        </div>
+
+                        <div
+                            class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+                            <label for="netease-url-input" class="text-xs font-bold text-gray-500 uppercase">网易云链接 /
+                                文本</label>
+                            <input type="text" id="netease-url-input" placeholder="粘贴分享链接，自动识别..."
+                                class="w-full h-10 px-3 light-input text-sm">
                             <div class="flex gap-2">
                                 <select id="netease-slot-select"
-                                    class="flex-grow h-10 px-3 light-input text-sm focus:ring-0">
+                                    class="flex-grow h-10 px-3 light-input text-sm focus:ring-0 bg-white">
                                     <!-- Options generated via JS -->
                                 </select>
                                 <button id="netease-fetch-btn"
-                                    class="py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-md text-sm whitespace-nowrap flex items-center justify-center disabled:bg-gray-400"
+                                    class="py-2 px-5 rounded-lg bg-gray-900 hover:bg-black text-white font-semibold transition-all shadow-md text-sm whitespace-nowrap flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
                                     style="min-width: 80px;">
-                                    <span id="netease-btn-text">提取</span>
+                                    <span id="netease-btn-text">提取封面</span>
                                     <div id="netease-loader" class="loader hidden"></div>
                                 </button>
                             </div>
-                            <div id="netease-msg" class="text-xs text-center hidden"></div>
+                            <div id="netease-msg" class="text-xs text-center hidden font-medium"></div>
                         </div>
 
                         <div class="grid grid-cols-3 gap-3" id="slots-grid">
-                            <!-- Slots 1-9 will be generated by JS to keep HTML clean -->
+                            <!-- Slots Generated by JS -->
                         </div>
                     </div>
 
-                    <!-- 4. 样式和操作 -->
+                    <!-- 4. 风格调整 -->
                     <div class="flex flex-col gap-4">
-                        <h2 class="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">4. 样式与操作</h2>
-                        <div class="flex flex-col">
-                            <label for="bg-color" class="text-sm font-medium text-gray-700 mb-2">海报背景色</label>
-                            <input id="bg-color" type="color" value="#F4F4F8"
-                                class="w-full h-10 p-1 rounded-md light-input cursor-pointer appearance-none border-gray-300">
+                        <div class="flex items-center gap-2 text-gray-900 font-bold border-b border-gray-100 pb-2">
+                            <span
+                                class="bg-red-100 text-red-600 w-6 h-6 flex items-center justify-center rounded-full text-xs">4</span>
+                            <h2>风格微调</h2>
                         </div>
                         <div class="flex flex-col">
-                            <label for="poster-padding" class="text-sm font-medium text-gray-700 mb-2">海报内边距: <span
-                                    id="padding-value">180</span>px</label>
-                            <input id="poster-padding" type="range" value="180" min="60" max="450" class="w-full">
+                            <label for="bg-color" class="text-xs font-bold text-gray-500 uppercase mb-2">纸张基色</label>
+                            <div class="flex gap-2 items-center">
+                                <input id="bg-color" type="color" value="#F4F4F8"
+                                    class="w-10 h-10 p-0.5 rounded-lg border-2 border-gray-200 cursor-pointer">
+                                <span class="text-xs text-gray-400">点击色块更换</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="poster-padding"
+                                class="text-xs font-bold text-gray-500 uppercase mb-2">留白大小</label>
+                            <input id="poster-padding" type="range" value="180" min="60" max="450"
+                                class="w-full accent-gray-800 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-2">
+                        <div class="grid grid-cols-2 gap-4 mt-4 border-t border-gray-100 pt-6">
                             <button id="clear-btn"
-                                class="w-full py-3 px-4 rounded-lg bg-gray-500 hover:bg-gray-600 text-white font-semibold transition-colors shadow-md">
-                                清空
+                                class="w-full py-3 px-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold transition-colors shadow-sm text-sm">
+                                重置画布
                             </button>
                             <button id="download-btn"
-                                class="w-full py-3 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-colors shadow-lg shadow-red-600/30">
-                                下载海报
+                                class="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all shadow-lg shadow-red-600/20 text-sm tracking-wide">
+                                下载 PNG
                             </button>
                         </div>
                     </div>
@@ -294,8 +341,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- 全局配置 ---
             const CANVAS_SIZE = 3000;
-            // 使用我们刚刚验证成功的私有 Worker
-            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url=";
+            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url="; // 使用私有 Worker
 
             // 状态
             let sourceUrls = {};
@@ -308,17 +354,18 @@
             const debugPanel = document.getElementById('debug-panel');
             const toggleDebugBtn = document.getElementById('toggle-debug');
 
-            // --- 初始化 DOM ---
+            // --- 初始化 ---
             initSlots();
             canvas.width = CANVAS_SIZE;
             canvas.height = CANVAS_SIZE;
 
             // --- 日志工具 ---
             function log(msg, type = 'info') {
-                console.log(`[${type.toUpperCase()}] ${msg}`);
+                const time = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+                console.log(`[${time}] ${msg}`);
                 const div = document.createElement('div');
                 div.className = `log-entry log-${type}`;
-                div.textContent = `> ${msg}`;
+                div.innerHTML = `<span class="opacity-50 text-[10px] mr-2">${time}</span>${msg}`;
                 debugPanel.appendChild(div);
                 debugPanel.scrollTop = debugPanel.scrollHeight;
             }
@@ -327,26 +374,24 @@
                 debugPanel.style.display = debugPanel.style.display === 'block' ? 'none' : 'block';
             });
 
-            // --- 核心请求函数 (集成防风控逻辑) ---
+            // --- 核心请求函数 ---
             async function fetchViaWorker(targetUrl) {
                 const finalUrl = `${PROXY_ENDPOINT}${encodeURIComponent(targetUrl)}`;
-                log(`请求 Worker: ${finalUrl}`);
+                log(`请求: ${targetUrl.substring(0, 40)}...`);
 
                 try {
                     const controller = new AbortController();
-                    const id = setTimeout(() => controller.abort(), 20000); // 20秒
-
+                    const id = setTimeout(() => controller.abort(), 20000);
                     const resp = await fetch(finalUrl, { signal: controller.signal });
                     clearTimeout(id);
                     const text = await resp.text();
-
                     return { ok: resp.ok, status: resp.status, text: text };
                 } catch (e) {
                     throw new Error(e.name === 'AbortError' ? "请求超时" : e.message);
                 }
             }
 
-            // --- 提取逻辑 (集成 Mobile Spoofing) ---
+            // --- 提取逻辑 ---
             async function handleExtract() {
                 const input = document.getElementById('netease-url-input');
                 const slotSelect = document.getElementById('netease-slot-select');
@@ -358,7 +403,6 @@
                 const rawText = input.value.trim();
                 if (!rawText) return alert('请输入链接');
 
-                // UI Loading
                 btn.disabled = true;
                 loader.classList.remove('hidden');
                 btnText.classList.add('hidden');
@@ -370,28 +414,26 @@
                     if (!urlMatch) throw new Error("未找到链接");
                     let targetUrl = urlMatch[0].replace(/\/$/, "");
 
-                    // Worker 已升级为伪装 iPhone，可能会重定向到移动版
-                    log(`抓取页面 (移动端伪装)...`, 'info');
+                    log(`正在抓取页面...`, 'info');
                     const htmlRes = await fetchViaWorker(targetUrl);
                     const htmlContent = htmlRes.text;
 
                     let realId = null, realType = null, imageUrl = null;
 
-                    // A. 分析 Worker 回传的真实 URL
+                    // 1. Worker URL Check
                     const workerMarkerMatch = htmlContent.match(/<!-- REAL_URL: (.*?) -->/);
                     if (workerMarkerMatch) {
                         const realUrl = workerMarkerMatch[1];
-                        log(`跳转: ${realUrl}`, 'success');
+                        log(`识别跳转: ${realUrl}`, 'success');
                         const idMatch = realUrl.match(/(song|album|playlist)(?:\/|\?id=)(\d+)/);
                         if (idMatch) {
                             realType = idMatch[1]; realId = idMatch[2];
-                            log(`ID: ${realType}/${realId}`, 'info');
                         }
                     }
 
-                    // B. 并发 API 请求 (如果有ID)
+                    // 2. API (Concurrent if ID found)
                     if (realId && realType && !imageUrl) {
-                        log(`尝试 API...`, 'info');
+                        log(`尝试 API 获取高清图...`, 'info');
                         try {
                             let apiUrl = "";
                             if (realType === 'song') apiUrl = `https://music.163.com/api/song/detail?ids=[${realId}]`;
@@ -407,21 +449,20 @@
                                         if (realType === 'song' && data.songs?.[0]?.album?.picUrl) imageUrl = data.songs[0].album.picUrl;
                                         else if (realType === 'album' && data.album?.picUrl) imageUrl = data.album.picUrl;
                                         else if (realType === 'playlist' && data.result?.coverImgUrl) imageUrl = data.result.coverImgUrl;
-                                        if (imageUrl) log('API 提取成功', 'success');
+                                        if (imageUrl) log('API 成功', 'success');
                                     }
                                 } catch (e) { }
                             }
                         } catch (e) { }
                     }
 
-                    // C. DOM 解析 (移动端适配)
+                    // 3. DOM
                     if (!imageUrl && htmlContent) {
                         try {
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(htmlContent, "text/html");
                             const ogImage = doc.querySelector('meta[property="og:image"]');
                             if (ogImage && ogImage.content) imageUrl = ogImage.content;
-
                             if (!imageUrl) {
                                 const linkImg = doc.querySelector('link[rel="image_src"]');
                                 if (linkImg && linkImg.href) imageUrl = linkImg.href;
@@ -429,24 +470,21 @@
                         } catch (e) { }
                     }
 
-                    // D. 正则兜底 (带黑名单过滤)
+                    // 4. Regex (Safe)
                     if (!imageUrl && htmlContent) {
-                        log('正则搜索 (已过滤杂质)...', 'info');
                         const jpgRegex = /(https?:\/\/[p-z]\d?\.music\.126\.net\/(?!.*(?:obj\/|style\/|web2\/|img\/|default\/|core_|pt_))[^"'\s)]+)/i;
                         const m = htmlContent.match(jpgRegex);
                         if (m) imageUrl = m[0];
                     }
 
-                    if (!imageUrl) throw new Error("无法提取封面，可能是深度风控或链接无效");
+                    if (!imageUrl) throw new Error("无法提取封面");
 
                     const hdUrl = imageUrl.split('?')[0] + '?param=3000y3000';
                     const slot = slotSelect.value;
-                    log(`成功: ${hdUrl}`, 'success');
 
                     await updateSlotImage(slot, hdUrl);
                     input.value = '';
 
-                    // Auto next slot
                     let next = parseInt(slot) + 1;
                     if (next > 9) next = 1;
                     slotSelect.value = next;
@@ -456,8 +494,8 @@
                     msgBox.classList.remove('hidden');
 
                 } catch (err) {
-                    log(`错误: ${err.message}`, 'error');
-                    msgBox.textContent = "提取失败，请查看日志";
+                    log(err.message, 'error');
+                    msgBox.textContent = "提取失败";
                     msgBox.className = "text-xs text-center mt-1 block text-red-500";
                     msgBox.classList.remove('hidden');
                 } finally {
@@ -467,20 +505,19 @@
                 }
             }
 
-            // --- 核心绘图与交互 ---
-
+            // --- 初始化插槽 ---
             function initSlots() {
                 const grid = document.getElementById('slots-grid');
                 const select = document.getElementById('netease-slot-select');
                 for (let i = 1; i <= 9; i++) {
                     const opt = document.createElement('option');
-                    opt.value = i; opt.textContent = `到插槽 ${i}`; select.appendChild(opt);
+                    opt.value = i; opt.textContent = `插槽 ${i}`; select.appendChild(opt);
                     const div = document.createElement('div');
-                    div.className = "relative aspect-square light-slot rounded-lg flex items-center justify-center text-center overflow-hidden group";
+                    div.className = "relative aspect-square light-slot rounded-lg flex items-center justify-center text-center overflow-hidden group bg-white border-gray-200";
                     div.innerHTML = `
-                        <img id="preview-${i}" class="absolute inset-0 w-full h-full object-cover z-10 hidden">
-                        <div class="z-0 text-xs text-gray-400 pointer-events-none">插槽 ${i}</div>
-                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-6 h-6 bg-black/50 hover:bg-red-600 text-white rounded-full z-20 hidden items-center justify-center transition-colors">&times;</button>
+                        <img id="preview-${i}" class="absolute inset-0 w-full h-full object-cover z-10 hidden transition-transform duration-300 group-hover:scale-105">
+                        <div class="z-0 text-xs text-gray-300 pointer-events-none font-bold">${i}</div>
+                        <button onclick="clearSlot(${i})" id="del-${i}" class="absolute top-1 right-1 w-5 h-5 bg-black/50 hover:bg-red-500 text-white rounded-full z-20 hidden items-center justify-center transition-colors text-xs">&times;</button>
                         <input type="file" accept="image/*" data-slot="${i}" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFile(this)">
                     `;
                     grid.appendChild(div);
@@ -523,44 +560,53 @@
                 });
             }
 
+            // --- 绘画核心 (风格化升级) ---
             function draw() {
                 const bgColor = document.getElementById('bg-color').value;
                 const padding = parseInt(document.getElementById('poster-padding').value);
                 const title = document.getElementById('poster-title').value || "顔色推歌";
-                const sharer = document.getElementById('poster-sharer').value || "填表人：";
+                const sharer = document.getElementById('poster-sharer').value || "Editor's Choice";
                 const layout = document.querySelector('input[name="template"]:checked').value;
 
-                // 1. 背景色
+                // 1. 基础背景
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-                // 2. 新增：边缘暗角 (Vignette) - 增加立体感
-                // 创建一个径向渐变，从中心透明到边缘半透明黑
-                const gradient = ctx.createRadialGradient(
-                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.3,
-                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.8
-                );
-                gradient.addColorStop(0, 'rgba(0,0,0,0)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0.04)'); // 非常淡的阴影
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                // 2. 纸张肌理 (Paper Texture Layer)
+                // 先画一层不均匀的纸张色斑
+                drawPaperBlotches(ctx, bgColor);
 
-                // 3. 纸质纤维 (Paper Fibers) - 模拟纸张杂质
-                drawPaperFibers(ctx);
-
-                // 4. 噪点 (Noise)
+                // 3. 强效噪点 (Grain) - 使用 overlay 混合模式增强质感
                 if (!noisePatternCanvas) noisePatternCanvas = createNoise();
                 ctx.save();
-                ctx.globalCompositeOperation = 'overlay';
-                ctx.globalAlpha = 0.12; // 稍微降低透明度，更细腻
+                ctx.globalCompositeOperation = 'overlay'; // 关键：使用叠加模式
+                ctx.globalAlpha = 0.18; // 提高可见度
                 ctx.fillStyle = ctx.createPattern(noisePatternCanvas, 'repeat');
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
                 ctx.restore();
 
-                // 颜色策略
-                const isDark = getLuminance(bgColor) < 128;
-                const textColor = isDark ? '#F9FAFB' : '#111827';
-                const subColor = isDark ? '#D1D5DB' : '#4B5563';
+                // 4. 纸张纤维 (Fibers)
+                drawPaperFibers(ctx);
+
+                // 5. 边缘暗角 (Vignette) - 增加立体感
+                const gradient = ctx.createRadialGradient(
+                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.4,
+                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.85
+                );
+                gradient.addColorStop(0, 'rgba(0,0,0,0)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0.15)'); // 加深暗角
+                ctx.save();
+                ctx.fillStyle = gradient;
+                ctx.globalCompositeOperation = 'multiply';
+                ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                ctx.restore();
+
+                // 计算颜色
+                const isDark = getLuminance(bgColor) < 100; // 阈值调低，更倾向于用深色字
+                // 如果是浅色背景，强制使用深炭灰/黑色，而不是浅灰
+                const mainTextColor = isDark ? '#F9FAFB' : '#111827'; // 近乎纯黑
+                const subTextColor = isDark ? '#D1D5DB' : '#374151'; // 深灰 (Gray-700)
+                const emptyTextColor = isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)';
 
                 const topH = 450; const botH = 300;
                 const area = {
@@ -576,22 +622,34 @@
                     else if (layout === 'grid-2x2') drawGrid(imgs, area, 2);
                     else drawGrid(imgs, area, 3);
                 } else {
-                    ctx.fillStyle = subColor;
+                    ctx.fillStyle = emptyTextColor;
                     ctx.font = '90px "STDongGuanTi"';
                     ctx.textAlign = 'center';
                     ctx.fillText('请添加封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
                 }
 
+                // 6. 绘制文字 (带凸版印刷效果/轻微阴影)
                 ctx.textAlign = 'center';
-                ctx.fillStyle = textColor;
-                ctx.font = 'bold 156px "STDongGuanTi"';
+
+                // 标题
+                ctx.fillStyle = mainTextColor;
+                ctx.font = 'bold 156px "STDongGuanTi", serif';
+                // 增加一点点 letterpress 效果 (浅色高光)
+                if (!isDark) {
+                    ctx.shadowColor = "rgba(255,255,255,0.6)";
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    ctx.shadowBlur = 0;
+                }
                 ctx.fillText(title, CANVAS_SIZE / 2, padding + topH / 2 + 50);
-                ctx.fillStyle = subColor;
-                ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)"';
+                ctx.shadowColor = "transparent"; // 重置阴影
+
+                // 副标题
+                ctx.fillStyle = subTextColor;
+                ctx.font = 'normal 84px "Zhuque Fangsong (technical preview)", serif';
                 ctx.fillText(sharer, CANVAS_SIZE / 2, CANVAS_SIZE - padding - botH / 2 + 40);
             }
 
-            // 绘图辅助函数
             function drawHero(imgs, rect) {
                 if (!imgs[0]) return;
                 const gap = 60;
@@ -621,10 +679,10 @@
             function drawImg(img, x, y, s) {
                 const r = 24;
                 ctx.save();
-                // 绘制阴影
+                // 更加柔和、扩散的阴影
                 ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
-                ctx.shadowBlur = 20;
-                ctx.shadowOffsetY = 10;
+                ctx.shadowBlur = 40;
+                ctx.shadowOffsetY = 20;
 
                 ctx.beginPath();
                 ctx.moveTo(x + r, y); ctx.lineTo(x + s - r, y); ctx.quadraticCurveTo(x + s, y, x + s, y + r);
@@ -633,24 +691,23 @@
                 ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
                 ctx.closePath();
 
-                // 先填充一个白色底，防止透明图片阴影叠加
                 ctx.fillStyle = "#fff";
                 ctx.fill();
-
                 ctx.clip();
                 const min = Math.min(img.width, img.height);
                 ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, x, y, s, s);
                 ctx.restore();
             }
 
+            // 升级版：胶片颗粒噪点
             function createNoise() {
                 const c = document.createElement('canvas');
-                c.width = 200; c.height = 200;
+                c.width = 300; c.height = 300; // 增大 pattern 尺寸
                 const cx = c.getContext('2d');
-                const d = cx.createImageData(200, 200);
+                const d = cx.createImageData(300, 300);
                 for (let i = 0; i < d.data.length; i += 4) {
-                    // 使用黑白噪点，更像纸张
-                    const v = Math.random() * 255;
+                    // 随机灰度，模拟胶片银盐颗粒
+                    const v = Math.random() * 200;
                     d.data[i] = v;
                     d.data[i + 1] = v;
                     d.data[i + 2] = v;
@@ -660,25 +717,49 @@
                 return c;
             }
 
-            // 模拟纸张纤维
-            function drawPaperFibers(ctx) {
+            // 新增：纸张斑驳效果
+            function drawPaperBlotches(ctx, bgColor) {
                 ctx.save();
-                ctx.globalAlpha = 0.03; // 非常淡
-                ctx.strokeStyle = "#000";
-                ctx.lineWidth = 2;
+                ctx.globalCompositeOperation = 'multiply'; // 正片叠底
+                ctx.globalAlpha = 0.05;
 
-                // 随机画 50 条小曲线
-                for (let i = 0; i < 50; i++) {
+                // 随机画一些不规则的大圆斑
+                for (let i = 0; i < 20; i++) {
                     const x = Math.random() * CANVAS_SIZE;
                     const y = Math.random() * CANVAS_SIZE;
-                    const len = Math.random() * 30 + 10;
+                    const r = Math.random() * 400 + 100;
+
+                    const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+                    grad.addColorStop(0, '#000');
+                    grad.addColorStop(1, 'transparent');
+
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            // 升级版：纸张纤维
+            function drawPaperFibers(ctx) {
+                ctx.save();
+                ctx.globalAlpha = 0.15; // 提升可见度
+                ctx.strokeStyle = "#000"; // 黑色纤维
+
+                // 画短纤维
+                for (let i = 0; i < 120; i++) {
+                    ctx.lineWidth = Math.random() * 3 + 2; // 2px - 5px 粗细
+                    const x = Math.random() * CANVAS_SIZE;
+                    const y = Math.random() * CANVAS_SIZE;
+                    const len = Math.random() * 40 + 10;
                     const angle = Math.random() * Math.PI * 2;
 
                     ctx.beginPath();
                     ctx.moveTo(x, y);
                     ctx.quadraticCurveTo(
-                        x + Math.cos(angle) * len / 2 + Math.random() * 5,
-                        y + Math.sin(angle) * len / 2 + Math.random() * 5,
+                        x + Math.cos(angle) * len / 2 + Math.random() * 10,
+                        y + Math.sin(angle) * len / 2 + Math.random() * 10,
                         x + Math.cos(angle) * len,
                         y + Math.sin(angle) * len
                     );
@@ -694,7 +775,6 @@
                 return (r * 299 + g * 587 + b * 114) / 1000;
             }
 
-            // URL State 管理
             function updateUrlState() {
                 const state = {
                     t: document.getElementById('poster-title').value,
