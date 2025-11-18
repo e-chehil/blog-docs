@@ -356,6 +356,7 @@
             // sourceUrls 用于存储可分享的源 URL
             let sourceUrls = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null, 7: null, 8: null, 9: null };
             let loadedImages = {}; // 存储加载的 Image 对象
+            let noisePatternCanvas = null; // 用于存储噪点图案
 
             // --- DOM 元素 ---
             const textTitle = document.getElementById('poster-title');
@@ -515,6 +516,7 @@
             }
 
             // --- 初始化 ---
+            noisePatternCanvas = createNoisePattern(); // 创建噪点图案
             populateSlotSelector();
             // 启动时从 URL 加载状态，而不是直接绘制
             loadStateFromUrl();
@@ -556,6 +558,31 @@
 
 
             // --- 核心函数 ---
+
+            /**
+            * 创建一个 200x200 的噪点图案
+            * @returns {HTMLCanvasElement}
+            */
+            function createNoisePattern() {
+                const size = 200;
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const imageData = ctx.createImageData(size, size);
+                const data = imageData.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    // 0-255 的全范围灰度噪点
+                    const noise = Math.random() * 255;
+                    data[i] = noise;   // R
+                    data[i + 1] = noise; // G
+                    data[i + 2] = noise; // B
+                    data[i + 3] = 255;   // A
+                }
+                ctx.putImageData(imageData, 0, 0);
+                return canvas;
+            }
 
             function clearSlot(slot) {
                 sourceUrls[slot] = null;
@@ -605,6 +632,7 @@
 
                 try {
                     const urlRegex = /(https?:\/\/[^\s"'()]+)/;
+
                     const match = rawInput.match(urlRegex);
                     if (!match) throw new Error('未在输入内容中找到有效的URL。');
 
@@ -761,7 +789,7 @@
             }
 
             /**
-             * 主绘制函数 (已修改)
+             * 主绘制函数
              */
             function drawPoster() {
                 const settings = {
@@ -778,10 +806,10 @@
                     }
                 }
 
-                // 1. (修复) 获取所有对比色
+                // 1. 获取所有对比色
                 const textColors = getContrastingTextColors(settings.bgColor);
 
-                // 2. (修复) 将颜色传递给 background
+                // 2. 将颜色传递给 background
                 drawBackground(settings.bgColor, activeImages.length === 0, textColors);
 
                 const TOP_TEXT_ZONE_HEIGHT = 450;
@@ -798,12 +826,12 @@
                     case 'grid-3x3': drawGrid3x3Layout(activeImages, contentBox); break;
                 }
 
-                // 3. (修复) 将颜色传递给 text
+                // 3. 将颜色传递给 text
                 drawText(settings, textColors);
             }
 
             /**
-             * 绘制背景 (已修改)
+             * 绘制背景
              * @param {string} color - 背景色
              * @param {boolean} showHint - 是否显示提示
              * @param {object} textColors - 包含 {main, secondary, hint} 的对象
@@ -813,11 +841,23 @@
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
+                // 叠加纸纹
+                if (noisePatternCanvas) {
+                    ctx.save();
+                    // 'overlay' 模式，适合叠加中性灰(128)的噪点
+                    ctx.globalCompositeOperation = 'overlay';
+                    // 透明度控制纹理强度
+                    ctx.globalAlpha = 0.15;
+                    ctx.fillStyle = ctx.createPattern(noisePatternCanvas, 'repeat');
+                    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+                    ctx.restore();
+                }
+
                 // 确保 textColors 存在，如果不存在则获取默认值
                 const colors = textColors || getContrastingTextColors(color);
 
                 if (showHint) {
-                    // (修复) 使用动态的提示颜色
+                    // 使用动态的提示颜色
                     ctx.fillStyle = colors.hint;
                     ctx.font = '90px "STDongGuanTi", sans-serif';
                     ctx.textAlign = 'center';
@@ -862,7 +902,7 @@
             }
 
             /**
-             * 根据背景色自动选择适合的文字颜色（深/浅）(已修改为 WCAG 标准)
+             * 根据背景色自动选择适合的文字颜色（深/浅）
              * @param {string} bgColor - Hex 格式的背景色
              * @returns {{main: string, secondary: string, hint: string}}
              */
@@ -892,7 +932,6 @@
                     // 3. 返回对比色 (使用 WCAG 逻辑判断)
                     if (contrastWithBlack >= contrastWithWhite) {
                         // 背景偏亮 -> 文字用深色系
-                        // (使用我们上次调整的高对比度深色)
                         return {
                             main: '#111827',      // 主标题 (gray-900)
                             secondary: '#374151', // 副标题 (gray-700)
@@ -914,7 +953,7 @@
             }
 
             /**
-             * 辅助: 绘制文本 (已修改)
+             * 辅助: 绘制文本
              * @param {object} settings - 包含 {title, sharer, padding} 的对象
              * @param {object} textColors - 包含 {main, secondary, hint} 的对象
              */
@@ -942,7 +981,7 @@
                 ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
             }
 
-            // --- 布局绘制函数 (未修改) ---
+            // --- 布局绘制函数 ---
 
             function drawHeroLayout(images, box) {
                 const gap = 60;
