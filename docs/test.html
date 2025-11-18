@@ -594,7 +594,7 @@
             }
 
             /**
-             * 提取网易云封面 (V3 - 已修正 Album 正则)
+             * 提取网易云封面 (V2 - 三级降级策略)
              */
             async function handleNeteaseFetch() {
                 const rawInput = neteaseUrlInput.value.trim();
@@ -619,8 +619,7 @@
                     let htmlContent = null; // 存储 HTML 内容以便复用
 
                     // 2. 分析 URL
-                    // (修正) 匹配 song/album 和 ?id=ID /ID/ 两种格式
-                    const idRegex = /(song|album)(?:\?id=|\/)(\d+)/;
+                    const idRegex = /(song|album)\?id=(\d+)/;
                     const idMatch = targetUrl.match(idRegex);
                     const isShortLink = targetUrl.includes('163.fm');
 
