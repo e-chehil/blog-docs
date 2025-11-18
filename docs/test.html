@@ -663,69 +663,29 @@
                         console.log("检测到短链接，跳过 API 策略，直接进行 HTML 解析");
                     }
 
-                    // --- 策略 2: HTML 解析 (次优先) ---
+                    // --- 策略 2: HTML 'og:image' 解析 (次优先) ---
+                    // (前提: 策略 1 未执行或失败)
                     if (!imageUrl) {
                         try {
                             showNeteaseMessage(isShortLink ? '解析短链中...' : '尝试HTML解析... (2/3)', 'loading');
 
-                            // 如果之前没抓取过，现在抓取
-                            if (!htmlContent) {
-                                htmlContent = await fetchWithProxies(targetUrl);
-                            }
+                            htmlContent = await fetchWithProxies(targetUrl);
+                            showNeteaseMessage('解析HTML, 查找封面...', 'loading');
 
-                            // 检查 Worker 传回来的真实 URL
-                            const helperMatch = htmlContent.match(new RegExp(''));
-                            if (helperMatch) {
-                                const resolvedUrl = helperMatch[1];
-                                console.log("Worker 返回了真实地址:", resolvedUrl);
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(htmlContent, 'text/html');
+                            const ogImageTag = doc.querySelector("meta[property='og:image']");
 
-                                // 尝试从真实地址中再次提取 ID
-                                const newIdMatch = resolvedUrl.match(/(song|album|playlist)(?:\/|\?id=)(\d+)/);
-                                if (newIdMatch) {
-                                    const type = newIdMatch[1];
-                                    const id = newIdMatch[2];
-                                    showNeteaseMessage(`短链解析成功 (ID:${id})，转入API...`, 'loading');
+                            imageUrl = ogImageTag?.getAttribute('content');
 
-                                    // 再次尝试调用 API
-                                    // 手动构建 API URL
-                                    let retryApiUrl = '';
-                                    if (type === 'song') retryApiUrl = `https://music.163.com/api/song/detail?ids=${id}`;
-                                    else if (type === 'album') retryApiUrl = `https://music.163.com/api/album/${id}`;
-
-                                    if (retryApiUrl) {
-                                        try {
-                                            const jsonStr = await fetchWithProxies(retryApiUrl);
-                                            const data = JSON.parse(jsonStr);
-                                            if (type === 'song') imageUrl = data?.songs?.[0]?.album?.picUrl;
-                                            else imageUrl = data?.album?.picUrl;
-
-                                            if (imageUrl) {
-                                                console.log("✅ 曲线救国成功：短链 -> 拦截页 -> 获取ID -> API -> 图片");
-                                            }
-                                        } catch (e) {
-                                            console.warn("API 重试失败", e);
-                                        }
-                                    }
-                                }
-                            }
-
-                            // 如果上面的“曲线救国”成功了，imageUrl 就有值了，下面这些就会跳过
-                            // 如果还没拿到，继续尝试解析 meta 标签
                             if (!imageUrl) {
-                                const parser = new DOMParser();
-                                const doc = parser.parseFromString(htmlContent, 'text/html');
-
-                                // 检查是否是恶心的拦截页
-                                if (htmlContent.includes('网络文化经营许可证') || htmlContent.includes('安全验证')) {
-                                    console.warn("检测到拦截页，且未能提取到ID，跳过 meta 解析");
-                                } else {
-                                    const ogImageTag = doc.querySelector("meta[property='og:image']");
-                                    imageUrl = ogImageTag?.getAttribute('content');
-                                }
+                                throw new Error('无法在此页面找到封面图片(og:image)。');
                             }
+                            showNeteaseMessage('HTML og:image 提取成功！', 'success');
 
                         } catch (htmlError) {
-                            console.warn("HTML 解析阶段失败:", htmlError.message);
+                            console.warn("HTML 'og:image' 提取失败:", htmlError.message);
+                            // HTML 解析失败，降级到策略 3，不抛出错误
                         }
                     }
 
