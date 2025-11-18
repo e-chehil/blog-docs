@@ -220,7 +220,6 @@
                         <h3 class="text-md font-semibold text-gray-800 mb-3">手动上传 (1-9 张)</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <!-- 插槽 1-9 -->
-                            <!-- ... 省略 9 个插槽的 HTML ... -->
                             <div class="relative aspect-square light-slot rounded-lg flex items-center justify-center text-center"
                                 id="slot-container-1">
                                 <img id="preview-1"
@@ -377,8 +376,10 @@
             const deleteBtns = document.querySelectorAll('.delete-btn');
 
             const CORS_PROXIES = [
+                "https://corsproxy.io/?",
                 "https://api.allorigins.win/raw?url=",
-                "https://everyorigin.jwvbremen.nl/raw?url="
+                "https://api.codetabs.com/v1/proxy?quest=",
+                "https://thingproxy.freeboard.io/fetch/"
             ];
 
             async function fetchWithProxies(targetUrl) {
@@ -759,7 +760,7 @@
             }
 
             /**
-             * 主绘制函数
+             * 主绘制函数 (已修改)
              */
             function drawPoster() {
                 const settings = {
@@ -775,7 +776,13 @@
                         activeImages.push(loadedImages[i]);
                     }
                 }
-                drawBackground(settings.bgColor, activeImages.length === 0);
+
+                // 1. (修复) 获取所有对比色
+                const textColors = getContrastingTextColors(settings.bgColor);
+
+                // 2. (修复) 将颜色传递给 background
+                drawBackground(settings.bgColor, activeImages.length === 0, textColors);
+
                 const TOP_TEXT_ZONE_HEIGHT = 450;
                 const BOTTOM_TEXT_ZONE_HEIGHT = 300;
                 const contentBox = {
@@ -789,98 +796,103 @@
                     case 'grid-2x2': drawGrid2x2Layout(activeImages, contentBox); break;
                     case 'grid-3x3': drawGrid3x3Layout(activeImages, contentBox); break;
                 }
-                drawText(settings);
+
+                // 3. (修复) 将颜色传递给 text
+                drawText(settings, textColors);
             }
 
-            function drawBackground(color, showHint) {
+            /**
+             * 绘制背景 (已修改)
+             * @param {string} color - 背景色
+             * @param {boolean} showHint - 是否显示提示
+             * @param {object} textColors - 包含 {main, secondary, hint} 的对象
+             */
+            function drawBackground(color, showHint, textColors) {
                 ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
                 ctx.fillStyle = color;
                 ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+                // 确保 textColors 存在，如果不存在则获取默认值
+                const colors = textColors || getContrastingTextColors(color);
+
                 if (showHint) {
-                    ctx.fillStyle = '#9ca3af';
+                    // (修复) 使用动态的提示颜色
+                    ctx.fillStyle = colors.hint;
                     ctx.font = '90px "STDongGuanTi", sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillText('请在侧边栏上传或提取专辑封面', CANVAS_SIZE / 2, CANVAS_SIZE / 2);
                 }
             }
 
-            // 把 hex 转成 { r, g, b } (0-255)
-            function hexToRgb(hex) {
-                hex = hex.replace('#', '');
-                if (hex.length === 3) {
-                    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-                }
-                const r = parseInt(hex.substr(0, 2), 16);
-                const g = parseInt(hex.substr(2, 2), 16);
-                const b = parseInt(hex.substr(4, 2), 16);
-                return { r, g, b };
-            }
-
-            // sRGB -> 相对亮度 (WCAG)
-            function getRelativeLuminance({ r, g, b }) {
-                const srgb = [r, g, b].map(v => v / 255);
-
-                const [R, G, B] = srgb.map(v =>
-                    v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
-                );
-
-                // 相对亮度
-                return 0.2126 * R + 0.7152 * G + 0.0722 * B;
-            }
-
-            // 计算两个亮度的对比度
-            function getContrastRatio(L1, L2) {
-                const light = Math.max(L1, L2);
-                const dark = Math.min(L1, L2);
-                return (light + 0.05) / (dark + 0.05);
-            }
-
-            // 根据背景色选主文字 & 副文字颜色
+            /**
+             * 根据背景色自动选择适合的文字颜色（深/浅）(已修改)
+             * @param {string} bgColor - Hex 格式的背景色
+             * @returns {{main: string, secondary: string, hint: string}}
+             */
             function getContrastingTextColors(bgColor) {
+                // 默认 (浅色背景)
+                const defaultColors = { main: '#111827', secondary: '#4B5563', hint: '#6B7280' };
+
                 if (!bgColor) {
-                    return {
-                        main: '#111827',
-                        secondary: '#6B7280',
-                    };
+                    return defaultColors;
                 }
 
-                const bgRgb = hexToRgb(bgColor);
-                const bgL = getRelativeLuminance(bgRgb);
+                try {
+                    // 1. 解析 Hex
+                    let hex = bgColor.replace('#', '');
+                    if (hex.length === 3) {
+                        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+                    }
+                    if (hex.length !== 6) {
+                        return defaultColors;
+                    }
 
-                const whiteL = 1;          // #FFFFFF
-                const blackL = 0;          // #000000
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
 
-                const contrastWithWhite = getContrastRatio(bgL, whiteL);
-                const contrastWithBlack = getContrastRatio(bgL, blackL);
+                    // 2. 计算亮度 (YIQ formula)
+                    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
 
-                // 默认使用一套更"系统化"的配色
-                if (contrastWithBlack >= contrastWithWhite) {
-                    // 背景偏浅 -> 文字用深色系
-                    return {
-                        main: '#111827',  // slate-900
-                        secondary: '#6B7280', // slate-500~600
-                    };
-                } else {
-                    // 背景偏深 -> 文字用浅色系
-                    return {
-                        main: '#F9FAFB',  // gray-50
-                        secondary: '#D1D5DB', // gray-300
-                    };
+                    // 3. 返回对比色
+                    if (yiq >= 128) {
+                        // 背景偏亮 -> 文字用深色
+                        return {
+                            main: '#111827',      // 主标题
+                            secondary: '#4B5563', // 副标题（分享人）
+                            hint: '#6B7280'       // (修复) 提示文字 (需要更深的灰色)
+                        };
+                    } else {
+                        // 背景偏暗 -> 文字用浅色
+                        return {
+                            main: '#F9FAFB',
+                            secondary: '#E5E7EB',
+                            hint: '#9CA3AF'       // (修复) 提示文字 (浅灰色)
+                        };
+                    }
+                } catch (e) {
+                    console.error("解析颜色失败:", bgColor, e);
+                    // 发生错误时返回默认值
+                    return defaultColors;
                 }
             }
+
 
             /**
-             * 辅助: 绘制文本 (使用新字体和新尺寸)
+             * 辅助: 绘制文本 (已修改)
+             * @param {object} settings - 包含 {title, sharer, padding} 的对象
+             * @param {object} textColors - 包含 {main, secondary, hint} 的对象
              */
-            function drawText(settings) {
+            function drawText(settings, textColors) {
                 ctx.shadowColor = 'transparent';
                 ctx.shadowBlur = 0;
                 const padding = settings.padding;
                 const TOP_TEXT_ZONE_HEIGHT = 450;
                 const BOTTOM_TEXT_ZONE_HEIGHT = 300;
 
-                // 根据背景色，动态计算一组适合的文字颜色
-                const { main, secondary } = getContrastingTextColors(settings.bgColor);
+                // (修复) 1. 直接使用传入的 textColors
+                // (如果未传入，则获取默认值，以防万一)
+                const { main, secondary } = textColors || getContrastingTextColors(settings.bgColor);
 
                 // 标题
                 ctx.fillStyle = main;
@@ -897,7 +909,7 @@
                 ctx.fillText(settings.sharer, CANVAS_SIZE / 2, sharerY);
             }
 
-            // --- 布局绘制函数 ---
+            // --- 布局绘制函数 (未修改) ---
 
             function drawHeroLayout(images, box) {
                 const gap = 60;
