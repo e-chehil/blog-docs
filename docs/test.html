@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>海报工坊</title>
+    <title>海报工坊 (艺术臻享版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/488/main/result.css">
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/7/main/result.css">
@@ -31,6 +31,7 @@
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
+
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
@@ -45,14 +46,18 @@
         }
 
         /* 布局选择器 */
-        .template-selector input[type="radio"] { display: none; }
+        .template-selector input[type="radio"] {
+            display: none;
+        }
+
         .template-selector label {
             cursor: pointer;
             background-color: #fff;
             border: 2px solid transparent;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
+
         .template-selector input[type="radio"]:checked+label {
             background-color: #fff1f2;
             color: var(--rose-600);
@@ -60,13 +65,14 @@
             box-shadow: 0 4px 12px rgba(225, 29, 72, 0.15);
             transform: translateY(-1px);
         }
-        
+
         /* 输入框优化 */
         .art-input {
             background-color: #f5f5f4;
             border: 1px solid transparent;
             transition: all 0.2s;
         }
+
         .art-input:focus {
             background-color: #fff;
             border-color: #fda4af;
@@ -75,12 +81,18 @@
         }
 
         /* 加载动画 */
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         .loader {
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-top: 2px solid #fff;
             border-radius: 50%;
-            width: 16px; height: 16px;
+            width: 16px;
+            height: 16px;
             animation: spin 0.8s linear infinite;
         }
     </style>
@@ -89,10 +101,10 @@
 <body class="min-h-screen py-8 px-4 md:px-8 flex justify-center">
 
     <div class="w-full max-w-[1200px]">
-        
+
         <!-- 顶部标题 -->
         <header class="text-center mb-10 md:mb-14">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-stone-800 mb-2" 
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight text-stone-800 mb-2"
                 style="font-family: 'STDongGuanTi', serif;">
                 海报工坊
             </h1>
@@ -108,13 +120,16 @@
             <!-- lg:w-[55%] 给画布留更多空间，lg:sticky lg:top-8 实现悬浮 -->
             <section class="w-full lg:w-[58%] lg:sticky lg:top-8 z-10">
                 <div class="w-full glass-panel p-3 md:p-4 rounded-2xl md:rounded-3xl">
-                    <div class="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-stone-100 shadow-inner cursor-crosshair group">
+                    <div
+                        class="relative w-full aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-stone-100 shadow-inner cursor-crosshair group">
                         <canvas id="poster-canvas" width="3000" height="3000"
                             class="w-full h-full object-contain"></canvas>
-                        
+
                         <!-- 简单的提示 -->
-                        <div class="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                            <span class="bg-black/50 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full shadow-lg">长按或右键保存图片</span>
+                        <div
+                            class="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                            <span
+                                class="bg-black/50 backdrop-blur text-white text-xs px-3 py-1.5 rounded-full shadow-lg">长按或右键保存图片</span>
                         </div>
                     </div>
                 </div>
@@ -127,7 +142,9 @@
                     <!-- 1. 文本设置 -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">01</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">
+                                01</div>
                             <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">内容 Content</h2>
                         </div>
                         <div class="space-y-3 pl-2">
@@ -147,17 +164,20 @@
                     <!-- 2. 布局选择 -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">02</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">
+                                02</div>
                             <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">布局 Layout</h2>
                         </div>
                         <div class="grid grid-cols-3 gap-3 template-selector pl-2">
                             <div>
                                 <input type="radio" name="template" id="template-hero" value="hero">
                                 <label for="template-hero" class="rounded-xl py-4 flex flex-col items-center gap-2">
-                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24" fill="currentColor">
-                                        <rect x="4" y="3" width="9" height="18" rx="1.5"/>
-                                        <rect x="14.5" y="3" width="5.5" height="8" rx="1.5" opacity="0.5"/>
-                                        <rect x="14.5" y="13" width="5.5" height="8" rx="1.5" opacity="0.5"/>
+                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24"
+                                        fill="currentColor">
+                                        <rect x="4" y="3" width="9" height="18" rx="1.5" />
+                                        <rect x="14.5" y="3" width="5.5" height="8" rx="1.5" opacity="0.5" />
+                                        <rect x="14.5" y="13" width="5.5" height="8" rx="1.5" opacity="0.5" />
                                     </svg>
                                     <span class="text-xs font-bold">精选</span>
                                 </label>
@@ -165,11 +185,12 @@
                             <div>
                                 <input type="radio" name="template" id="template-grid-2x2" value="grid-2x2">
                                 <label for="template-grid-2x2" class="rounded-xl py-4 flex flex-col items-center gap-2">
-                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24" fill="currentColor">
-                                        <rect x="3" y="3" width="8" height="8" rx="1.5"/>
-                                        <rect x="13" y="3" width="8" height="8" rx="1.5"/>
-                                        <rect x="3" y="13" width="8" height="8" rx="1.5"/>
-                                        <rect x="13" y="13" width="8" height="8" rx="1.5"/>
+                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24"
+                                        fill="currentColor">
+                                        <rect x="3" y="3" width="8" height="8" rx="1.5" />
+                                        <rect x="13" y="3" width="8" height="8" rx="1.5" />
+                                        <rect x="3" y="13" width="8" height="8" rx="1.5" />
+                                        <rect x="13" y="13" width="8" height="8" rx="1.5" />
                                     </svg>
                                     <span class="text-xs font-bold">四格</span>
                                 </label>
@@ -177,16 +198,17 @@
                             <div>
                                 <input type="radio" name="template" id="template-grid-3x3" value="grid-3x3" checked>
                                 <label for="template-grid-3x3" class="rounded-xl py-4 flex flex-col items-center gap-2">
-                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24" fill="currentColor">
-                                        <rect x="3" y="3" width="5" height="5" rx="1"/>
-                                        <rect x="9.5" y="3" width="5" height="5" rx="1"/>
-                                        <rect x="16" y="3" width="5" height="5" rx="1"/>
-                                        <rect x="3" y="9.5" width="5" height="5" rx="1"/>
-                                        <rect x="9.5" y="9.5" width="5" height="5" rx="1"/>
-                                        <rect x="16" y="9.5" width="5" height="5" rx="1"/>
-                                        <rect x="3" y="16" width="5" height="5" rx="1"/>
-                                        <rect x="9.5" y="16" width="5" height="5" rx="1"/>
-                                        <rect x="16" y="16" width="5" height="5" rx="1"/>
+                                    <svg class="w-6 h-6 text-current opacity-80" viewBox="0 0 24 24"
+                                        fill="currentColor">
+                                        <rect x="3" y="3" width="5" height="5" rx="1" />
+                                        <rect x="9.5" y="3" width="5" height="5" rx="1" />
+                                        <rect x="16" y="3" width="5" height="5" rx="1" />
+                                        <rect x="3" y="9.5" width="5" height="5" rx="1" />
+                                        <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
+                                        <rect x="16" y="9.5" width="5" height="5" rx="1" />
+                                        <rect x="3" y="16" width="5" height="5" rx="1" />
+                                        <rect x="9.5" y="16" width="5" height="5" rx="1" />
+                                        <rect x="16" y="16" width="5" height="5" rx="1" />
                                     </svg>
                                     <span class="text-xs font-bold">九宫</span>
                                 </label>
@@ -197,10 +219,12 @@
                     <!-- 3. 提取封面 -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">03</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">
+                                03</div>
                             <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">资源 Source</h2>
                         </div>
-                        
+
                         <div class="pl-2 space-y-3">
                             <div class="p-1 bg-white rounded-2xl border border-stone-200 shadow-sm">
                                 <input type="text" id="netease-url-input" placeholder="粘贴网易云链接..."
@@ -217,7 +241,8 @@
                                     </button>
                                 </div>
                             </div>
-                            <div id="netease-msg" class="text-xs text-center hidden font-bold py-1 bg-stone-100 rounded-lg"></div>
+                            <div id="netease-msg"
+                                class="text-xs text-center hidden font-bold py-1 bg-stone-100 rounded-lg"></div>
 
                             <!-- 手动上传槽位 -->
                             <div class="grid grid-cols-3 gap-3 mt-2" id="slots-grid">
@@ -229,16 +254,20 @@
                     <!-- 4. 风格微调 -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">04</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xs font-bold">
+                                04</div>
                             <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">风格 Style</h2>
                         </div>
-                        
+
                         <div class="pl-2 space-y-5">
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-bold text-stone-500 uppercase">纸张基色</label>
                                 <div class="flex items-center gap-3">
-                                    <span id="color-hex" class="text-[10px] font-mono text-stone-300 uppercase">#F4F4F8</span>
-                                    <div class="relative w-8 h-8 rounded-full shadow-md ring-2 ring-white overflow-hidden cursor-pointer hover:scale-110 transition-transform">
+                                    <span id="color-hex"
+                                        class="text-[10px] font-mono text-stone-300 uppercase">#F4F4F8</span>
+                                    <div
+                                        class="relative w-8 h-8 rounded-full shadow-md ring-2 ring-white overflow-hidden cursor-pointer hover:scale-110 transition-transform">
                                         <input id="bg-color" type="color" value="#F4F4F8"
                                             class="absolute -top-4 -left-4 w-16 h-16 p-0 border-0 cursor-pointer">
                                     </div>
@@ -250,7 +279,7 @@
                                     <label class="text-xs font-bold text-stone-500 uppercase">留白控制</label>
                                     <span id="padding-val" class="text-[10px] font-mono text-stone-400">180px</span>
                                 </div>
-                                <input id="poster-padding" type="range" value="180" min="60" max="450" 
+                                <input id="poster-padding" type="range" value="180" min="60" max="450"
                                     class="w-full h-1.5 bg-stone-200 rounded-full appearance-none cursor-pointer accent-rose-500 hover:accent-rose-600">
                             </div>
                         </div>
@@ -268,7 +297,7 @@
                     </div>
 
                 </div>
-                
+
                 <footer class="mt-8 text-center pb-10">
                     <p class="text-stone-300 text-[10px] font-medium">Designed for Music Lovers</p>
                 </footer>
@@ -279,7 +308,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const CANVAS_SIZE = 3000;
-            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url="; 
+            const PROXY_ENDPOINT = "https://music-api.chehil.icu/?url=";
 
             let sourceUrls = {};
             let loadedImages = {};
@@ -363,7 +392,7 @@
                                     else if (realType === 'playlist' && data.result?.coverImgUrl) imageUrl = data.result.coverImgUrl;
                                 }
                             }
-                        } catch (e) {}
+                        } catch (e) { }
                     }
 
                     // 3. DOM
@@ -377,7 +406,7 @@
                                 const linkImg = doc.querySelector('link[rel="image_src"]');
                                 if (linkImg && linkImg.href) imageUrl = linkImg.href;
                             }
-                        } catch (e) {}
+                        } catch (e) { }
                     }
 
                     // 4. Regex
@@ -392,7 +421,7 @@
                     const hdUrl = imageUrl.split('?')[0] + '?param=3000y3000';
                     await updateSlotImage(slotSelect.value, hdUrl);
                     input.value = '';
-                    
+
                     let next = parseInt(slotSelect.value) + 1;
                     if (next > 9) next = 1;
                     slotSelect.value = next;
@@ -438,8 +467,8 @@
 
                 // 4. 边缘暗角 (Vignette)
                 const vig = ctx.createRadialGradient(
-                    CANVAS_SIZE/2, CANVAS_SIZE/2, CANVAS_SIZE*0.4, 
-                    CANVAS_SIZE/2, CANVAS_SIZE/2, CANVAS_SIZE*0.95
+                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.4,
+                    CANVAS_SIZE / 2, CANVAS_SIZE / 2, CANVAS_SIZE * 0.95
                 );
                 vig.addColorStop(0, 'rgba(0,0,0,0)');
                 vig.addColorStop(1, 'rgba(20,20,25,0.08)'); // 极淡的冷黑
@@ -449,9 +478,9 @@
                 // 颜色策略：深色油墨
                 const isDarkBg = getLuminance(bgColor) < 90;
                 // 浅背景下使用炭黑和深褐灰，深背景下使用米白
-                const inkMain = isDarkBg ? '#ffffff' : '#1c1917'; 
+                const inkMain = isDarkBg ? '#ffffff' : '#1c1917';
                 const inkSub = isDarkBg ? '#e5e5e5' : '#44403c';
-                
+
                 const topH = 450; const botH = 300;
                 const area = {
                     x: padding, y: padding + topH,
@@ -474,7 +503,7 @@
 
                 // 5. 文字绘制 (Letterpress Effect)
                 ctx.textAlign = 'center';
-                
+
                 // Title
                 ctx.fillStyle = inkMain;
                 ctx.font = 'bold 156px "STDongGuanTi", serif';
@@ -486,7 +515,7 @@
                     ctx.shadowOffsetX = 0;
                 }
                 ctx.fillText(title, CANVAS_SIZE / 2, padding + topH / 2 + 50);
-                ctx.shadowColor = "transparent"; 
+                ctx.shadowColor = "transparent";
 
                 // Subtitle
                 ctx.fillStyle = inkSub;
@@ -496,11 +525,11 @@
 
             function drawOrganicTexture(ctx, w, h) {
                 ctx.save();
-                
+
                 // A. 水彩晕染 (Watercolor Washes) - 模拟受潮/不均匀
                 ctx.globalCompositeOperation = 'multiply';
                 ctx.globalAlpha = 0.04;
-                for(let i=0; i<5; i++) {
+                for (let i = 0; i < 5; i++) {
                     const x = Math.random() * w;
                     const y = Math.random() * h;
                     const r = Math.random() * 600 + 300;
@@ -508,7 +537,7 @@
                     g.addColorStop(0, 'rgba(0,0,0,1)');
                     g.addColorStop(1, 'rgba(0,0,0,0)');
                     ctx.fillStyle = g;
-                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
                 }
 
                 // B. 短绒纤维 (Micro-Fibers) - 模拟纸浆
@@ -516,8 +545,8 @@
                 ctx.globalAlpha = 0.12;
                 ctx.strokeStyle = '#292524'; // 炭黑纤维
                 ctx.lineCap = 'round';
-                
-                for(let i=0; i<600; i++) {
+
+                for (let i = 0; i < 600; i++) {
                     const x = Math.random() * w;
                     const y = Math.random() * h;
                     const len = Math.random() * 8 + 3; // 极短 3-11px
@@ -527,9 +556,9 @@
                     ctx.beginPath();
                     ctx.moveTo(x, y);
                     ctx.quadraticCurveTo(
-                        x + Math.cos(angle) * len/2 + (Math.random()-0.5)*2,
-                        y + Math.sin(angle) * len/2 + (Math.random()-0.5)*2,
-                        x + Math.cos(angle) * len, 
+                        x + Math.cos(angle) * len / 2 + (Math.random() - 0.5) * 2,
+                        y + Math.sin(angle) * len / 2 + (Math.random() - 0.5) * 2,
+                        x + Math.cos(angle) * len,
                         y + Math.sin(angle) * len
                     );
                     ctx.stroke();
@@ -570,18 +599,18 @@
                 ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
                 ctx.shadowBlur = 40;
                 ctx.shadowOffsetY = 20;
-                
+
                 ctx.beginPath();
                 ctx.moveTo(x + r, y); ctx.lineTo(x + s - r, y); ctx.quadraticCurveTo(x + s, y, x + s, y + r);
                 ctx.lineTo(x + s, y + s - r); ctx.quadraticCurveTo(x + s, y + s, x + s - r, y + s);
                 ctx.lineTo(x + r, y + s); ctx.quadraticCurveTo(x, y + s, x, y + s - r);
                 ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
                 ctx.closePath();
-                
+
                 ctx.fillStyle = "#fff";
-                ctx.fill(); 
+                ctx.fill();
                 ctx.clip();
-                
+
                 const min = Math.min(img.width, img.height);
                 ctx.drawImage(img, (img.width - min) / 2, (img.height - min) / 2, min, min, x, y, s, s);
                 ctx.restore();
@@ -680,25 +709,25 @@
                 if (!p.get('d')) { draw(); return; }
                 try {
                     const s = JSON.parse(decodeURIComponent(atob(p.get('d'))));
-                    if(s.t) document.getElementById('poster-title').value = s.t;
-                    if(s.s) document.getElementById('poster-sharer').value = s.s;
-                    if(s.bg) { document.getElementById('bg-color').value = s.bg; document.getElementById('color-hex').textContent = s.bg; }
-                    if(s.p) { document.getElementById('poster-padding').value = s.p; document.getElementById('padding-val').textContent = s.p + 'px'; }
-                    if(s.l) document.getElementById(`template-${s.l}`).checked = true;
-                    if(s.i) for(let k in s.i) if(s.i[k]) updateSlotImage(k, s.i[k], true); else draw();
-                } catch(e) { draw(); }
+                    if (s.t) document.getElementById('poster-title').value = s.t;
+                    if (s.s) document.getElementById('poster-sharer').value = s.s;
+                    if (s.bg) { document.getElementById('bg-color').value = s.bg; document.getElementById('color-hex').textContent = s.bg; }
+                    if (s.p) { document.getElementById('poster-padding').value = s.p; document.getElementById('padding-val').textContent = s.p + 'px'; }
+                    if (s.l) document.getElementById(`template-${s.l}`).checked = true;
+                    if (s.i) for (let k in s.i) if (s.i[k]) updateSlotImage(k, s.i[k], true); else draw();
+                } catch (e) { draw(); }
             }
 
             // Events
             document.getElementById('netease-fetch-btn').onclick = handleExtract;
-            document.getElementById('clear-btn').onclick = () => { sourceUrls={}; loadedImages={}; initSlots(); draw(); updateUrlState(); };
+            document.getElementById('clear-btn').onclick = () => { sourceUrls = {}; loadedImages = {}; initSlots(); draw(); updateUrlState(); };
             document.getElementById('download-btn').onclick = () => {
                 const a = document.createElement('a'); a.download = `poster-${Date.now()}.png`; a.href = canvas.toDataURL(); a.click();
             };
             ['poster-title', 'poster-sharer', 'bg-color', 'poster-padding'].forEach(id => {
                 document.getElementById(id).oninput = (e) => {
-                    if(id==='bg-color') document.getElementById('color-hex').textContent = e.target.value.toUpperCase();
-                    if(id==='poster-padding') document.getElementById('padding-val').textContent = e.target.value + 'px';
+                    if (id === 'bg-color') document.getElementById('color-hex').textContent = e.target.value.toUpperCase();
+                    if (id === 'poster-padding') document.getElementById('padding-val').textContent = e.target.value + 'px';
                     draw(); updateUrlState();
                 };
             });
