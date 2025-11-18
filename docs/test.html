@@ -612,30 +612,34 @@
                     const urlMatch = rawInput.match(urlRegex);
                     if (!urlMatch) throw new Error('未在输入内容中找到有效的URL。');
 
-                    let targetUrl = urlMatch[0].replace("/#/", "/"); // 清理 hash 路由
+                    let targetUrl = urlMatch[0].replace("/#/", "/").replace(/\/$/, "");
                     showNeteaseMessage('识别到URL，正在分析...', 'loading');
 
                     let imageUrl = null;
-                    let htmlContent = null; // 存储 HTML 内容以便复用
+                    let htmlContent = null;
 
                     // 2. 分析 URL
-                    const idRegex = /(song|album)\?id=(\d+)/;
+                    const idRegex = /(song|album|playlist)(?:\/|\?id=)(\d+)/;
                     const idMatch = targetUrl.match(idRegex);
-                    const isShortLink = targetUrl.includes('163.fm');
+                    const shortLinkDomains = ['163.fm', '163cn.tv', 't.cn'];
+                    const isShortLink = shortLinkDomains.some(domain => targetUrl.includes(domain));
 
                     // --- 策略 1: API (最优先) ---
                     // (前提: 不是短链接，且能匹配到 song/album ID)
                     if (idMatch && !isShortLink) {
                         try {
-                            const resourceType = idMatch[1]; // 'song' 或 'album'
+                            const resourceType = idMatch[1];
                             const id = idMatch[2];
-                            showNeteaseMessage('发现ID，尝试API... (1/3)', 'loading');
+                            showNeteaseMessage(`发现${resourceType} ID: ${id}，尝试API... (1/3)`, 'loading');
 
                             let apiUrl;
                             if (resourceType === 'song') {
                                 apiUrl = `https://music.163.com/api/song/detail?ids=${id}`;
-                            } else { // 'album'
+                            } else if (resourceType === 'album') {
                                 apiUrl = `https://music.163.com/api/album/${id}`;
+                            } else {
+                                // 如果通过某种方式匹配到了 playlist 等其他类型，暂时跳过 API
+                                throw new Error('暂不支持此类型的API提取');
                             }
 
                             const jsonString = await fetchWithProxies(apiUrl);
@@ -643,7 +647,7 @@
 
                             if (resourceType === 'song') {
                                 imageUrl = data?.songs?.[0]?.album?.picUrl;
-                            } else { // 'album'
+                            } else {
                                 imageUrl = data?.album?.picUrl;
                             }
 
@@ -655,6 +659,8 @@
                             console.warn("API 提取失败:", apiError.message);
                             // API 失败，降级到策略 2，不抛出错误
                         }
+                    } else if (isShortLink) {
+                        console.log("检测到短链接，跳过 API 策略，直接进行 HTML 解析");
                     }
 
                     // --- 策略 2: HTML 'og:image' 解析 (次优先) ---
