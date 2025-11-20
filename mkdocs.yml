@@ -53,8 +53,8 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.superfences:
       custom_fences:
-        - name: acct
-          class: acct-journal-render
+        - name: je
+          class: je-source
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
@@ -64,9 +64,21 @@ markdown_extensions:
 
 extra_css:
   - stylesheets/extra.css
-  - stylesheets/acct-journal.css
 
 extra_javascript:
   - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
   - javascripts/tablesort.js
-  - javascripts/acc.js
+  # 1. 引入 React 和 ReactDOM (使用 UMD 版本)
+  - https://unpkg.com/react@18/umd/react.production.min.js
+  - https://unpkg.com/react-dom@18/umd/react-dom.production.min.js
+  
+  # 2. 引入 Babel Standalone (用于浏览器端编译 JSX)
+  - https://unpkg.com/@babel/standalone/babel.min.js
+  
+  # 3. 引入 Tailwind CSS (通过 CDN)
+  - https://cdn.tailwindcss.com
+
+  # 4. 引入你的渲染脚本
+  # 注意：必须添加 type: text/babel 以便 Babel 识别并编译它
+  - path: javascripts/voucher-render.js
+    type: text/babel
