@@ -367,7 +367,7 @@
                     let realId = null, realType = null, imageUrl = null;
 
                     // 1. Worker URL & ID
-                    const workerMarkerMatch = htmlContent.match(/<!-- REAL_URL: (.*?) -->/);
+                    const workerMarkerMatch = htmlContent.match(new RegExp("<!-- REAL_URL: (.*?) -->"));
                     if (workerMarkerMatch) {
                         const realUrl = workerMarkerMatch[1];
                         const idMatch = realUrl.match(/(song|album|playlist)(?:\/|\?id=)(\d+)/);
