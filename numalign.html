@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小数点对齐 (JS 宽度同步方案)</title>
+    <style>
+        /* 1. 基本的表格样式 (可选) */
+        table {
+            border-collapse: collapse;
+            width: 400px;
+            margin-bottom: 2em;
+            font-size: 1.1em;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        /*
+     * 2. 关键的对齐样式
+     */
+
+        /* (A) 包含数字的单元格 */
+        td.align-decimal {
+            /* 将单元格设为右对齐。*/
+            /* 这将使我们内部创建的 .num-wrapper 作为一个整体靠右 */
+            text-align: right;
+
+            /* (推荐) 使用等宽数字字体，确保 '1' 和 '8' 占同样宽度 */
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* (B) JS创建的包装器 */
+        .num-wrapper {
+            display: inline-block;
+            /* 允许 text-align: right 生效 */
+            white-space: nowrap;
+            /* 防止 123 和 .45 换行 */
+        }
+
+        /* (C) 整数和小数部分 */
+        .int-part,
+        .frac-part {
+            display: inline-block;
+            /* 允许设置宽度和对齐 */
+            vertical-align: baseline;
+            /* 保持在同一行 */
+        }
+
+        .int-part {
+            text-align: right;
+        }
+
+        .frac-part {
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>小数点对齐 (JS 宽度同步方案)</h1>
+
+    <h3>测试1: 混合数字列</h3>
+    <table id="table1">
+        <thead>
+            <tr>
+                <th>描述</th>
+                <th data-align-col="true">数值 (已对齐)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>混合</td>
+                <td class="align-decimal">123.45</td>
+            </tr>
+            <tr>
+                <td>整数</td>
+                <td class="align-decimal">1000.</td>
+            </tr>
+            <tr>
+                <td>短小数</td>
+                <td class="align-decimal">1.2</td>
+            </tr>
+            <tr>
+                <td>长小数</td>
+                <td class="align-decimal">9876.54321</td>
+            </tr>
+            <tr>
+                <td>只有小数</td>
+                <td class="align-decimal">.5</td>
+            </tr>
+            <tr>
+                <td>负数</td>
+                <td class="align-decimal">-12.3</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>测试2: 仅整数列</h3>
+    <table id="table2">
+        <thead>
+            <tr>
+                <th>描述</th>
+                <th data-align-col="true">数值 (已对齐)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>整数A</td>
+                <td class="align-decimal">123</td>
+            </tr>
+            <tr>
+                <td>整数B</td>
+                <td class="align-decimal">45678</td>
+            </tr>
+            <tr>
+                <td>整数C</td>
+                <td class="align-decimal">9</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            /**
+             * 处理单个表格中所有标记了 data-align-col 的列
+             */
+            function alignTableColumns(table) {
+                // 1. 找到所有标记了 data-align-col="true" 的表头 <th>
+                const headers = table.querySelectorAll('thead th[data-align-col="true"]');
+
+                headers.forEach(header => {
+                    // 2. 获取此表头的列索引 (从 0 开始)
+                    // (Array.from(...).indexOf(...))
+                    const colIndex = Array.from(header.parentNode.children).indexOf(header);
+                    if (colIndex === -1) return;
+
+                    // 3. 准备工作：拆分单元格并收集 DOM 元素
+                    let maxIntWidth = 0;
+                    let maxFracWidth = 0;
+
+                    const intPartElements = [];
+                    const fracPartElements = [];
+
+                    // 4. (第一遍扫描): 找到该列 (colIndex) 的所有 <td>
+                    //    `nth-child` 是 1-based, 所以用 colIndex + 1
+                    const cells = table.querySelectorAll(`tbody tr td:nth-child(${colIndex + 1})`);
+
+                    cells.forEach(cell => {
+                        const text = cell.textContent.trim();
+                        const parts = text.split('.');
+                        const intPart = parts[0];
+                        const fracPart = (parts[1] !== undefined) ? `.${parts[1]}` : '';
+
+                        // 5. 注入HTML
+                        cell.innerHTML = `
+              <span class="num-wrapper">
+                <span class="int-part">${intPart}</span><span class="frac-part">${fracPart}</span>
+              </span>
+            `;
+
+                        // 6. 获取刚创建的元素
+                        const intEl = cell.querySelector('.int-part');
+                        const fracEl = cell.querySelector('.frac-part');
+
+                        // 7. 测量并更新最大宽度
+                        //    offsetWidth 会返回元素渲染后的宽度
+                        maxIntWidth = Math.max(maxIntWidth, intEl.offsetWidth);
+                        maxFracWidth = Math.max(maxFracWidth, fracEl.offsetWidth);
+
+                        // 8. 存储元素以便第二遍扫描
+                        intPartElements.push(intEl);
+                        fracPartElements.push(fracEl);
+                    });
+
+                    // 9. (第二遍扫描): 应用最大宽度
+                    //    我们使用 min-width 而不是 width，这更健壮
+                    intPartElements.forEach(el => {
+                        el.style.minWidth = maxIntWidth + 'px';
+                    });
+
+                    fracPartElements.forEach(el => {
+                        el.style.minWidth = maxFracWidth + 'px';
+                    });
+
+                });
+            }
+
+            // 运行脚本
+            document.querySelectorAll('table').forEach(alignTableColumns);
+        });
+    </script>
+
+</body>
+
+</html>
