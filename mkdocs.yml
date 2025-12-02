@@ -74,9 +74,6 @@ extra_javascript:
   
   # 2. 引入 Babel Standalone (用于浏览器端编译 JSX)
   - https://unpkg.com/@babel/standalone/babel.min.js
-  
-  # 3. 引入 Tailwind CSS (通过 CDN)
-  - https://cdn.tailwindcss.com
 
   # 4. 引入你的渲染脚本
   # 注意：必须添加 type: text/babel 以便 Babel 识别并编译它
