@@ -152,7 +152,7 @@ const injectTStyles = () => {
             margin-top: auto; /* 推到底部 */
             padding: 4px 12px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
             text-align: right;
             color: #64748b;
         }
