@@ -56,6 +56,9 @@ markdown_extensions:
         - name: je
           class: je-source
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: jet
+          class: je-t-account
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -78,4 +81,6 @@ extra_javascript:
   # 4. 引入你的渲染脚本
   # 注意：必须添加 type: text/babel 以便 Babel 识别并编译它
   - path: javascripts/voucher-render.js
+    type: text/babel
+  - path: javascripts/taccount.js
     type: text/babel
