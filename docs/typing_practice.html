@@ -165,6 +165,33 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
+
+        @media screen and (max-width: 600px) {
+            body {
+                background-color: var(--card-bg);
+                align-items: flex-start; 
+            }
+
+            .container {
+                width: 100%;
+                max-width: none;
+                min-height: 100vh; 
+                border-radius: 0;
+                box-shadow: none;
+                padding: 30px 20px; 
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+
+            .chinese-word {
+                font-size: 3.5rem;
+            }
+        }
     </style>
 </head>
 <body>
