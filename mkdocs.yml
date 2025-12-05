@@ -59,6 +59,9 @@ markdown_extensions:
         - name: jet
           class: je-t-account
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: quiz
+          class: je-quiz
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -83,4 +86,6 @@ extra_javascript:
   - path: javascripts/voucher-render.js
     type: text/babel
   - path: javascripts/taccount.js
+    type: text/babel
+  - path: javascripts/quiz.js
     type: text/babel

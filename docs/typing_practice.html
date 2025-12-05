@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeFlow - 极简打字练习</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --primary-text: #2c3e50;
+            --secondary-text: #95a5a6;
+            --accent-color: #3498db;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --hint-color: #e67e22;
+            --input-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: var(--primary-text);
+        }
+
+        .container {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 480px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* 顶部栏：模式选择 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .mode-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--secondary-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select {
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 0.9rem;
+            color: #555;
+            background-color: transparent;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* 核心显示区 */
+        .word-display {
+            margin-bottom: 30px;
+        }
+
+        .chinese-word {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .pinyin-text {
+            font-family: Times, serif;
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            font-style: italic;
+            min-height: 24px;
+        }
+
+        /* 提示区 */
+        .hint-area {
+            height: 30px;
+            margin-bottom: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--hint-color);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .hint-area.visible { opacity: 1; }
+
+        /* 输入框区域 */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.5rem;
+            border: 2px solid transparent;
+            background-color: var(--input-bg);
+            border-radius: 12px;
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+            font-family: 'Consolas', monospace;
+            color: var(--primary-text);
+            transition: all 0.2s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        input:focus {
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        input.correct {
+            border-color: var(--success-color);
+            color: var(--success-color);
+            background-color: rgba(46, 204, 113, 0.05);
+        }
+
+        input.error {
+            border-color: var(--error-color);
+            animation: shake 0.3s ease-in-out;
+        }
+
+        /* 底部状态 */
+        .footer {
+            font-size: 0.9rem;
+            color: #b2bec3;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .key-hint {
+            font-size: 0.8rem;
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin: 0 4px;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span class="mode-badge">Practice Mode</span>
+        <select id="mode" onchange="resetGame()">
+            <option value="sp">微软双拼 (Double Pinyin)</option>
+            <option value="wb">86五笔 (Wubi)</option>
+        </select>
+    </div>
+
+    <div class="word-display">
+        <div class="chinese-word" id="target-word">Wait...</div>
+        <div class="pinyin-text" id="pinyin-display"></div>
+    </div>
+
+    <div class="hint-area" id="hint-display"></div>
+
+    <div class="input-wrapper">
+        <input type="text" id="user-input" placeholder="Type here..." autocomplete="off">
+    </div>
+
+    <div class="footer">
+        <span><span class="key-hint">Enter</span> Skip / Hint</span>
+        <span id="counter">Done: 0</span>
+    </div>
+</div>
+
+<script>
+    const dictionary = [{"w": "阿爸", "p": "ābà", "sp": "oaba", "wb": "bswq"}, {"w": "阿昌族", "p": "Āchāngzú", "sp": "oaihzu", "wb": "bjyt"}, {"w": "阿斗", "p": "Ā Dǒu", "sp": "oadb", "wb": "bsuf"}, {"w": "阿飞", "p": "āfēi", "sp": "oafz", "wb": "bsnu"}, {"w": "阿富汗", "p": "Āfùhàn", "sp": "oafuhj", "wb": "bpif"}, {"w": "阿訇", "p": "āhōng", "sp": "oahs", "wb": "bsqy"}, {"w": "阿拉伯数字", "p": "Ālābó shùzì", "sp": "oalabouuzi", "wb": "brwp"}, {"w": "阿拉伯语", "p": "Ālābóyǔ", "sp": "oalaboyu", "wb": "brwy"}, {"w": "阿妈", "p": "āmā", "sp": "oama", "wb": "bsvc"}, {"w": "阿门", "p": "āmén", "sp": "oamf", "wb": "bsuy"}, {"w": "阿Q", "p": "Ā Q", "sp": "oaQQ", "wb": "bskg"}, {"w": "阿司匹林", "p": "āsīpǐlín", "sp": "oasipiln", "wb": "bnas"}, {"w": "阿嚏", "p": "ātì", "sp": "oati", "wb": "bskf"}, {"w": "阿姨", "p": "āyí", "sp": "oayi", "wb": "bsvg"}, {"w": "啊", "p": "ā", "sp": "oa", "wb": "kbsk"}, {"w": "啊呀", "p": "āya", "sp": "oaya", "wb": "kbka"}, {"w": "啊哟", "p": "āyo", "sp": "oayo", "wb": "kbkx"}, {"w": "啊", "p": "á", "sp": "oa", "wb": "kbsk"}, {"w": "啊", "p": "ǎ", "sp": "oa", "wb": "kbsk"}, {"w": "啊", "p": "à", "sp": "oa", "wb": "kbsk"}, {"w": "啊", "p": "a", "sp": "oa", "wb": "kbsk"}, {"w": "哎", "p": "āi", "sp": "ol", "wb": "kaqy"}, {"w": "哎呀", "p": "āiyā", "sp": "olya", "wb": "kaka"}, {"w": "哎哟", "p": "āiyō", "sp": "olyo", "wb": "kakx"}, {"w": "哀兵必胜", "p": "āibīng-bìshèng", "sp": "olb;biug", "wb": "yrne"}, {"w": "哀愁", "p": "āichóu", "sp": "olib", "wb": "yeto"}, {"w": "哀悼", "p": "āidào", "sp": "oldk", "wb": "yenh"}, {"w": "哀告", "p": "āigào", "sp": "olgk", "wb": "yetf"}, {"w": "哀歌", "p": "āigē", "sp": "olge", "wb": "yesk"}, {"w": "哀号", "p": "āiháo", "sp": "olhk", "wb": "yekg"}, {"w": "哀嚎", "p": "āiháo", "sp": "olhk", "wb": "yeky"}, {"w": "哀叫", "p": "āijiào", "sp": "oljc", "wb": "yekn"}, {"w": "哀哭", "p": "āikū", "sp": "olku", "wb": "yekk"}, {"w": "哀怜", "p": "āilián", "sp": "ollm", "wb": "yenw"}, {"w": "哀鸣", "p": "āimíng", "sp": "olm;", "wb": "yekq"}, {"w": "哀戚", "p": "āiqī", "sp": "olqi", "wb": "yedh"}, {"w": "哀泣", "p": "āiqì", "sp": "olqi", "wb": "yeiu"}, {"w": "哀求", "p": "āiqiú", "sp": "olqq", "wb": "yefi"}, {"w": "哀伤", "p": "āishāng", "sp": "oluh", "wb": "yewt"}, {"w": "哀思", "p": "āisī", "sp": "olsi", "wb": "yeln"}, {"w": "哀叹", "p": "āitàn", "sp": "oltj", "wb": "yekc"}, {"w": "哀恸", "p": "āitòng", "sp": "olts", "wb": "yenf"}, {"w": "哀痛", "p": "āitòng", "sp": "olts", "wb": "yeuc"}, {"w": "哀婉", "p": "āiwǎn", "sp": "olwj", "wb": "yevp"}, {"w": "哀怨", "p": "āiyuàn", "sp": "olyr", "wb": "yeqb"}, {"w": "哀乐", "p": "āiyuè", "sp": "olle", "wb": "yeqi"}, {"w": "埃及", "p": "Āijí", "sp": "olji", "wb": "fcey"}, {"w": "挨", "p": "āi", "sp": "ol", "wb": "rctd"}, {"w": "挨边儿", "p": "āibiānr", "sp": "olbmor", "wb": "rlqt"}, {"w": "挨次", "p": "āicì", "sp": "olci", "wb": "rcuq"}, {"w": "挨个儿", "p": "āigèr", "sp": "olgeor", "wb": "rwqt"}, {"w": "挨家挨户", "p": "āijiā-āihù", "sp": "oljwolhu", "wb": "rpry"}, {"w": "挨肩儿", "p": "āijiānr", "sp": "oljmor", "wb": "ryqt"}, {"w": "挨近", "p": "āijìn", "sp": "oljn", "wb": "rcrp"}, {"w": "唉", "p": "āi", "sp": "ol", "wb": "kctd"}, {"w": "唉声叹气", "p": "āishēng-tànqì", "sp": "olugtjqi", "wb": "kfkr"}, {"w": "挨", "p": "ái", "sp": "ol", "wb": "rctd"}, {"w": "挨饿", "p": "ái’è", "sp": "oloe", "wb": "rcqn"}, {"w": "挨批", "p": "áipī", "sp": "olpi", "wb": "rcrx"}, {"w": "挨整", "p": "áizhěng", "sp": "olvg", "wb": "rcgk"}, {"w": "挨揍", "p": "áizòu", "sp": "olzb", "wb": "rcrd"}, {"w": "皑皑", "p": "ái’ái", "sp": "olol", "wb": "rmrm"}, {"w": "癌", "p": "ái", "sp": "ol", "wb": "ukkm"}, {"w": "癌变", "p": "áibiàn", "sp": "olbm", "wb": "ukyo"}, {"w": "癌细胞", "p": "áixìbāo", "sp": "olxibk", "wb": "uxeq"}, {"w": "癌症", "p": "áizhèng", "sp": "olvg", "wb": "ukug"}, {"w": "癌肿", "p": "áizhǒng", "sp": "olvs", "wb": "ukek"}, {"w": "嗳", "p": "ǎi", "sp": "ol", "wb": "kepc"}, {"w": "矮", "p": "ǎi", "sp": "ol", "wb": "tdtv"}, {"w": "矮墩墩", "p": "ǎidūndūn", "sp": "oldpdp", "wb": "tffy"}, {"w": "矮胖", "p": "ǎipàng", "sp": "olph", "wb": "tdeu"}, {"w": "矮小", "p": "ǎixiǎo", "sp": "olxc", "wb": "tdih"}, {"w": "矮子", "p": "ǎizi", "sp": "olzi", "wb": "tdbb"}, {"w": "艾", "p": "ài", "sp": "ol", "wb": "aqu"}, {"w": "艾蒿", "p": "àihāo", "sp": "olhk", "wb": "aqay"}, {"w": "艾窝窝", "p": "àiwōwo", "sp": "olwowo", "wb": "appw"}, {"w": "艾滋病", "p": "àizībìng", "sp": "olzib;", "wb": "aiug"}, {"w": "唉", "p": "ài", "sp": "ol", "wb": "kctd"}, {"w": "爱", "p": "ài", "sp": "ol", "wb": "epdc"}, {"w": "爱不释手", "p": "àibùshìshǒu", "sp": "olbuuiub", "wb": "egtr"}, {"w": "爱财如命", "p": "àicái-rúmìng", "sp": "olclrum;", "wb": "emvw"}, {"w": "爱巢", "p": "àicháo", "sp": "olik", "wb": "epvj"}, {"w": "爱称", "p": "àichēng", "sp": "olig", "wb": "eptq"}, {"w": "爱搭不理", "p": "àidābùlǐ", "sp": "oldabuli", "wb": "ergg"}, {"w": "爱戴", "p": "àidài", "sp": "oldl", "wb": "epfa"}, {"w": "爱抚", "p": "àifǔ", "sp": "olfu", "wb": "eprf"}, {"w": "爱国", "p": "àiguó", "sp": "olgo", "wb": "eplg"}, {"w": "爱国主义", "p": "àiguó zhǔyì", "sp": "olgovuyi", "wb": "elyy"}, {"w": "爱好", "p": "àihào", "sp": "olhk", "wb": "epvb"}, {"w": "爱河", "p": "àihé", "sp": "olhe", "wb": "epis"}, {"w": "爱护", "p": "àihù", "sp": "olhu", "wb": "epry"}, {"w": "爱将", "p": "àijiàng", "sp": "oljd", "wb": "epuq"}, {"w": "爱克斯光", "p": "àikèsīguāng", "sp": "olkesigd", "wb": "edai"}, {"w": "爱怜", "p": "àilián", "sp": "ollm", "wb": "epnw"}, {"w": "爱恋", "p": "àiliàn", "sp": "ollm", "wb": "epyo"}, {"w": "爱侣", "p": "àilǚ", "sp": "olly", "wb": "epwk"}, {"w": "爱美", "p": "àiměi", "sp": "olmz", "wb": "epug"}, {"w": "爱面子", "p": "àimiànzi", "sp": "olmmzi", "wb": "edbb"}, {"w": "爱莫能助", "p": "àimònéngzhù", "sp": "olmongvu", "wb": "eace"}, {"w": "爱慕", "p": "àimù", "sp": "olmu", "wb": "epaj"}, {"w": "爱女", "p": "àinǚ", "sp": "olny", "wb": "epvv"}, {"w": "爱情", "p": "àiqíng", "sp": "olq;", "wb": "epng"}, {"w": "爱人", "p": "àiren", "sp": "olrf", "wb": "epww"}, {"w": "爱神", "p": "àishén", "sp": "oluf", "wb": "eppy"}, {"w": "爱屋及乌", "p": "àiwū-jíwū", "sp": "olwujiwu", "wb": "eneq"}, {"w": "爱惜", "p": "àixī", "sp": "olxi", "wb": "epna"}, {"w": "爱心", "p": "àixīn", "sp": "olxn", "wb": "epny"}, {"w": "爱憎", "p": "àizēng", "sp": "olzg", "wb": "epnu"}, {"w": "爱憎分明", "p": "àizēng-fēnmíng", "sp": "olzgffm;", "wb": "enwj"}, {"w": "隘口", "p": "àikǒu", "sp": "olkb", "wb": "bukk"}, {"w": "碍", "p": "ài", "sp": "ol", "wb": "djgf"}, {"w": "碍口", "p": "àikǒu", "sp": "olkb", "wb": "djkk"}, {"w": "碍难", "p": "àinán", "sp": "olnj", "wb": "djcw"}, {"w": "碍事", "p": "àishì", "sp": "olui", "wb": "djgk"}, {"w": "碍手碍脚", "p": "àishǒu-àijiǎo", "sp": "oluboljc", "wb": "drde"}, {"w": "碍眼", "p": "àiyǎn", "sp": "olyj", "wb": "djhv"}, {"w": "暧昧", "p": "àimèi", "sp": "olmz", "wb": "jejf"}, {"w": "安", "p": "ān", "sp": "oj", "wb": "pvf"}, {"w": "安步当车", "p": "ānbù-dàngchē", "sp": "ojbudhie", "wb": "phil"}, {"w": "安插", "p": "ānchā", "sp": "ojia", "wb": "pvrt"}, {"w": "安抵", "p": "āndǐ", "sp": "ojdi", "wb": "pvrq"}, {"w": "安定", "p": "āndìng", "sp": "ojd;", "wb": "pvpg"}, {"w": "安度", "p": "āndù", "sp": "ojdu", "wb": "pvya"}, {"w": "安顿", "p": "āndùn", "sp": "ojdp", "wb": "pvgb"}, {"w": "安放", "p": "ānfàng", "sp": "ojfh", "wb": "pvyt"}, {"w": "安分", "p": "ānfèn", "sp": "ojff", "wb": "pvwv"}, {"w": "安分守己", "p": "ānfèn-shǒujǐ", "sp": "ojffubji", "wb": "pwpn"}, {"w": "安抚", "p": "ānfǔ", "sp": "ojfu", "wb": "pvrf"}, {"w": "安好", "p": "ānhǎo", "sp": "ojhk", "wb": "pvvb"}, {"w": "安徽", "p": "Ānhuī", "sp": "ojhv", "wb": "pvtm"}, {"w": "安家", "p": "ānjiā", "sp": "ojjw", "wb": "pvpe"}, {"w": "安家费", "p": "ānjiāfèi", "sp": "ojjwfz", "wb": "ppxj"}, {"w": "安家立业", "p": "ānjiā-lìyè", "sp": "ojjwliye", "wb": "ppuo"}, {"w": "安家落户", "p": "ānjiā-luòhù", "sp": "ojjwlohu", "wb": "ppay"}, {"w": "安检", "p": "ānjiǎn", "sp": "ojjm", "wb": "pvsw"}, {"w": "安静", "p": "ānjìng", "sp": "ojj;", "wb": "pvge"}, {"w": "安居", "p": "ānjū", "sp": "ojju", "wb": "pvnd"}, {"w": "安居工程", "p": "ānjū gōngchéng", "sp": "ojjugsig", "wb": "pnat"}, {"w": "安居乐业", "p": "ānjū-lèyè", "sp": "ojjuleye", "wb": "pnqo"}, {"w": "安康", "p": "ānkāng", "sp": "ojkh", "wb": "pvyv"}, {"w": "安乐", "p": "ānlè", "sp": "ojle", "wb": "pvqi"}, {"w": "安乐死", "p": "ānlèsǐ", "sp": "ojlesi", "wb": "pqgq"}, {"w": "安乐窝", "p": "ānlèwō", "sp": "ojlewo", "wb": "pqpw"}, {"w": "安乐椅", "p": "ānlèyǐ", "sp": "ojleyi", "wb": "pqsd"}, {"w": "安理会", "p": "Ānlǐhuì", "sp": "ojlihv", "wb": "pgwf"}, {"w": "安谧", "p": "ānmì", "sp": "ojmi", "wb": "pvyn"}, {"w": "安眠", "p": "ānmián", "sp": "ojmm", "wb": "pvhn"}, {"w": "安眠药", "p": "ānmiányào", "sp": "ojmmyk", "wb": "phax"}, {"w": "安民告示", "p": "ānmín gàoshi", "sp": "ojmngkui", "wb": "pntf"}, {"w": "安宁", "p": "ānníng", "sp": "ojn;", "wb": "pvps"}, {"w": "安排", "p": "ānpái", "sp": "ojpl", "wb": "pvrd"}, {"w": "安培", "p": "ānpéi", "sp": "ojpz", "wb": "pvfu"}, {"w": "安贫乐道", "p": "ānpín-lèdào", "sp": "ojpnledk", "wb": "pwqu"}, {"w": "安琪儿", "p": "ānqí'ér", "sp": "ojqior", "wb": "pgqt"}, {"w": "安寝", "p": "ānqǐn", "sp": "ojqn", "wb": "pvpu"}, {"w": "安全", "p": "ānquán", "sp": "ojqr", "wb": "pvwg"}, {"w": "安全带", "p": "ānquándài", "sp": "ojqrdl", "wb": "pwgk"}, {"w": "安全岛", "p": "ānquándǎo", "sp": "ojqrdk", "wb": "pwqy"}, {"w": "安全阀", "p": "ānquánfá", "sp": "ojqrfa", "wb": "pwuw"}, {"w": "安全感", "p": "ānquángǎn", "sp": "ojqrgj", "wb": "pwdg"}, {"w": "安全帽", "p": "ānquánmào", "sp": "ojqrmk", "wb": "pwmh"}, {"w": "安全门", "p": "ānquánmén", "sp": "ojqrmf", "wb": "pwuy"}, {"w": "安全套", "p": "ānquántào", "sp": "ojqrtk", "wb": "pwdd"}, {"w": "安全系数", "p": "ānquánxìshù", "sp": "ojqrxiuu", "wb": "pwto"}, {"w": "安然", "p": "ānrán", "sp": "ojrj", "wb": "pvqd"}, {"w": "安然无恙", "p": "ānrán-wúyàng", "sp": "ojrjwuyh", "wb": "pqfu"}, {"w": "安如磐石", "p": "ānrúpánshí", "sp": "ojrupjui", "wb": "pvtd"}, {"w": "安如泰山", "p": "ānrútàishān", "sp": "ojrutluj", "wb": "pvdm"}, {"w": "安设", "p": "ānshè", "sp": "ojue", "wb": "pvym"}, {"w": "安身", "p": "ānshēn", "sp": "ojuf", "wb": "pvtm"}, {"w": "安身立命", "p": "ānshēn-lìmìng", "sp": "ojuflim;", "wb": "ptuw"}, {"w": "安神", "p": "ānshén", "sp": "ojuf", "wb": "pvpy"}, {"w": "安生", "p": "ānshēng", "sp": "ojug", "wb": "pvtg"}, {"w": "安适", "p": "ānshì", "sp": "ojui", "wb": "pvtd"}, {"w": "安睡", "p": "ānshuì", "sp": "ojuv", "wb": "pvht"}, {"w": "安泰", "p": "āntài", "sp": "ojtl", "wb": "pvdw"}, {"w": "安土重迁", "p": "āntǔ-zhòngqiān", "sp": "ojtuvsqm", "wb": "pftt"}, {"w": "安危", "p": "ānwēi", "sp": "ojwz", "wb": "pvqd"}, {"w": "安慰", "p": "ānwèi", "sp": "ojwz", "wb": "pvnf"}, {"w": "安稳", "p": "ānwěn", "sp": "ojwf", "wb": "pvtq"}, {"w": "安息", "p": "ānxī", "sp": "ojxi", "wb": "pvth"}, {"w": "安闲", "p": "ānxián", "sp": "ojxm", "wb": "pvus"}, {"w": "安详", "p": "ānxiáng", "sp": "ojxd", "wb": "pvyu"}, {"w": "安享", "p": "ānxiǎng", "sp": "ojxd", "wb": "pvyb"}, {"w": "安歇", "p": "ānxiē", "sp": "ojxx", "wb": "pvjq"}, {"w": "安心", "p": "ānxīn", "sp": "ojxn", "wb": "pvny"}, {"w": "安养", "p": "ānyǎng", "sp": "ojyh", "wb": "pvud"}, {"w": "安逸", "p": "ānyì", "sp": "ojyi", "wb": "pvqk"}, {"w": "安营", "p": "ānyíng", "sp": "ojy;", "wb": "pvap"}, {"w": "安营扎寨", "p": "ānyíng-zhāzhài", "sp": "ojy;vavl", "wb": "parp"}, {"w": "安于", "p": "ānyú", "sp": "ojyu", "wb": "pvgf"}, {"w": "安葬", "p": "ānzàng", "sp": "ojzh", "wb": "pvag"}, {"w": "安之若素", "p": "ānzhī-ruòsù", "sp": "ojvirosu", "wb": "ppag"}, {"w": "安置", "p": "ānzhì", "sp": "ojvi", "wb": "pvlf"}, {"w": "安装", "p": "ānzhuāng", "sp": "ojvd", "wb": "pvuf"}, {"w": "桉树", "p": "ānshù", "sp": "ojuu", "wb": "spsc"}, {"w": "氨", "p": "ān", "sp": "oj", "wb": "rnpv"}, {"w": "氨基酸", "p": "ānjīsuān", "sp": "ojjisr", "wb": "rasg"}, {"w": "氨气", "p": "ānqì", "sp": "ojqi", "wb": "rnrn"}, {"w": "氨水", "p": "ānshuǐ", "sp": "ojuv", "wb": "rnii"}, {"w": "庵", "p": "ān", "sp": "oj", "wb": "ydjn"}, {"w": "庵堂", "p": "āntáng", "sp": "ojth", "wb": "ydip"}, {"w": "谙练", "p": "ānliàn", "sp": "ojlm", "wb": "yuxa"}, {"w": "谙熟", "p": "ānshú", "sp": "ojuu", "wb": "yuyb"}, {"w": "鹌鹑", "p": "ānchún", "sp": "ojip", "wb": "djyb"}, {"w": "鞍马", "p": "ānmǎ", "sp": "ojma", "wb": "afcn"}, {"w": "鞍马劳顿", "p": "ānmǎ-láodùn", "sp": "ojmalkdp", "wb": "acag"}, {"w": "鞍前马后", "p": "ānqián-mǎhòu", "sp": "ojqmmahb", "wb": "aucr"}, {"w": "鞍子", "p": "ānzi", "sp": "ojzi", "wb": "afbb"}, {"w": "俺", "p": "ǎn", "sp": "oj", "wb": "wdjn"}, {"w": "埯", "p": "ǎn", "sp": "oj", "wb": "fdjn"}, {"w": "岸", "p": "àn", "sp": "oj", "wb": "mdfj"}, {"w": "岸基", "p": "ànjī", "sp": "ojji", "wb": "mdad"}, {"w": "岸然", "p": "ànrán", "sp": "ojrj", "wb": "mdqd"}, {"w": "按", "p": "àn", "sp": "oj", "wb": "rpvg"}, {"w": "按兵不动", "p": "ànbīng-bùdòng", "sp": "ojb;buds", "wb": "rrgf"}, {"w": "按部就班", "p": "ànbù-jiùbān", "sp": "ojbujqbj", "wb": "ruyg"}, {"w": "按键", "p": "ànjiàn", "sp": "ojjm", "wb": "rpqv"}, {"w": "按揭", "p": "ànjiē", "sp": "ojjx", "wb": "rprj"}, {"w": "按金", "p": "ànjīn", "sp": "ojjn", "wb": "rpqq"}, {"w": "按理", "p": "ànlǐ", "sp": "ojli", "wb": "rpgj"}, {"w": "按例", "p": "ànlì", "sp": "ojli", "wb": "rpwg"}, {"w": "按脉", "p": "ànmài", "sp": "ojml", "wb": "rpey"}, {"w": "按摩", "p": "ànmó", "sp": "ojmo", "wb": "rpys"}, {"w": "按捺", "p": "ànnà", "sp": "ojna", "wb": "rprd"}, {"w": "按钮", "p": "ànniǔ", "sp": "ojnq", "wb": "rpqn"}, {"w": "按期", "p": "ànqī", "sp": "ojqi", "wb": "rpad"}, {"w": "按时", "p": "ànshí", "sp": "ojui", "wb": "rpjf"}, {"w": "按说", "p": "ànshuō", "sp": "ojuo", "wb": "rpyu"}, {"w": "按图索骥", "p": "àntú-suǒjì", "sp": "ojtusoji", "wb": "rlfc"}, {"w": "按压", "p": "ànyā", "sp": "ojya", "wb": "rpdf"}, {"w": "按语", "p": "ànyǔ", "sp": "ojyu", "wb": "rpyg"}, {"w": "按照", "p": "ànzhào", "sp": "ojvk", "wb": "rpjv"}, {"w": "案", "p": "àn", "sp": "oj", "wb": "pvsu"}, {"w": "案板", "p": "ànbǎn", "sp": "ojbj", "wb": "pvsr"}, {"w": "案底", "p": "àndǐ", "sp": "ojdi", "wb": "pvyq"}, {"w": "案牍", "p": "àndú", "sp": "ojdu", "wb": "pvth"}, {"w": "案发", "p": "ànfā", "sp": "ojfa", "wb": "pvnt"}, {"w": "案犯", "p": "ànfàn", "sp": "ojfj", "wb": "pvqt"}, {"w": "案件", "p": "ànjiàn", "sp": "ojjm", "wb": "pvwr"}, {"w": "案卷", "p": "ànjuàn", "sp": "ojjr", "wb": "pvud"}, {"w": "案例", "p": "ànlì", "sp": "ojli", "wb": "pvwg"}, {"w": "案情", "p": "ànqíng", "sp": "ojq;", "wb": "pvng"}];
+    
+    let currentWord = null;
+    let currentMode = 'sp';
+    let count = 0;
+    let isHintShown = false; // 状态标记：当前是否正在显示答案
+
+    const wordEl = document.getElementById('target-word');
+    const pinyinEl = document.getElementById('pinyin-display');
+    const hintEl = document.getElementById('hint-display');
+    const inputEl = document.getElementById('user-input');
+    const modeSelect = document.getElementById('mode');
+    const counterEl = document.getElementById('counter');
+
+    function getRandomWord() {
+        return dictionary[Math.floor(Math.random() * dictionary.length)];
+    }
+
+    function render() {
+        if (!currentWord) return;
+        
+        // 渲染文字
+        wordEl.innerText = currentWord.w;
+        pinyinEl.innerText = currentWord.p;
+        
+        // 重置状态
+        hintEl.classList.remove('visible');
+        hintEl.innerText = getTargetCode(); // 预填提示，但看不见
+        inputEl.value = '';
+        inputEl.className = ''; // 清除 correct/error 类
+        inputEl.focus();
+        isHintShown = false;
+    }
+
+    function getTargetCode() {
+        return (currentMode === 'sp' ? currentWord.sp : currentWord.wb).toLowerCase();
+    }
+
+    function nextWord() {
+        currentWord = getRandomWord();
+        render();
+    }
+
+    function resetGame() {
+        currentMode = modeSelect.value;
+        count = 0;
+        updateCounter();
+        nextWord();
+    }
+    
+    function updateCounter() {
+        counterEl.innerText = `Done: ${count}`;
+    }
+
+    // 核心输入逻辑
+    inputEl.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase().trim();
+        const target = getTargetCode();
+
+        // 1. 完全匹配
+        if (val === target) {
+            inputEl.classList.add('correct'); // 变绿
+            inputEl.classList.remove('error');
+            
+            // 增加一点点延迟，让用户看到绿色的成功状态
+            setTimeout(() => {
+                count++;
+                updateCounter();
+                nextWord();
+            }, 300);
+        } 
+        // 2. 长度超过或字符错误 (简单的即时反馈)
+        else if (!target.startsWith(val)) {
+            // 如果输入的前缀都不对，稍微变红提示
+            if(val.length > 0) inputEl.classList.add('error');
+        } else {
+            inputEl.classList.remove('error');
+        }
+    });
+
+    // 键盘交互优化
+    inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            const target = getTargetCode();
+            
+            // 逻辑 A: 如果输入框是空的，或者用户还没打对 -> 显示提示
+            if (!isHintShown && inputEl.value !== target) {
+                hintEl.classList.add('visible');
+                hintEl.innerText = target;
+                isHintShown = true;
+                
+                // 可选：将输入框清空，方便用户照着打
+                inputEl.value = ''; 
+                inputEl.classList.remove('error');
+            }
+            // 逻辑 B: 如果提示已经显示了，再按回车 -> 跳过当前词
+            else {
+                nextWord();
+            }
+        }
+    });
+
+    // 初始化
+    resetGame();
+</script>
+</body>
+</html>
