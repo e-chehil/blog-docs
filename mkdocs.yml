@@ -1,6 +1,6 @@
 site_name: Chehil的博客
 site_description: 嘎嘎嘎
-site_url: https://e-chehil.github.io/blog-docs/
+site_url: https://chehil.icu
 
 theme:
   name: material
@@ -9,6 +9,7 @@ theme:
     - navigation.instant
     - navigation.tabs
     - navigation.sections
+    - navigation.tracking
     - navigation.top
     - search.suggest
     - search.highlight
@@ -18,8 +19,6 @@ theme:
 
 nav:
   - 首页: index.md
-  - 课表: class_schedule.html
-
 plugins:
   - search
 
@@ -67,6 +66,8 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+  - pymdownx.arithmatex:
+      generic: true
 
 extra_css:
   - stylesheets/extra.css
@@ -83,9 +84,13 @@ extra_javascript:
 
   # 4. 引入你的渲染脚本
   # 注意：必须添加 type: text/babel 以便 Babel 识别并编译它
-  - path: javascripts/voucher-render.js
-    type: text/babel
-  - path: javascripts/taccount.js
+  # - path: javascripts/voucher-render.js
+  #   type: text/babel
+  # - path: javascripts/taccount.js
+  #   type: text/babel
+  - path: javascripts/acctool.js
     type: text/babel
   - path: javascripts/quiz.js
     type: text/babel
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
