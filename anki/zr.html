@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Recite Pro | Zen & Powerful</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    },
+                    colors: {
+                        paper: '#FDFCF8',
+                        ink: '#2C2C2C',
+                        sub: '#8E8E93',
+                        accent: '#2563EB',
+                    },
+                    boxShadow: {
+                        float: '0 12px 40px -8px rgba(0, 0, 0, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* 基础重置 */
+        body { background-color: #FDFCF8; color: #2C2C2C; transition: all 0.5s ease; }
+        
+        /* 核心输入框 */
+        .zen-input {
+            width: 100%;
+            border: none;
+            outline: none !important;
+            background: transparent;
+            resize: none;
+            font-family: 'Merriweather', serif;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #2C2C2C;
+            padding: 0;
+            margin: 0;
+        }
+        .zen-input::placeholder { color: #D1D5DB; font-style: italic; font-weight: 300; }
+
+        /* 模式切换按钮 */
+        .mode-chip {
+            padding: 6px 16px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+            color: #6B7280;
+        }
+        .mode-chip.active {
+            background: #1F2937;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .mode-chip:hover:not(.active) { background: #F3F4F6; }
+
+        /* Diff 样式 */
+        ins { background-color: #DCFCE7; color: #15803D; text-decoration: none; border-bottom: 2px solid #86EFAC; }
+        del { background-color: #FEE2E2; color: #B91C1C; text-decoration: line-through; opacity: 0.7; }
+        
+        /* 智能提示 Tooltip */
+        .smart-hint {
+            position: fixed;
+            background: #1F2937;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', monospace;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            white-space: pre; /* 保留空格显示 */
+        }
+        .smart-hint.visible { opacity: 1; transform: translateY(0); }
+
+        /* 镜像 Div (用于精准定位光标) */
+        #input-mirror {
+            position: absolute;
+            top: 0; left: 0;
+            visibility: hidden;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Merriweather', serif;
+            font-size: 1.25rem;
+            line-height: 1.8;
+            width: 100%;
+            z-index: -10;
+            padding: 1rem;
+        }
+
+        .layout-review { max-width: 1600px !important; padding: 0 2rem; }
+        .fade-enter { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 自定义滚动条样式 (用于 Setup 阶段的大输入框) */
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background-color: #E5E7EB; border-radius: 20px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #D1D5DB; } 
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <header class="h-16 shrink-0 flex items-center justify-between px-8 bg-paper/90 backdrop-blur z-50 border-b border-transparent transition-all duration-300" id="main-header">
+        <div class="flex items-center gap-4">
+            <span class="font-serif font-bold text-lg tracking-tight">ZenRecite</span>
+            <div id="mode-selector" class="flex bg-gray-100/50 p-1 rounded-full ml-8 transition-opacity duration-300">
+                <button onclick="app.setMode('A')" class="mode-chip active" data-mode="A">全文默写</button>
+                <button onclick="app.setMode('B')" class="mode-chip" data-mode="B">分段闯关</button>
+                <button onclick="app.setMode('C')" class="mode-chip" data-mode="C">填空提示</button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 text-sm text-sub">
+            <div id="wpm-box" class="hidden font-mono bg-gray-100 px-2 py-1 rounded">WPM: <span id="wpm-val" class="text-ink font-bold">0</span></div>
+            <button onclick="app.toggleSidebar()" class="hover:text-ink transition-colors relative">
+                错题本
+                <span id="badge-mistake" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+            </button>
+        </div>
+    </header>
+
+    <main id="workspace" class="flex-1 overflow-y-auto relative transition-all duration-500">
+        
+        <div id="container-width" class="max-w-3xl mx-auto h-full flex flex-col py-8 px-6 transition-all duration-500">
+            
+            <div id="view-setup" class="flex-1 flex flex-col fade-enter">
+                <div class="flex justify-between items-end mb-4 text-sub text-sm">
+                    <span class="font-medium tracking-wider text-xs uppercase opacity-70">Original Text</span>
+                    <button onclick="app.cleanText()" class="text-gray-400 hover:text-ink transition-colors text-xs font-medium tracking-wide flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        格式清洗
+                    </button>
+                </div>
+                <div class="relative flex-1">
+                    <textarea id="source-input" class="zen-input h-full" 
+                        placeholder="请在此粘贴原文...&#10;Paste your text here..." spellcheck="false"></textarea>
+                </div>
+            </div>
+
+            <div id="view-practice" class="hidden flex-1 flex flex-col relative">
+                
+                <div id="practice-full" class="flex-1 relative">
+                    <div id="input-mirror"></div>
+                    <textarea id="user-input" class="zen-input h-full" 
+                        placeholder="Start typing..." spellcheck="false"></textarea>
+                </div>
+
+                <div id="practice-drill" class="hidden flex-1 flex flex-col justify-center items-center">
+                    <div id="drill-prev" class="text-sub/50 font-serif text-lg mb-8 text-center select-none blur-[1px]"></div>
+                    <div class="w-full relative">
+                        <input type="text" id="drill-input" 
+                            class="zen-input text-center border-b-2 border-gray-100 focus:border-gray-800 transition-colors pb-2" 
+                            placeholder="Type the current sentence..." autocomplete="off">
+                        <div id="drill-feedback" class="mt-6 min-h-[3rem] text-center font-serif text-lg"></div>
+                    </div>
+                    <div class="mt-12 text-xs text-sub uppercase tracking-widest flex gap-4">
+                        <span>[Enter] Submit</span>
+                        <span>[Alt] Hint</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="view-review" class="hidden flex-1 grid grid-cols-2 gap-12 h-full overflow-hidden">
+                <div class="flex flex-col h-full border-gray-100 pr-6 overflow-hidden">
+                    <div class="text-xs font-bold text-sub mb-4 uppercase tracking-wider">Original</div>
+                    <div id="review-source" class="font-serif text-lg leading-loose text-gray-500 overflow-y-auto pr-2 no-scrollbar"></div>
+                </div>
+                <div class="flex flex-col h-full pl-6 overflow-hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="text-xs font-bold text-sub uppercase tracking-wider">Your Recall</div>
+                        <div id="score-display" class="font-mono font-bold text-xl"></div>
+                    </div>
+                    <div id="review-diff" class="font-serif text-lg leading-loose text-ink overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-40 flex items-center gap-3">
+        <button id="btn-start" onclick="app.start()" 
+            class="bg-ink text-white px-10 py-3 rounded-full shadow-float hover:scale-105 transition-transform font-medium">
+            Start Practice
+        </button>
+        
+        <button id="btn-submit" onclick="app.submit()" 
+            class="hidden bg-emerald-600 text-white px-8 py-3 rounded-full shadow-float hover:bg-emerald-700 hover:scale-105 transition-all flex items-center gap-2">
+            <span>Finish & Check</span>
+            <span class="text-xs opacity-70 bg-black/20 px-1.5 rounded">Ctrl+Enter</span>
+        </button>
+
+        <div id="nav-review" class="hidden flex bg-white border border-gray-200 rounded-full shadow-float p-1">
+            <button onclick="app.navDiff(-1)" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full text-gray-600">▲</button>
+            <button onclick="app.navDiff(1)" class="w-10 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full text-gray-600">▼</button>
+            <div class="w-px h-6 bg-gray-200 my-auto mx-1"></div>
+            <button onclick="app.reset()" class="px-6 h-10 flex items-center justify-center hover:bg-gray-100 rounded-full text-gray-800 font-medium">Reset</button>
+        </div>
+    </div>
+
+    <div id="hint-tooltip" class="smart-hint"></div>
+
+    <aside id="sidebar" class="fixed top-0 right-0 bottom-0 w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[60] p-8 overflow-y-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="font-serif font-bold text-xl">Mistakes</h3>
+            <button onclick="app.toggleSidebar()" class="text-gray-400 hover:text-ink">✕</button>
+        </div>
+        <ul id="mistake-list" class="space-y-3"></ul>
+    </aside>
+
+    <script>
+        const dmp = new diff_match_patch();
+
+        class App {
+            constructor() {
+                this.state = {
+                    mode: 'A',
+                    status: 'setup',
+                    originalText: localStorage.getItem('sr_source') || '',
+                    userText: '',
+                    sentences: [],
+                    currentSentenceIdx: 0,
+                    mistakes: JSON.parse(localStorage.getItem('sr_mistakes') || '{}'),
+                    startTime: null,
+                    hintTimer: null
+                };
+
+                this.dom = {
+                    views: {
+                        setup: document.getElementById('view-setup'),
+                        practice: document.getElementById('view-practice'),
+                        review: document.getElementById('view-review')
+                    },
+                    inputs: {
+                        source: document.getElementById('source-input'),
+                        user: document.getElementById('user-input'),
+                        drill: document.getElementById('drill-input'),
+                        mirror: document.getElementById('input-mirror')
+                    },
+                    containers: {
+                        main: document.getElementById('container-width'),
+                        practiceFull: document.getElementById('practice-full'),
+                        practiceDrill: document.getElementById('practice-drill'),
+                        drillPrev: document.getElementById('drill-prev'),
+                        drillFeedback: document.getElementById('drill-feedback'),
+                        reviewDiff: document.getElementById('review-diff'),
+                        reviewSource: document.getElementById('review-source')
+                    },
+                    btns: {
+                        start: document.getElementById('btn-start'),
+                        submit: document.getElementById('btn-submit'),
+                        navReview: document.getElementById('nav-review'),
+                        modeSelector: document.getElementById('mode-selector')
+                    },
+                    tooltip: document.getElementById('hint-tooltip')
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.dom.inputs.source.value = this.state.originalText;
+                this.updateMistakeList();
+                this.bindEvents();
+                this.setMode('A');
+            }
+
+            setMode(mode) {
+                if (this.state.status !== 'setup') return;
+                this.state.mode = mode;
+                document.querySelectorAll('.mode-chip').forEach(btn => {
+                    if (btn.dataset.mode === mode) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+            }
+
+            start() {
+                const text = this.dom.inputs.source.value.trim();
+                if (!text) return alert("请先输入原文");
+                
+                this.state.originalText = text;
+                localStorage.setItem('sr_source', text);
+                this.state.status = 'practice';
+                this.state.startTime = Date.now();
+                this.dom.inputs.user.value = '';
+
+                this.dom.views.setup.classList.add('hidden');
+                this.dom.views.practice.classList.remove('hidden');
+                this.dom.btns.start.classList.add('hidden');
+                this.dom.btns.modeSelector.style.opacity = '0';
+                document.getElementById('wpm-box').classList.remove('hidden');
+
+                if (this.state.mode === 'B') {
+                    this.state.sentences = this.splitSentences(text);
+                    this.state.currentSentenceIdx = 0;
+                    this.dom.containers.practiceFull.classList.add('hidden');
+                    this.dom.containers.practiceDrill.classList.remove('hidden');
+                    this.renderDrill();
+                } else {
+                    this.dom.containers.practiceFull.classList.remove('hidden');
+                    this.dom.containers.practiceDrill.classList.add('hidden');
+                    this.dom.btns.submit.classList.remove('hidden');
+                    
+                    if (this.state.mode === 'C') {
+                        const cloze = text.replace(/\b(\w)(\w+)\b/g, (m, p1, p2) => p1 + '_'.repeat(p2.length));
+                        this.dom.inputs.user.value = cloze;
+                    }
+                    this.dom.inputs.user.focus();
+                }
+            }
+
+            bindEvents() {
+                const handleInput = (el) => {
+                    this.updateWPM();
+                    this.hideHint();
+                };
+                this.dom.inputs.user.addEventListener('input', (e) => handleInput(e.target));
+
+                const handleKey = (e, inputEl) => {
+                    if (e.key === 'Alt') {
+                        e.preventDefault();
+                        if (e.repeat) return;
+                        this.showHint(inputEl, 'short');
+                        this.state.hintTimer = setTimeout(() => {
+                            this.showHint(inputEl, 'long');
+                        }, 400);
+                    }
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        if (this.state.mode === 'B') this.checkDrill();
+                        else this.submit();
+                    }
+                };
+
+                const handleKeyUp = (e) => {
+                    if (e.key === 'Alt') {
+                        clearTimeout(this.state.hintTimer);
+                        this.hideHint();
+                    }
+                };
+
+                [this.dom.inputs.user, this.dom.inputs.drill].forEach(el => {
+                    el.addEventListener('keydown', (e) => handleKey(e, el));
+                    el.addEventListener('keyup', handleKeyUp);
+                });
+                
+                this.dom.inputs.drill.addEventListener('keydown', e => {
+                    if(e.key === 'Enter') this.checkDrill();
+                });
+            }
+
+            // === 核心修复: 提示逻辑重构 ===
+            showHint(inputEl, type) {
+                let targetText = this.state.mode === 'B' 
+                    ? this.state.sentences[this.state.currentSentenceIdx] 
+                    : this.state.originalText;
+                let userVal = inputEl.value;
+                let hintContent = "";
+
+                // 优化 1: 前缀匹配优先 (速度快且逻辑符合人类直觉)
+                // 如果用户输入是目标的子集，直接取下一个字符，不做复杂的Diff
+                if (targetText.startsWith(userVal)) {
+                    const remainder = targetText.slice(userVal.length);
+                    hintContent = this.extractHint(remainder, type);
+                } else {
+                    // 优化 2: 容错匹配 (Raw Diff)
+                    const diffs = dmp.diff_main(userVal, targetText);
+                    // 关键修改: 移除 dmp.diff_cleanupSemantic(diffs)
+                    // 语义清洗会合并修改，导致"下一个字"被吞进Diff块中，造成提示不准。
+                    // 保持 Raw Diff 能更精确地找到光标后的第一个差异。
+                    
+                    for (let op of diffs) {
+                        // op[0]: 0=equal, 1=insert, -1=delete
+                        // 我们只关心 Insert (用户缺少的)，忽略 Delete (用户多打的错字)
+                        if (op[0] === 1) {
+                            hintContent = this.extractHint(op[1], type);
+                            break;
+                        }
+                    }
+                }
+
+                if (!hintContent) hintContent = "✅";
+                this.renderTooltip(inputEl, hintContent);
+            }
+
+            // 辅助: 从字符串中提取提示
+            extractHint(text, type) {
+                if (!text) return "";
+                
+                // 优化 3: 正则逻辑增强
+                // 之前: /^\s*([a-zA-Z...])/ -> 遇到标点符号会失败
+                // 现在: 
+                // 短按: 匹配第一个非空白字符 (包括标点)
+                // 长按: 匹配第一个单词或完整标点串
+                
+                if (type === 'short') {
+                    // 如果开头是空格，提示 "␣" 
+                    if (text.startsWith(' ')) return '␣';
+                    // 否则取第一个字符
+                    return text.charAt(0);
+                } else {
+                    // 长按: 尝试匹配下一个单词
+                    // Group 1: 可选的前置空格
+                    // Group 2: 单词 (字母数字汉字) 或 标点符号串
+                    const match = text.match(/^(\s*)([a-zA-Z0-9\u4e00-\u9fa5]+|[^a-zA-Z0-9\u4e00-\u9fa5\s]+)/);
+                    if (match) {
+                        return (match[1] ? '␣ ' : '') + match[2];
+                    }
+                    return text.slice(0, 5); // Fallback
+                }
+            }
+
+            renderTooltip(inputEl, text) {
+                const tooltip = this.dom.tooltip;
+                tooltip.innerText = text;
+                
+                let top, left;
+                if (inputEl === this.dom.inputs.drill) {
+                    const rect = inputEl.getBoundingClientRect();
+                    top = rect.top - 40;
+                    left = rect.left + rect.width / 2;
+                } else {
+                    // 优化 4: 修复光标定位
+                    const coords = this.getCaretCoordinates(inputEl, inputEl.selectionEnd);
+                    const rect = inputEl.getBoundingClientRect();
+                    // 必须减去 scrollTop，否则滚动后提示框会飞走
+                    top = rect.top + coords.top - 40 - inputEl.scrollTop; 
+                    left = rect.left + coords.left;
+                }
+
+                tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left}px`;
+                tooltip.classList.add('visible');
+            }
+
+            hideHint() {
+                clearTimeout(this.state.hintTimer);
+                this.dom.tooltip.classList.remove('visible');
+            }
+
+            splitSentences(text) {
+                return text.match(/[^.!?。！？\n]+[.!?。！？\n]+/g)?.map(s=>s.trim()) || [text];
+            }
+
+            renderDrill() {
+                if (this.state.currentSentenceIdx >= this.state.sentences.length) {
+                    alert("🎉 All sentences completed!");
+                    return this.submit();
+                }
+                const prev = this.state.currentSentenceIdx > 0 
+                    ? this.state.sentences[this.state.currentSentenceIdx - 1] 
+                    : '(Start)';
+                this.dom.containers.drillPrev.innerText = prev;
+                this.dom.inputs.drill.value = '';
+                this.dom.containers.drillFeedback.innerHTML = '';
+                this.dom.inputs.drill.focus();
+            }
+
+            checkDrill() {
+                const target = this.state.sentences[this.state.currentSentenceIdx];
+                const input = this.dom.inputs.drill.value.trim();
+                
+                if (input === target) {
+                    this.dom.inputs.drill.classList.add('text-green-600');
+                    setTimeout(() => {
+                        this.dom.inputs.drill.classList.remove('text-green-600');
+                        this.state.currentSentenceIdx++;
+                        this.renderDrill();
+                    }, 300);
+                } else {
+                    const diffs = dmp.diff_main(input, target);
+                    dmp.diff_cleanupSemantic(diffs);
+                    this.dom.containers.drillFeedback.innerHTML = dmp.diff_prettyHtml(diffs);
+                    this.recordMistakes(diffs);
+                    this.dom.inputs.drill.parentElement.classList.add('animate-pulse');
+                    setTimeout(()=>this.dom.inputs.drill.parentElement.classList.remove('animate-pulse'), 500);
+                }
+            }
+
+            submit() {
+                this.state.status = 'review';
+                this.dom.views.practice.classList.add('hidden');
+                this.dom.views.review.classList.remove('hidden');
+                this.dom.containers.main.classList.add('layout-review');
+                this.dom.btns.submit.classList.add('hidden');
+                this.dom.btns.navReview.classList.remove('hidden');
+                document.getElementById('main-header').classList.add('border-gray-200');
+
+                let finalUserText = this.dom.inputs.user.value;
+                if (this.state.mode === 'B') finalUserText = "(Mode B Drill Completed)"; 
+
+                const diffs = dmp.diff_main(finalUserText, this.state.originalText);
+                dmp.diff_cleanupSemantic(diffs);
+
+                this.dom.containers.reviewSource.innerText = this.state.originalText;
+                this.dom.containers.reviewDiff.innerHTML = dmp.diff_prettyHtml(diffs);
+                
+                let correct = 0, total = this.state.originalText.length;
+                diffs.forEach(op => { if(op[0]===0) correct += op[1].length; });
+                const score = total === 0 ? 0 : Math.round((correct/total)*100);
+                document.getElementById('score-display').innerText = score + '%';
+                document.getElementById('score-display').className = `font-mono font-bold text-xl ${score>80?'text-green-600':'text-red-600'}`;
+
+                this.recordMistakes(diffs);
+                this.diffErrors = this.dom.containers.reviewDiff.querySelectorAll('del, ins');
+                this.currentErrorIdx = -1;
+                this.initSyncScroll();
+            }
+
+            initSyncScroll() {
+                const left = this.dom.containers.reviewSource;
+                const right = this.dom.containers.reviewDiff;
+                let isSyncing = false;
+                const sync = (src, dest) => {
+                    if (isSyncing) return;
+                    isSyncing = true;
+                    const pct = src.scrollTop / (src.scrollHeight - src.clientHeight);
+                    dest.scrollTop = pct * (dest.scrollHeight - dest.clientHeight);
+                    setTimeout(() => isSyncing = false, 20);
+                };
+                left.onscroll = () => sync(left, right);
+                right.onscroll = () => sync(right, left);
+            }
+
+            navDiff(dir) {
+                if (!this.diffErrors.length) return;
+                this.currentErrorIdx = (this.currentErrorIdx + dir + this.diffErrors.length) % this.diffErrors.length;
+                const el = this.diffErrors[this.currentErrorIdx];
+                el.scrollIntoView({behavior: "smooth", block: "center"});
+                this.diffErrors.forEach(e => e.style.outline = 'none');
+                el.style.outline = '2px solid #2563EB';
+            }
+
+            recordMistakes(diffs) {
+                diffs.forEach(op => {
+                    if (op[0] === 1) {
+                        const words = op[1].match(/\b[a-zA-Z\u4e00-\u9fa5]+\b/g);
+                        if (words) words.forEach(w => {
+                            this.state.mistakes[w] = (this.state.mistakes[w] || 0) + 1;
+                        });
+                    }
+                });
+                localStorage.setItem('sr_mistakes', JSON.stringify(this.state.mistakes));
+                this.updateMistakeList();
+            }
+
+            updateMistakeList() {
+                const list = document.getElementById('mistake-list');
+                list.innerHTML = '';
+                Object.entries(this.state.mistakes)
+                    .sort((a,b)=>b[1]-a[1])
+                    .slice(0,50)
+                    .forEach(([w,c]) => {
+                        list.innerHTML += `<li class="flex justify-between text-sm text-gray-700"><span>${w}</span><span class="bg-red-100 px-2 rounded text-red-600 font-bold">${c}</span></li>`;
+                    });
+                if(Object.keys(this.state.mistakes).length > 0) document.getElementById('badge-mistake').classList.remove('hidden');
+            }
+
+            getCaretCoordinates(element, position) {
+                const mirror = this.dom.inputs.mirror;
+                const style = window.getComputedStyle(element);
+                // 必须复制影响布局的所有属性，否则 mirror 和 textarea 不重合
+                [
+                    'fontFamily','fontSize','fontWeight','lineHeight','padding',
+                    'width','letterSpacing','whiteSpace','wordWrap','boxSizing',
+                    'borderWidth','borderStyle'
+                ].forEach(p => {
+                    mirror.style[p] = style[p];
+                });
+                mirror.textContent = element.value.substring(0, position);
+                const span = document.createElement('span');
+                span.textContent = '|';
+                mirror.appendChild(span);
+                return { top: span.offsetTop, left: span.offsetLeft };
+            }
+
+            cleanText() {
+                let val = this.dom.inputs.source.value;
+                // 统一换行符，避免Diff混乱
+                val = val.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+                this.dom.inputs.source.value = val;
+            }
+
+            toggleSidebar() {
+                document.getElementById('sidebar').classList.toggle('translate-x-full');
+            }
+
+            updateWPM() {
+                const words = this.dom.inputs.user.value.length;
+                const min = (Date.now() - this.state.startTime) / 60000;
+                document.getElementById('wpm-val').innerText = Math.round(words/min) || 0;
+            }
+
+            reset() {
+                location.reload();
+            }
+        }
+
+        const app = new App();
+    </script>
+</body>
+</html>
