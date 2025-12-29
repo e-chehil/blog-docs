@@ -1,0 +1,231 @@
+/* docs/stylesheets/acct-journal.v6.css (V6 - 干净的布局修复) */
+
+.acct-journal-wrapper {
+    border: 1px solid #e0e0e0;
+    background-color: #ffffff;
+    border-radius: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 1.2em;
+    margin-bottom: 1.2em;
+}
+
+.acct-journal-wrapper h2 {
+    display: none;
+}
+
+/* * ⬇️ 【V9/V6 联合修复】 ⬇️
+ * 我们的 JS (V9) 现在会生成 <table class="acct-journal-table">
+ * 所以我们用 .acct-journal-table 来修饰它。
+ * 这使得它 *不会* 匹配 material 主题的 table:not([class])
+ * 因此，display: inline-block 的问题从根源上解决了。
+ */
+.acct-journal-wrapper .acct-journal-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    table-layout: fixed;
+    /* ⬅️ 这个规则现在会 100% 生效 */
+}
+
+/* * 我们现在需要将所有的 'table' 选择器更新为 '.acct-journal-table'
+ * (或者更简单，就用 .acct-journal-wrapper table)
+ */
+
+.acct-journal-wrapper table th,
+.acct-journal-wrapper table td {
+    padding: 10px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    word-break: break-word;
+    border: none;
+    border-bottom: 1px solid #eee;
+    /* 金额列不换行 */
+    white-space: nowrap;
+}
+
+/* 账户列、备注列允许换行 */
+.acct-journal-wrapper table .account-debit,
+.acct-journal-wrapper table .account-credit,
+.acct-journal-wrapper table .full-comment-cell,
+.acct-journal-wrapper table .comment-cell {
+    white-space: normal;
+}
+
+
+.acct-journal-wrapper table th {
+    background-color: #f7f7f7;
+    color: #555;
+    font-weight: 600;
+    text-align: center;
+    /* ⬇️ 定义桌面端 (3列) 默认列宽 */
+    width: 20%;
+}
+
+.acct-journal-wrapper table th:first-child {
+    width: 60%;
+    /* 桌面端账户列 */
+}
+
+.acct-journal-wrapper .account-debit {
+    text-align: left;
+    padding-left: 1rem;
+}
+
+.acct-journal-wrapper .account-credit {
+    text-align: left;
+    padding-left: 3rem;
+}
+
+.acct-journal-wrapper .amount {
+    text-align: right;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.acct-journal-wrapper .amount-debit-mobile {
+    text-align: right;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 600;
+    white-space: nowrap;
+    padding-right: 1rem;
+}
+
+.acct-journal-wrapper .amount-credit-mobile {
+    text-align: right;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 600;
+    white-space: nowrap;
+    padding-left: 2rem;
+}
+
+.acct-journal-wrapper .mobile-hide {
+    display: table-cell;
+}
+
+.acct-journal-wrapper table tfoot {
+    border-top: 2px solid #333;
+}
+
+.acct-journal-wrapper .total-row td {
+    font-weight: bold;
+    font-size: 1.05em;
+}
+
+.acct-journal-wrapper .total-label-mobile {
+    padding-left: 1rem !important;
+}
+
+.acct-journal-wrapper .total-debit-mobile {
+    text-align: left;
+    padding-left: 1.5rem;
+    font-size: 0.95em;
+}
+
+.acct-journal-wrapper .total-credit-mobile {
+    text-align: left;
+    padding-left: 1.5rem;
+    font-size: 0.95em;
+}
+
+.acct-journal-wrapper .balance-row td {
+    text-align: center;
+    font-weight: bold;
+    border-bottom: none;
+}
+
+.acct-journal-wrapper .balance-error {
+    color: #dc3545;
+}
+
+.acct-journal-wrapper .full-comment-row td.full-comment-cell {
+    background-color: #f7f7f7;
+    color: #444;
+    font-weight: 600;
+}
+
+.acct-journal-wrapper tr.has-comment>td {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.acct-journal-wrapper .comment-cell {
+    padding-top: 4px;
+    padding-bottom: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.acct-journal-wrapper .comment-cell-debit {
+    padding-left: 1.5rem;
+}
+
+.acct-journal-wrapper .comment-cell-credit {
+    padding-left: 3.5rem;
+}
+
+.acct-journal-wrapper .amount-formula {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: #007bff;
+    color: #007bff;
+}
+
+.acct-journal-wrapper .amount-formula.showing-formula {
+    color: #e83e8c;
+    text-decoration-color: #e83e8c;
+    font-weight: normal;
+}
+
+/* --- 响应式设计 (Breakpoint: 768px) --- */
+@media (max-width: 768px) {
+
+    .acct-journal-wrapper table {
+        /* 继承 table-layout: fixed; */
+    }
+
+    .acct-journal-wrapper table thead th:first-child {
+        width: 65%;
+    }
+
+    .acct-journal-wrapper table thead th:nth-child(2) {
+        width: 35%;
+    }
+
+    .acct-journal-wrapper table thead th:nth-child(3),
+    .acct-journal-wrapper .mobile-hide {
+        display: none;
+    }
+
+    .acct-journal-wrapper table th,
+    .acct-journal-wrapper table td {
+        padding: 8px 10px;
+    }
+
+    .acct-journal-wrapper .account-credit {
+        padding-left: 2rem;
+    }
+
+    .acct-journal-wrapper .comment-cell-credit {
+        padding-left: 2.5rem;
+    }
+
+    .acct-journal-wrapper .amount-debit-mobile {
+        padding-right: 2rem;
+    }
+
+    .acct-journal-wrapper .amount-credit-mobile {
+        padding-right: 1rem;
+    }
+
+    .acct-journal-wrapper .total-row-mobile {
+        display: table-row;
+    }
+
+    .acct-journal-wrapper .total-debit-mobile,
+    .acct-journal-wrapper .total-credit-mobile {
+        padding-left: 1rem;
+    }
+}
