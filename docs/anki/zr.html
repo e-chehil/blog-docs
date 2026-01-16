@@ -194,23 +194,34 @@
 <body class="h-screen flex flex-col overflow-hidden">
 
     <header
-        class="h-16 shrink-0 flex items-center justify-between px-8 bg-paper/90 backdrop-blur z-50 border-b border-transparent transition-all duration-300"
+        class="h-16 shrink-0 flex items-center justify-between px-4 md:px-8 bg-paper/90 backdrop-blur z-50 border-b border-transparent transition-all duration-300"
         id="main-header">
-        <div class="flex items-center gap-4">
-            <span class="font-serif font-bold text-lg tracking-tight">ZenRecite</span>
-            <div id="mode-selector" class="flex bg-gray-100/50 p-1 rounded-full ml-8 transition-opacity duration-300">
-                <button onclick="app.setMode('A')" class="mode-chip active" data-mode="A">全文默写</button>
-                <button onclick="app.setMode('B')" class="mode-chip" data-mode="B">分句闯关</button>
-                <button onclick="app.setMode('C')" class="mode-chip" data-mode="C">填空提示</button>
+    
+        <div class="flex items-center gap-2 md:gap-4 flex-1 min-w-0 mr-2">
+            <span class="font-serif font-bold text-lg tracking-tight hidden md:block shrink-0">ZenRecite</span>
+    
+            <div id="mode-selector"
+                class="flex bg-gray-100/50 p-1 rounded-full ml-0 md:ml-8 transition-opacity duration-300 overflow-x-auto no-scrollbar max-w-full">
+                <button onclick="app.setMode('A')"
+                    class="mode-chip whitespace-nowrap text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5 active"
+                    data-mode="A">全文</button>
+                <button onclick="app.setMode('B')"
+                    class="mode-chip whitespace-nowrap text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5"
+                    data-mode="B">分句</button>
+                <button onclick="app.setMode('C')"
+                    class="mode-chip whitespace-nowrap text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5"
+                    data-mode="C">填空</button>
             </div>
         </div>
-
-        <div class="flex items-center gap-4 text-sm text-sub">
+    
+        <div class="flex items-center gap-3 text-sm text-sub shrink-0">
             <div id="wpm-box" class="hidden font-mono bg-gray-100 px-2 py-1 rounded">WPM: <span id="wpm-val"
                     class="text-ink font-bold">0</span></div>
-            <button onclick="app.toggleSidebar()" class="hover:text-ink transition-colors relative">
+    
+            <button onclick="app.toggleSidebar()"
+                class="hover:text-ink transition-colors relative whitespace-nowrap px-2 py-1">
                 错题本
-                <span id="badge-mistake" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                <span id="badge-mistake" class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full hidden"></span>
             </button>
         </div>
     </header>
@@ -222,6 +233,10 @@
             <div id="view-setup" class="flex-1 flex flex-col fade-enter">
                 <div class="flex justify-between items-end mb-4 text-sub text-sm">
                     <span class="font-medium tracking-wider text-xs uppercase opacity-70">Original Text</span>
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-ink transition-colors">
+                        <input type="checkbox" id="toggle-lenient" class="accent-ink w-4 h-4 rounded border-gray-300">
+                        <span class="text-xs font-medium">宽松模式 (忽略标点/大小写)</span>
+                    </label>
                     <button onclick="app.cleanText()"
                         class="text-gray-400 hover:text-ink transition-colors text-xs font-medium tracking-wide flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
@@ -328,6 +343,7 @@
                     sentences: [],
                     currentSentenceIdx: 0,
                     mistakes: JSON.parse(localStorage.getItem('sr_mistakes') || '{}'),
+                    lenientMode: false,
                     startTime: null,
                     hintTimer: null
                 };
@@ -370,6 +386,17 @@
                 this.updateMistakeList();
                 this.bindEvents();
                 this.setMode('A');
+            }
+
+            normalizeText(text) {
+                if (!text) return '';
+                return text
+                    .toLowerCase()
+                    // 正则解释：保留 字母、数字、中文、空格，去除其他所有符号
+                    .replace(/[^\w\s\u4e00-\u9fa5]|_/g, "")
+                    // 将多个连续空格合并为一个
+                    .replace(/\s+/g, " ")
+                    .trim();
             }
 
             setMode(mode) {
@@ -469,6 +496,11 @@
                 this.dom.inputs.drill.addEventListener('keydown', e => {
                     if (e.key === 'Enter') this.checkDrill();
                 });
+
+                const lenientToggle = document.getElementById('toggle-lenient');
+                lenientToggle.addEventListener('change', (e) => {
+                    this.state.lenientMode = e.target.checked;
+                });
             }
 
             // === 新增功能: Tab 键自动定位到下一个单词/下划线 ===
@@ -476,16 +508,9 @@
                 e.preventDefault();
                 const val = inputEl.value;
                 const currentPos = inputEl.selectionEnd;
-
-                // 正则：寻找当前光标之后的单词边界，该单词需包含下划线
-                // 逻辑：找到下一个 "单词首字母 + 下划线" 或者 "连续下划线" 的位置
                 const regex = /\b\w+_/g;
                 regex.lastIndex = currentPos;
-
-                // 如果当前就在一个词中间，先跳过当前词
                 let match = regex.exec(val);
-
-                // 如果找不到，尝试找纯下划线（处理用户可能删除了首字母的情况）
                 if (!match) {
                     const fallbackRegex = /_+/g;
                     fallbackRegex.lastIndex = currentPos;
@@ -493,19 +518,14 @@
                 }
 
                 if (match) {
-                    // 定位到该单词下划线开始的地方（通常是首字母后）
-                    // 比如 "H____"，定位到 'H' 后面
                     const targetPos = match.index + 1;
                     inputEl.setSelectionRange(targetPos, targetPos);
                 } else {
-                    // 如果后面没有了，循环回开头
                     inputEl.setSelectionRange(0, 0);
                 }
             }
 
-            // === 新增功能: 智能覆盖模式 (输入字母时自动删除后面的下划线) ===
             handleModeCTyping(e, inputEl) {
-                // 忽略功能键、Ctrl组合键等
                 if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return false;
 
                 const start = inputEl.selectionStart;
@@ -513,75 +533,60 @@
                 const val = inputEl.value;
                 const nextChar = val.charAt(end);
 
-                // 只有当光标后面紧跟着下划线时，才触发“覆盖”模式
                 if (nextChar === '_') {
                     e.preventDefault();
-                    // 使用 setRangeText 替换 "下划线" 为 "用户输入的字符"
-                    // 这样文本长度不变，不会发生位移干扰
                     inputEl.setRangeText(e.key, start, end + 1, 'end');
-                    return true; // 告诉调用者我们处理了输入
+                    return true;
                 }
-                return false; // 正常输入（比如光标后不是下划线，或者是插入模式）
+                return false;
             }
 
-            // === 核心修复: 提示逻辑重构 ===
             showHint(inputEl, type) {
-                let targetText = this.state.mode === 'B'
+                let rawTarget = this.state.mode === 'B'
                     ? this.state.sentences[this.state.currentSentenceIdx]
                     : this.state.originalText;
-                let userVal = inputEl.value;
+
+                let rawUser = inputEl.value;
+                let compTarget = rawTarget;
+                let compUser = rawUser;
+
+                if (this.state.lenientMode) {
+                    compTarget = this.normalizeText(rawTarget);
+                    compUser = this.normalizeText(rawUser);
+                }
+
                 let hintContent = "";
 
-                // 优化 1: 前缀匹配优先 (速度快且逻辑符合人类直觉)
-                // 如果用户输入是目标的子集，直接取下一个字符，不做复杂的Diff
-                if (targetText.startsWith(userVal)) {
-                    const remainder = targetText.slice(userVal.length);
-                    hintContent = this.extractHint(remainder, type);
+                if (compTarget.startsWith(compUser)) {
+                    hintContent = compTarget.slice(compUser.length);
                 } else {
-                    // 优化 2: 容错匹配 (Raw Diff)
-                    const diffs = dmp.diff_main(userVal, targetText);
-                    // 关键修改: 移除 dmp.diff_cleanupSemantic(diffs)
-                    // 语义清洗会合并修改，导致"下一个字"被吞进Diff块中，造成提示不准。
-                    // 保持 Raw Diff 能更精确地找到光标后的第一个差异。
+                    const diffs = dmp.diff_main(compUser, compTarget);
 
                     for (let op of diffs) {
-                        // op[0]: 0=equal, 1=insert, -1=delete
-                        // 我们只关心 Insert (用户缺少的)，忽略 Delete (用户多打的错字)
                         if (op[0] === 1) {
-                            hintContent = this.extractHint(op[1], type);
+                            hintContent = op[1];
                             break;
                         }
                     }
                 }
 
+                hintContent = this.extractHint(hintContent, type);
                 if (!hintContent) hintContent = "✅";
                 this.renderTooltip(inputEl, hintContent);
             }
 
-            // 辅助: 从字符串中提取提示
             extractHint(text, type) {
                 if (!text) return "";
 
-                // 优化 3: 正则逻辑增强
-                // 之前: /^\s*([a-zA-Z...])/ -> 遇到标点符号会失败
-                // 现在: 
-                // 短按: 匹配第一个非空白字符 (包括标点)
-                // 长按: 匹配第一个单词或完整标点串
-
                 if (type === 'short') {
-                    // 如果开头是空格，提示 "␣" 
                     if (text.startsWith(' ')) return '␣';
-                    // 否则取第一个字符
                     return text.charAt(0);
                 } else {
-                    // 长按: 尝试匹配下一个单词
-                    // Group 1: 可选的前置空格
-                    // Group 2: 单词 (字母数字汉字) 或 标点符号串
                     const match = text.match(/^(\s*)([a-zA-Z0-9\u4e00-\u9fa5]+|[^a-zA-Z0-9\u4e00-\u9fa5\s]+)/);
                     if (match) {
                         return (match[1] ? '␣ ' : '') + match[2];
                     }
-                    return text.slice(0, 5); // Fallback
+                    return text.slice(0, 5);
                 }
             }
 
@@ -595,10 +600,8 @@
                     top = rect.top - 40;
                     left = rect.left + rect.width / 2;
                 } else {
-                    // 优化 4: 修复光标定位
                     const coords = this.getCaretCoordinates(inputEl, inputEl.selectionEnd);
                     const rect = inputEl.getBoundingClientRect();
-                    // 必须减去 scrollTop，否则滚动后提示框会飞走
                     top = rect.top + coords.top - 40 - inputEl.scrollTop;
                     left = rect.left + coords.left;
                 }
@@ -635,7 +638,15 @@
                 const target = this.state.sentences[this.state.currentSentenceIdx];
                 const input = this.dom.inputs.drill.value.trim();
 
-                if (input === target) {
+                let isMatch = false;
+
+                if (this.state.lenientMode) {
+                    isMatch = (this.normalizeText(input) === this.normalizeText(target));
+                } else {
+                    isMatch = (input === target);
+                }
+
+                if (isMatch) {
                     this.dom.inputs.drill.classList.add('text-green-600');
                     setTimeout(() => {
                         this.dom.inputs.drill.classList.remove('text-green-600');
@@ -664,10 +675,18 @@
                 let finalUserText = this.dom.inputs.user.value;
                 if (this.state.mode === 'B') finalUserText = "(Mode B Drill Completed)";
 
-                const diffs = dmp.diff_main(finalUserText, this.state.originalText);
+                let diffSource = this.state.originalText;
+                let diffUser = finalUserText;
+
+                if (this.state.lenientMode && this.state.mode !== 'B') {
+                    diffSource = this.normalizeText(diffSource);
+                    diffUser = this.normalizeText(diffUser);
+                }
+
+                const diffs = dmp.diff_main(diffUser, diffSource);
                 dmp.diff_cleanupSemantic(diffs);
 
-                this.dom.containers.reviewSource.innerText = this.state.originalText;
+                this.dom.containers.reviewSource.innerText = diffSource;
                 this.dom.containers.reviewDiff.innerHTML = dmp.diff_prettyHtml(diffs);
 
                 let correct = 0, total = this.state.originalText.length;
@@ -734,7 +753,6 @@
             getCaretCoordinates(element, position) {
                 const mirror = this.dom.inputs.mirror;
                 const style = window.getComputedStyle(element);
-                // 必须复制影响布局的所有属性，否则 mirror 和 textarea 不重合
                 [
                     'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'padding',
                     'width', 'letterSpacing', 'whiteSpace', 'wordWrap', 'boxSizing',
@@ -751,7 +769,6 @@
 
             cleanText() {
                 let val = this.dom.inputs.source.value;
-                // 统一换行符，避免Diff混乱
                 val = val.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
                 this.dom.inputs.source.value = val;
             }
