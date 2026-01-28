@@ -60,8 +60,8 @@ Pumas are large, cat-like[^2] animals which are found[^3] in America. When repor
 
         ??? example
 
-            - The proposal **that John should be dismissed** is unacceptable.
-            - The proposal **that John put forward** is unacceptable.
+            - The proposal **that John should be dismissed** is unacceptable.<br>约翰应该被解雇的提议是不可接受的。
+            - The proposal **that John put forward** is unacceptable.<br>约翰提出的提议是不可接受的。
             - We hold **these truths** to be self-evident, **that** all men are created equal, **that** they are endowed by the Creator with certain unalienable rights, **that** among these are life, liberty, and the pursuit of happiness. —Thomas Jefferson, *Declaration of Independence*<br>我们认为这些真理是不言而喻的：人人生而平等，造物主赋予他们若干不可剥夺的权利，包括生命、自由与对幸福的追求。（托马斯·杰斐逊《独立宣言》）
 
 [^6]:
@@ -101,12 +101,12 @@ Pumas are large, cat-like[^2] animals which are found[^3] in America. When repor
     
     !!! note "非谓语动词作后置定语"
 
-        - *(NCE3-1)* The hunt for the puma began in a smal village where **a woman picking blackberries** saw a large cat only five yards away from her.
-        - *(NCE3-7)* John had a very good day and put his **wallet containing ￡3,000** into the microwave oven for safekeeping.
-        - *(NCE3-8)* For hundreds of years, St. Bernard dogs have saved the lives of **travellers crossing the dangerous Pass**.
-        - novels **written by Lu Xun**
-        - movies **directed by Zhang Yimou**
-        - The man **leaning against the wall named *George*** is my brother.
+        - *(NCE3-1)* The hunt for the puma began in a smal village where **a woman picking blackberries** saw a large cat only five yards away from her.<br>对美洲狮的搜捕始于一个小村庄，那里有一位正在采摘黑莓的妇女，看见一只大猫就在离她仅五码远的地方。
+        - *(NCE3-7)* John had a very good day and put his **wallet containing ￡3,000** into the microwave oven for safekeeping.<br>约翰度过了非常愉快的一天，随后把装有3000英镑的钱包放进微波炉里以求安全保管。
+        - *(NCE3-8)* For hundreds of years, St. Bernard dogs have saved the lives of **travellers crossing the dangerous Pass**.<br>几百年来，圣伯纳犬一直在挽救穿越那个危险山口的旅行者们的生命。
+        - novels **written by Lu Xun**<br>鲁迅写的小说
+        - movies **directed by Zhang Yimou**<br>张艺谋导演的电影
+        - The man **leaning against the wall named *George*** is my brother.<br>那个靠在墙上，名叫乔治的人是我哥哥。
 
 [^10]:
     - **claim to have done …**(1)<br>声称曾经做过某事
@@ -115,18 +115,18 @@ Pumas are large, cat-like[^2] animals which are found[^3] in America. When repor
         1.  固定搭配要求使用不定式，而动作又发生在之前，故有“to have done”这一结构。
 
     - **claim to do …**<br>声称做某事
-    - So far, no organization has **claimed to be responsible** for the accident.
-    - Everyone went to the funeral, for the 'ghost' was none other than Eric Cox, a third brother who was supposed **to have died** as a young man.
+    - So far, no organization has **claimed to be responsible** for the accident.<br>到目前为止，还没有任何组织声称对这起事故负责。
+    - Everyone went to the funeral, for the 'ghost' was none other than Eric Cox, a third brother who was supposed **to have died** as a young man.<br>大家都去参加了葬礼，因为那个“鬼”不是别人，正是艾里克·科克斯——他是家里的老三，大家原本以为他年轻时就已经死了。
 
 [^11]:
-    - were extraordinarily similar
-    - were particularly alike
-    - had a lot in common
-    - had considerable commonalities
+    - were extraordinarily similar<br>特别相似的
+    - were particularly alike<br>格外相似的
+    - had a lot in common<br>有很多共同之处
+    - had considerable commonalities<br>有相当多的共性
 
-    > —well, I saw the ad on the back of the bus stop today. And, uh… though it was not exactly like looking in the mirror, you can't deny that **there is a certain commonality in our visages**.
+    > —well, I saw the ad on the back of the bus stop today. And, uh… though it was not exactly like looking in the mirror, you can't deny that **there is a certain commonality in our visages**.<br>那个，我今天看到公交站牌背后的广告了。然后，呃……虽说不完全像是照镜子，但你不能否认，你我的容貌之中确实有着某种共性。
 
-    > —I guess **we do look a little bit alike**.
+    > —I guess **we do look a little bit alike**.<br>我想我们确实是有那么一点像。
 
     !!! example
 
@@ -141,18 +141,18 @@ The hunt[^12] for the puma began in a small village where a woman picking blackb
         - I'm **hunting for** a job now.<br>现在我正在找工作。
         - The **hunt for** a job will begin tomorrow.<br>我明天就要开始找工作了。
 
-    > - the winter **in** America 
-    > - the entrance **to** the parking lot
-    > - a witness **to** the accident
-    > - a longing **for** love
-    > - the reason **for** the disaster
+    > - the winter **in** America<br>美国的冬天
+    > - the entrance **to** the parking lot<br>停车场的入口
+    > - a witness **to** the accident<br>事故的目击者
+    > - a longing **for** love<br>对爱情的渴望
+    > - the reason **for** the disaster<br>灾难的原因
 
 [^13]:
     - **prove (to be) + adj./n.<br>被证明是⋯⋯**
         - His injury **proved (to be)** fatal.<br>他的伤势被证明是致命的。
-        - The operation **proved (to be)** a success.
+        - The operation **proved (to be)** a success.<br>手术被证明是成功的。
     - **turn out to be + adj./n.<br>原来是⋯⋯**
-        - *(NCE3-3)* When the archaeologists reconstructed the fragmerits, they were amazed to find that the goddess **turned out to be** a very modern-looking woman.
+        - *(NCE3-3)* When the archaeologists reconstructed the fragmerits, they were amazed to find that the goddess **turned out to be** a very modern-looking woman.<br>当考古学家们拼凑起这些碎片时，他们惊讶地发现，这位女神原来是一个看起来非常现代的女性。
 
 [^14]:
     **疑问词 + ever** (whenever, wherever, whoever, whichever, whatever …) **有两个含义：**
@@ -378,7 +378,7 @@ The hunt[^12] for the puma began in a small village where a woman picking blackb
     - To be, or not to be: that is the question. —Hamlet<br>生存还是毁灭，这是一个问题。（哈姆雷特）
     - I think therefore I am. —René Descartes<br>我思故我在。（勒内·笛卡尔）
 
-6.  > *(The Bucket List)* And I couldnʼt remember what it felt like when I could not walk down the street without holding her hand. I mean she was the same woman I fell in love with, she hadnʼt changed. But **somehow** everythingʼs different. Weʼve lost something along the way.<br>我记不起当时那种无法独自走在街上、非得牵着她的手的感觉了。我的意思是，她还是我爱上的那个女人，她没有改变。但不知怎么的，一切变得不同了。我们在这段路上失去了些什么。
+6.  > *(The Bucket List)* And I couldnʼt remember what it felt like when I could not walk down the street without holding her hand. I mean she was the same woman I fell in love with, she hadnʼt changed. But **somehow** everythingʼs different. Weʼve lost something along the way.<br>我记不起当时那种无法独自走在街上、非得牵着她的手的感觉了。我的意思是，她还是我爱上的那个女人，她没有改变。但不知怎么的，一切变得不同了。一路走来，我们失去了些什么。
 
     ---
 
