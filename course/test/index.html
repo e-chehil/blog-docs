@@ -1,0 +1,2085 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="嘎嘎嘎">
+      
+      
+      
+        <link rel="canonical" href="https://chehil.icu/course/test/">
+      
+      
+        <link rel="prev" href="../shichang/">
+      
+      
+        <link rel="next" href="../../courses/C01/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>基础知识 - Chehil的博客</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Chehil的博客" class="md-header__button md-logo" aria-label="Chehil的博客" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Chehil的博客
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              基础知识
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../accounting/01/" class="md-tabs__link">
+          
+  
+  
+  Accounting
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../audit/preface/" class="md-tabs__link">
+          
+  
+  
+  Audit
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../auditing/01/" class="md-tabs__link">
+          
+  
+  
+  Auditing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../shichang/" class="md-tabs__link">
+          
+  
+  
+  Course
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../courses/C01/" class="md-tabs__link">
+          
+  
+  
+  Courses
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../lyrics/hill/" class="md-tabs__link">
+          
+  
+  
+  Lyrics
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../note/aa-1/" class="md-tabs__link">
+          
+  
+  
+  Note
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Chehil的博客" class="md-nav__button md-logo" aria-label="Chehil的博客" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Chehil的博客
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Accounting
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Accounting
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../accounting/01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    总论
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../accounting/C1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    财务报表与商业决策
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../accounting/cunhuo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    存货
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../accounting/je/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    我的财务笔记
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../accounting/test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Test
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Audit
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Audit
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../audit/preface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    前言
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Auditing
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Auditing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../auditing/01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    审计的本质
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Course
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Course
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shichang/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    市场结构和企业行为
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    基础知识
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    基础知识
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="需求">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      影响需求量的因素
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求函数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求曲线
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求的变动与需求量的变动
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      供给
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="供给">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      供给量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      影响供给量的因素
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      均衡分析
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      政府市场的管制
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求价格弹性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求收入弹性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      需求交叉弹性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      企业生产函数
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      成本利润分析
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Courses
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Courses
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C01/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C01 — 管理学B
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C02/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C02 — 基础会计学
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C03/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C03 — 公司理财
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C04/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C04 — 应用统计分析与R语言
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C05 — 信息系统
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C06/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C06 — 财务管理专业导论
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C07/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C07 — 信息检索
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C08/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C08 — 中级财务会计
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C09/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C09 — 中高级财务管理
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C10 — 创业型中小企业投融资管理
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C11/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C11 — 审计学A
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C12/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C12 — 财务报表分析A
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C13/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C13 — 管理会计
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C14/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C14 — 财务估值与投资
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C15/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C15 — 项目评价与投资
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C16/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C16 — 研究方法与论文写作
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C17/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C17 — 商业伦理与会计职业道德
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C18/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C18 — 会计综合课程设计与劳动实践
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C19/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C19 — 专业认识实习
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C20/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C20 — 上市公司财务与会计综合案例
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C21/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C21 — 财务综合课程设计
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C22/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C22 — 内部控制与审计课程设计
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C23/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C23 — 毕业实习
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../courses/C24/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    C24 — 毕业设计
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Lyrics
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Lyrics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lyrics/hill/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    山丘
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lyrics/husk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    皮囊
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Note
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Note
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../note/aa-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    An Introduction to Assurance and Financial Statement Auditing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../note/cf-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction to Corporate Finance
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../note/financial_instrument/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    金融工具
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../note/mb-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    金融体系概览
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../note/nce3-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    A puma at large
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../note/shuake/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    网课后台自动连播
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">基础知识<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">需求<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">需求量<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>需求量是指在一定时期内，在一定条件下，消费者愿意购买且能够买得起的某种产品或劳务的数量。</p>
+<h3 id="_4">影响需求量的因素<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>产品的价格：需求量与商品价格变化成反比（需求法则）</p>
+<div class="admonition note">
+<p class="admonition-title">特殊例外的商品</p>
+<ol>
+<li>吉芬商品：贫困消费者在价格上升时，反而增加对某种低档商品的购买，因为收入效应大于替代效应。</li>
+<li>凡勃伦商品：炫耀性消费，价格越高，反而更能显示消费者的财富和地位，从而增加需求量。</li>
+</ol>
+</div>
+</li>
+<li>
+<p>消费者的收入：需求量与消费者的收入变化成正比</p>
+</li>
+<li>
+<p>相关商品的价格</p>
+<ul>
+<li>替代品：两种商品可以互相替代使用，某一商品价格上升，另一种商品的需求量增加。</li>
+<li>互补品：两种商品通常一起使用，某一商品价格上升，另一种商品的需求量减少。</li>
+</ul>
+</li>
+<li>
+<p>消费者的偏好</p>
+<p>厂商的广告营销、流行趋势等因素会影响消费者的偏好，从而影响需求量。</p>
+</li>
+<li>
+<p>消费者对未来价格的期望</p>
+<p>价格看涨，需求量增加；价格看跌，需求量减少。</p>
+</li>
+</ol>
+<h3 id="_5">需求函数<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p class="annotate">需求函数是需求量与影响这一数量的诸因素之间关系的一种数学表达式，通常表示为：(1)</p>
+<ol>
+<li>
+<ul>
+<li><span class="arithmatex">\(Q_x\)</span>：商品X的需求量</li>
+<li><span class="arithmatex">\(P_x\)</span>：商品X的价格</li>
+<li><span class="arithmatex">\(P_y\)</span>：相关商品Y的价格</li>
+<li><span class="arithmatex">\(I\)</span>：消费者的收入</li>
+<li><span class="arithmatex">\(T\)</span>：消费者的偏好</li>
+<li><span class="arithmatex">\(E\)</span>：消费者对未来价格的期望</li>
+<li><span class="arithmatex">\(A\)</span>：广告和营销活动</li>
+</ul>
+</li>
+</ol>
+<div class="arithmatex">\[Q_x = f(P_x, P_y, I, T, E, A)\]</div>
+<h3 id="_6">需求曲线<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>需求曲线是假定在除价格之外其他因素均保持不变的条件下，反映需求量与价格之间关系的表达式，即<span class="arithmatex">\(Q_D=f(P)\)</span>。</p>
+<ul>
+<li><strong>单个消费者需求曲线</strong>表示单个消费者愿意购买某种产品的数量与其价格之间的关系。</li>
+<li><strong>行业需求曲线</strong>表示市场上全体消费者愿意购买某种产品的总数与其价格之间的关系，可由行业内所有单个消费者需求曲线的横向加总得到。</li>
+<li><strong>企业需求曲线</strong>表示某企业的全体顾客愿意向该企业购买某种产品的数量与价格之间的关系，其斜率（绝对值）一般小于行业需求曲线。</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">需求曲线斜率为何向下倾斜？</p>
+<ol>
+<li>替代效应：当某商品价格下降时，消费者会倾向于购买该商品而减少对其他替代品的购买，从而增加该商品的需求量。</li>
+<li>收入效应：当某商品价格下降时，消费者的实际购买力增加，能够购买更多的该商品，从而增加需求量。</li>
+</ol>
+</div>
+<h3 id="_7">需求的变动与需求量的变动<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>需求量的变动：指在其他条件不变的情况下，由于商品价格的变化引起的需求量的变化，表现为沿着需求曲线的移动。</li>
+<li>需求的变动：指由于影响需求的其他因素变化引起的需求量的变化，表现为需求曲线的整体移动。</li>
+</ul>
+<h2 id="_8">供给<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<h3 id="_9">供给量<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>供给量是指在一定时期内，在一定条件下，生产者愿意且有能力提供某种产品或劳务的数量。</p>
+<h3 id="_10">影响供给量的因素<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<ol>
+<li>本身商品的价格</li>
+<li>生产要素的价格</li>
+<li>生产技术水平</li>
+<li>相关商品的价格</li>
+<li>政府税收政策</li>
+<li>生产者对价格的预期</li>
+</ol>
+<h2 id="_11">均衡分析<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h2 id="_12">政府市场的管制<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<h2 id="_13">需求价格弹性<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p><strong>点价格弹性的计算公式</strong></p>
+<div class="arithmatex">\[
+\epsilon_{P}=\lim_{\Delta P \to 0} \frac{\Delta Q}{\Delta P} \cdot \frac{P}{Q}=\frac{dQ}{dP} \cdot \frac{P}{Q}
+\]</div>
+<p><strong>弧价格弹性的计算公式</strong></p>
+<div class="arithmatex">\[
+\begin{align*}
+E_{P}&amp;=\frac{\Delta Q / Q}{\Delta P / P}=\frac{\left(Q_{2}-Q_{1}\right) / \frac{\left(Q_{1}+Q_{2}\right)}{2}}{\left(P_{2}-P_{1}\right) / \frac{\left(P_{1}+P_{2}\right)}{2}}\\
+&amp;=\frac{Q_{2}-Q_{1}}{P_{2}-P_{1}} \cdot \frac{P_{1}+P_{2}}{Q_{1}+Q_{2}}
+\end{align*}
+\]</div>
+<h2 id="_14">需求收入弹性<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>的</p>
+<h2 id="_15">需求交叉弹性<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p>的</p>
+<h2 id="_16">企业生产函数<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<h2 id="_17">成本利润分析<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.sections", "navigation.tracking", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "toc.integrate", "header.autohide"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js"></script>
+      
+        <script src="../../javascripts/tablesort.js"></script>
+      
+        <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+      
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+      
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+      
+        <script src="../../javascripts/acctool.js" type="text/babel"></script>
+      
+        <script src="../../javascripts/quiz.js" type="text/babel"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
