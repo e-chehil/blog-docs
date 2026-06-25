@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会计分录解析器</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        #entryInput {
+            width: 100%;
+            height: 450px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+
+        #journalOutput {
+            border: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        /* --- 2列布局的核心CSS --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* 1. 【统一内边距】所有单元格都使用此内边距 */
+        th,
+        td {
+            padding: 10px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            word-break: break-word;
+            /* 允许科目在需要时换行 */
+        }
+
+        th {
+            background-color: #f7f7f7;
+            color: #555;
+            font-weight: 600;
+        }
+
+        /* 2. 【桌面端】金额区使用 Grid 布局 */
+        .amount-header,
+        .amount-cell {
+            /* 它们本身就是 th/td, 已经有了 padding */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* 3. 【桌面端】插槽本身不需要内边距, 且右对齐 */
+        .debit-label,
+        .debit-slot,
+        .credit-label,
+        .credit-slot {
+            text-align: right;
+            padding: 0;
+        }
+
+        /* 保证空行有高度 */
+        tbody .debit-slot,
+        tbody .credit-slot {
+            min-height: 1.5em;
+        }
+
+        /* --- End 2列布局CSS --- */
+
+
+        .account-debit {
+            text-align: left;
+            padding-left: 1rem;
+        }
+
+        .account-credit {
+            text-align: left;
+            padding-left: 3rem;
+        }
+
+        .amount {
+            text-align: right;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        tfoot {
+            border-top: 2px solid #333;
+        }
+
+        .total-row td {
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+
+        .balance-row td {
+            text-align: center;
+            font-weight: bold;
+            border-bottom: none;
+        }
+
+        .balance-error {
+            color: #dc3545;
+        }
+
+        .full-comment-row td.full-comment-cell {
+            background-color: #f7f7f7;
+            color: #444;
+            font-weight: 600;
+        }
+
+        /* 注释行现在需要 colspan="2" */
+        tr.has-comment>td {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .comment-cell {
+            padding-top: 4px;
+            padding-bottom: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .comment-cell-debit {
+            padding-left: 1.5rem;
+        }
+
+        .comment-cell-credit {
+            padding-left: 3.5rem;
+        }
+
+        .amount-formula {
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-decoration-color: #007bff;
+            color: #007bff;
+            /* 默认显示结果时为蓝色 */
+        }
+
+        .amount-formula.showing-formula {
+            color: #e83e8c;
+            /* 变为粉色 */
+            text-decoration-color: #e83e8c;
+            font-weight: normal;
+        }
+
+        /* --- 响应式设计 (Responsive Design) --- */
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 1fr;
+                padding: 10px;
+                gap: 15px;
+            }
+
+            #entryInput {
+                height: 300px;
+            }
+
+            #journalOutput {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            table {
+                table-layout: fixed;
+                width: 100%;
+            }
+
+            /* 1. 【统一内边距】移动端所有单元格使用新 padding */
+            th,
+            td {
+                padding: 8px 10px;
+            }
+
+            /* 2. 列宽分配 */
+            table thead th:first-child {
+                width: 60%;
+            }
+
+            table thead th:nth-child(2) {
+                width: 40%;
+            }
+
+            /* 3. 科目缩进调整 */
+            .account-credit {
+                padding-left: 2rem;
+            }
+
+            .comment-cell-credit {
+                padding-left: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.25rem;
+                margin-bottom: 10px;
+            }
+
+
+            /* --- 【核心修正】 --- */
+
+            /* 4. 表头(thead) 和 表尾(tfoot) *不重叠*
+                  它们保持 Grid 布局, 继承 th/td 的 padding */
+            thead .amount-header,
+            tfoot .amount-cell {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 4px;
+                /* 继承 padding: 8px 10px; */
+            }
+
+            /* 内部插槽重置 padding 并右对齐 */
+            thead .debit-label,
+            thead .credit-label,
+            tfoot .debit-slot,
+            tfoot .credit-slot {
+                padding: 0;
+                text-align: right;
+            }
+
+            /* 5. *仅* 表体(tbody) 的金额单元格应用 "重叠" 布局 */
+            tbody .amount-cell {
+                display: block;
+                /* 覆盖 grid */
+                position: relative;
+                /* 继承 padding: 8px 10px; 这很完美 */
+
+                /* 【修正】设置父td右对齐, 这将对齐 'debit-slot' (span) */
+                text-align: right;
+            }
+
+            /* 6. 借方插槽: 正常显示, 右对齐 (通过父元素) */
+            tbody .debit-slot {
+                padding: 0;
+                position: static;
+                display: inline-block;
+                /* 确保是行内块 */
+            }
+
+            /* 7. 贷方插槽: 绝对定位 "重叠" */
+            tbody .credit-slot {
+                position: absolute;
+                right: 10px;
+                /* 对应 'td' 的 padding-right */
+                top: 8px;
+                /* 对应 'td' 的 padding-top */
+                padding: 0;
+                text-align: right;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2>输入分录</h2>
+        <textarea id="entryInput" oninput="parseAndRender()" placeholder="请在此处粘贴分录..."></textarea>
+    </div>
+
+    <div>
+        <h2>格式化结果</h2>
+        <div id="journalOutput">
+        </div>
+    </div>
+
+    <script>
+        // --- 辅助函数 (未改变) ---
+        function formatAmount(amountNum) {
+            if (typeof amountNum !== 'number' || isNaN(amountNum)) return 'N/A';
+            return amountNum.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        function getLevel1Account(accountPart) {
+            const plainTextAccount = accountPart.replace(/<[^>]*>/g, '');
+            const match = plainTextAccount.match(/^(.*?)\s*——\s*/);
+            return match ? match[1].trim() : plainTextAccount.trim();
+        }
+        function evaluateAmount(amountStr) {
+            let original = amountStr;
+            let cleanExpr = amountStr.replace(/,/g, '');
+            if (/^(\d+(\.\d*)?|\.\d+)$/.test(cleanExpr)) {
+                return { result: parseFloat(cleanExpr), original: original, isFormula: false };
+            }
+            cleanExpr = cleanExpr.replace(/(\d+(\.\d+)?)%/g, '($1/100)').replace(/\^/g, '**');
+            const safeMathRegex = /^[\d\s+\-*/().eE]+$/;
+            if (!safeMathRegex.test(cleanExpr)) {
+                return { result: NaN, original: original, isFormula: false };
+            }
+            try {
+                let result = new Function('return ' + cleanExpr)();
+                if (typeof result === 'number' && !isNaN(result)) {
+                    return { result: result, original: original, isFormula: true };
+                }
+            } catch (e) { }
+            return { result: NaN, original: original, isFormula: false };
+        }
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        // --- End 辅助函数 ---
+
+        function parseAndRender() {
+            // ... (解析逻辑与之前完全相同)
+            const inputText = document.getElementById('entryInput').value;
+            const outputDiv = document.getElementById('journalOutput');
+
+            let totalDebit = 0, totalCredit = 0;
+            const lines = inputText.split('\n');
+            let journalEntries = [];
+            let currentType = null, currentLevel1Account = '';
+
+            for (const rawLine of lines) {
+                let parts = rawLine.split('#');
+                let processedLine = parts[0].trim();
+                let comment = parts.slice(1).join('#').trim() || null;
+
+                if (processedLine === '' && comment) {
+                    journalEntries.push({ type: 'comment', account: comment });
+                    continue;
+                } else if (processedLine === '') {
+                    continue;
+                }
+
+                let entry = { type: null, account: '', amount: '', comment: comment, originalAmount: '', isFormula: false };
+                let accountPart = '', amountNum = NaN;
+                let prefix = '', lineContent = '';
+
+                if (processedLine.startsWith('借：')) {
+                    currentType = 'debit';
+                    prefix = '借：';
+                    lineContent = processedLine.substring(2).trim();
+                } else if (processedLine.startsWith('贷：')) {
+                    currentType = 'credit';
+                    prefix = '贷：';
+                    lineContent = processedLine.substring(2).trim();
+                } else if (processedLine.startsWith('——')) {
+                    prefix = '——';
+                    lineContent = processedLine.substring(2).trim();
+                } else {
+                    prefix = '';
+                    lineContent = processedLine.trim();
+                }
+
+                if (lineContent === '') { continue; }
+
+                let evalResult;
+                const contentLastSpace = lineContent.lastIndexOf(' ');
+
+                if (contentLastSpace === -1) {
+                    accountPart = lineContent;
+                    amountNum = NaN;
+                    evalResult = { original: '', isFormula: false };
+                } else {
+                    let potentialAmount = lineContent.substring(contentLastSpace + 1).trim();
+                    evalResult = evaluateAmount(potentialAmount);
+
+                    if (!isNaN(evalResult.result)) {
+                        accountPart = lineContent.substring(0, contentLastSpace).trim();
+                        amountNum = evalResult.result;
+                    } else {
+                        accountPart = lineContent;
+                        amountNum = NaN;
+                        evalResult = { original: '', isFormula: false };
+                    }
+                }
+
+                if (prefix === '——') {
+                    accountPart = `${currentLevel1Account}——${accountPart}`;
+                } else {
+                    if (accountPart.trim() !== '') {
+                        currentLevel1Account = getLevel1Account(accountPart);
+                    }
+                }
+
+                entry.type = currentType;
+                entry.account = accountPart;
+                entry.amount = isNaN(amountNum) ? '' : formatAmount(amountNum);
+                entry.originalAmount = evalResult.original;
+                entry.isFormula = evalResult.isFormula;
+
+                if (!isNaN(amountNum)) {
+                    if (entry.type === 'debit') totalDebit += amountNum;
+                    else if (entry.type === 'credit') totalCredit += amountNum;
+                }
+                journalEntries.push(entry);
+            }
+
+            const epsilon = 0.001;
+            const isBalanced = Math.abs(totalDebit - totalCredit) < epsilon;
+
+            // 【重要】调用 *2列* renderTable
+            renderTable(journalEntries, outputDiv, totalDebit, totalCredit, isBalanced);
+        }
+
+        /**
+         * 【辅助】渲染单个金额的 <span> (处理公式点击)
+         */
+        function renderAmountSpan(entry) {
+            if (entry.amount === '') return ''; // 空金额
+
+            const escapedFormula = escapeHTML(entry.originalAmount);
+            if (entry.isFormula) {
+                return `<span class="amount amount-formula" 
+                              data-formula="${escapedFormula}" 
+                              data-result="${entry.amount}" 
+                              data-state="result" 
+                              title="点击查看算式: ${escapedFormula}">
+                              ${entry.amount}
+                        </span>`;
+            } else {
+                return `<span class="amount">${entry.amount}</span>`;
+            }
+        }
+
+        /**
+         * 【2列】 renderTable 函数
+         */
+        function renderTable(entries, container, totalDebit, totalCredit, isBalanced) {
+            if (entries.length === 0) {
+                container.innerHTML = '<p style="padding: 15px; color: #888; text-align: center;">暂无内容</p>';
+                return;
+            }
+
+            let table = '<table>';
+            // <thead>: 2列
+            table += '<thead><tr>';
+            table += '<th>账户 (Account)</th>';
+            table += '<th class="amount-header">'; // 金额区 <th>
+            table += '<span class="debit-label">借方 (Debit)</span>';
+            table += '<span class="credit-label">贷方 (Credit)</span>';
+            table += '</th>';
+            table += '</tr></thead>';
+
+            table += '<tbody>';
+
+            for (const entry of entries) {
+                if (entry.type === 'comment') {
+                    // 纯注释行
+                    table += `<tr class="full-comment-row"><td colspan="2" class="full-comment-cell"># ${entry.account}</td></tr>`;
+                    continue;
+                }
+
+                const hasComment = entry.comment && entry.comment.trim() !== '';
+
+                // 准备借方和贷方"插槽"的内容
+                let debitSlotHTML = '';
+                let creditSlotHTML = '';
+                let accountClass = '';
+
+                if (entry.type === 'debit') {
+                    debitSlotHTML = renderAmountSpan(entry);
+                    accountClass = 'account-debit';
+                } else if (entry.type === 'credit') {
+                    creditSlotHTML = renderAmountSpan(entry);
+                    accountClass = 'account-credit';
+                }
+
+                // 1. 渲染主数据行 (2列)
+                table += `<tr class="${hasComment ? 'has-comment' : ''}">`;
+                // 列 1: 账户
+                table += `<td class="${accountClass}">${entry.account}</td>`;
+                // 列 2: 金额区 (内含2个插槽)
+                table += `<td class="amount-cell">`;
+                table += `<span class="debit-slot">${debitSlotHTML}</span>`;
+                table += `<span class="credit-slot">${creditSlotHTML}</span>`;
+                table += `</td>`;
+                table += '</tr>';
+
+                // 2. 渲染行内注释行 (如果存在)
+                if (hasComment) {
+                    let commentCellClass = entry.type === 'credit' ? 'comment-cell-credit' : 'comment-cell-debit';
+                    table += '<tr class="comment-row">';
+                    // 注释行也需要 colspan="2"
+                    table += `<td colspan="2" class="comment-cell ${commentCellClass}">↳ ${entry.comment}</td>`;
+                    table += '</tr>';
+                }
+            }
+            table += '</tbody>';
+
+            // <tfoot>: 2列
+            table += '<tfoot>';
+            // 合计
+            table += '<tr class="total-row">';
+            table += `<td><strong>合计 (Total)</strong></td>`; // 列 1
+            table += `<td class="amount-cell">`; // 列 2
+            table += `<span class="debit-slot amount">${formatAmount(totalDebit)}</span>`;
+            table += `<span class="credit-slot amount">${formatAmount(totalCredit)}</span>`;
+            table += `</td>`;
+            table += '</tr>';
+
+            // 配平
+            if (!isBalanced) {
+                let difference = Math.abs(totalDebit - totalCredit);
+                table += '<tr class="balance-row">';
+                table += `<td colspan="2" class="balance-error">分录未配平 (Unbalanced) - 差额: ${formatAmount(difference)}</td>`;
+                table += '</tr>';
+            }
+            table += '</tfoot></table>';
+            container.innerHTML = table;
+        }
+
+        // 默认示例 (未改变)
+        const defaultEntry = `# 研发部门工资表
+借：管理费用——工资（研发部） 5000+0.50
+——福利费（研发部） 800+200 # 研发人员福利
+贷：应付职工薪酬——工资 5000.50
+——福利费 1000 # 贷方注释测试
+
+# 提现 (故意不配平)
+借：银行存款 1500 # 从A银行提现
+贷：库存现金 1499.99
+
+# 仅有科目的行
+贷：库存股（测试）
+`;
+
+        document.getElementById('entryInput').value = defaultEntry;
+        parseAndRender(); // 页面加载时立即解析默认值
+
+        // 事件委托 (与上次相同)
+        document.getElementById('journalOutput').addEventListener('click', function (e) {
+            const el = e.target.closest('.amount-formula');
+
+            if (el) {
+                const currentState = el.getAttribute('data-state');
+                const formula = el.getAttribute('data-formula');
+                const result = el.getAttribute('data-result');
+
+                if (currentState === 'result') {
+                    el.innerHTML = formula;
+                    el.setAttribute('data-state', 'formula');
+                    el.setAttribute('title', `点击查看结果: ${result}`);
+                    el.classList.add('showing-formula');
+                } else {
+                    el.innerHTML = result;
+                    el.setAttribute('data-state', 'result');
+                    el.setAttribute('title', `点击查看算式: ${formula}`);
+                    el.classList.remove('showing-formula');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

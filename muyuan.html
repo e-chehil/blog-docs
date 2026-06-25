@@ -1,0 +1,2501 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'><style type='text/css'>html {overflow-x: initial !important;}</style>
+<style type='text/css'  id="style-base">:root { --bg-color: #ffffff; --text-color: #333333; --select-text-bg-color: #B5D6FC; --select-text-font-color: auto; --monospace: "Lucida Console",Consolas,"Courier",monospace; --title-bar-height: 20px; }
+.mac-os-11 { --title-bar-height: 28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, "Segoe UI Emoji", "SF Pro", sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, h5 { white-space: pre-wrap; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p *, #write.first-line-indent svg * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; position: relative; }
+#write svg h1, #write svg h2, #write svg h3, #write svg h4, #write svg h5, #write svg h6, #write svg p { position: static; }
+svg sub, svg sup { position: static; }
+.nodeLabel p { padding-right: 2px; padding-left: 2px; }
+.typora-export .nodeLabel p { padding-right: 0px; padding-left: 0px; }
+foreignobject { overflow: visible; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+li p { orphans: 1; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+thead, tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+svg { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; border-color: transparent !important; padding-top: 0px !important; padding-bottom: 0px !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  #write > p:nth-child(1) { margin-top: 0px; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+  figure { overflow-x: visible; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.reversefootnote { font-family: ui-monospace, sans-serif; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.mermaid-svg { margin: auto; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex: 2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; overflow-wrap: anywhere; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+mjx-container { break-inside: avoid; }
+.md-alert.md-alert-note { border-left-color: rgb(9, 105, 218); }
+.md-alert.md-alert-important { border-left-color: rgb(130, 80, 223); }
+.md-alert.md-alert-warning { border-left-color: rgb(154, 103, 0); }
+.md-alert.md-alert-tip { border-left-color: rgb(31, 136, 61); }
+.md-alert.md-alert-caution { border-left-color: rgb(207, 34, 46); }
+.md-alert { padding: 0px 1em; margin-bottom: 16px; color: inherit; border-left: 0.25em solid rgb(0, 0, 0); }
+.md-alert-text-note { color: rgb(9, 105, 218); }
+.md-alert-text-important { color: rgb(130, 80, 223); }
+.md-alert-text-warning { color: rgb(154, 103, 0); }
+.md-alert-text-tip { color: rgb(31, 136, 61); }
+.md-alert-text-caution { color: rgb(207, 34, 46); }
+.md-alert-text { font-size: 0.9rem; font-weight: 700; }
+.md-alert-text svg { fill: currentcolor; position: relative; top: 0.125em; margin-right: 1ch; overflow: visible; }
+.md-alert-text-container::after { content: attr(data-text); text-transform: capitalize; pointer-events: none; margin-right: 1ch; }
+
+</style>
+<style type='text/css'  id="style-theme_css">html {
+    font-size: 16px;
+    font-family: "LXGW WenKai"
+}
+
+#write {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 15px;
+    line-height: 2.25;
+    color: #000;
+    letter-spacing: 1.1px;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: left;
+    position: relative;
+    z-index: 0
+}
+
+#write::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-color: var(--element-color);
+    opacity: .12;
+    -webkit-mask-image: var(--bg-style);
+    mask-image: var(--bg-style);
+    -webkit-mask-size: 20px 20px;
+    mask-size: 20px 20px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-position: center;
+    mask-position: center
+}
+
+#write p {
+    color: #333;
+    margin: 10px 10px;
+    font-family: Optima-Regular, Optima, "LXGW WenKai", PingFangSC-light, PingFangTC-light, "PingFang SC", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+    font-size: 1rem;
+    word-spacing: 2px
+}
+
+#write h3.md-heading:after,
+h4.md-heading:after,
+h5.md-heading:after,
+h6.md-heading:after {
+    content: " ";
+    display: inline-block;
+    height: 2em;
+    width: 2em;
+    vertical-align: top;
+    margin-left: -2px;
+    background-color: var(--element-color-shallow);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: 24px 24px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 24px 24px
+}
+
+#write h3.md-heading:after {
+    -webkit-mask-image: var(--h3-icon-shape);
+    mask-image: var(--h3-icon-shape)
+}
+
+#write h4.md-heading:after {
+    -webkit-mask-image: var(--h4-icon-shape);
+    mask-image: var(--h4-icon-shape)
+}
+
+#write h5.md-heading:after {
+    -webkit-mask-image: var(--h5-icon-shape);
+    mask-image: var(--h5-icon-shape)
+}
+
+#write h6.md-heading:after {
+    -webkit-mask-image: var(--h6-icon-shape);
+    mask-image: var(--h6-icon-shape)
+}
+
+#write h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 1em auto .8em;
+    line-height: 1.4;
+    width: fit-content;
+    min-width: 120px;
+    min-height: 1.4em;
+    color: #222;
+    position: relative;
+    padding-bottom: 12px;
+    transition: color .3s ease, transform .3s ease;
+    border-bottom: none
+}
+
+#write h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--head-title-h2-background);
+    background-size: 100% auto;
+    transform: translateX(-50%);
+    transition: width .4s cubic-bezier(.25, .8, .25, 1)
+}
+
+#write h1:not(.md-focus):hover {
+    color: var(--head-title-color);
+    transform: translateY(-2px)
+}
+
+#write h1.md-focus::after,
+#write h1:focus::after,
+#write h1:hover::after {
+    width: 100%
+}
+
+#write h2 {
+    color: var(--head-title-h2-color);
+    font-size: 1.4rem;
+    line-height: 1.5;
+    width: fit-content;
+    font-weight: 700;
+    margin: 20px 0;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: var(--head-title-h2-background);
+    background-size: 200% auto;
+    background-position: 0 center;
+    box-shadow: 0 2px 5px rgba(61, 184, 211, .15);
+    transition: background-position .5s ease-out, transform .4s ease, box-shadow .4s ease
+}
+
+#write h2:hover {
+    background-position: 100% center;
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(61, 184, 211, .35)
+}
+
+#write h3 {
+    position: relative;
+    width: fit-content;
+    margin: 20px 0;
+    text-align: left;
+    font-size: 1.3rem;
+    padding-left: 10px;
+    transition: all .3s cubic-bezier(.25, .8, .25, 1)
+}
+
+#write h3 {
+    position: relative;
+    width: fit-content;
+    margin: 20px 0;
+    text-align: left;
+    font-size: 1.3rem;
+    padding-left: 10px;
+    transition: all .3s cubic-bezier(.25, .8, .25, 1)
+}
+
+#write h3::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 61%;
+    border-radius: 4px;
+    background-color: var(--head-title-color);
+    transition: all .3s cubic-bezier(.25, .8, .25, 1)
+}
+
+#write h3 span {
+    border-bottom: 2px hidden var(--head-title-color);
+    transition: color .3s ease
+}
+
+#write h3:hover {
+    padding-left: 18px;
+    color: var(--head-title-color);
+    cursor: pointer
+}
+
+#write h3:hover::before {
+    height: 66%;
+    background-color: var(--head-title-color);
+    width: 7px
+}
+
+#write h4,
+#write h5,
+#write h6 {
+    transition: color .3s ease, transform .3s ease
+}
+
+#write h4::before,
+#write h5::before,
+#write h6::before {
+    transition: all .3s cubic-bezier(.34, 1.56, .64, 1)
+}
+
+#write h4 {
+    margin: 20px 0;
+    font-size: 1.15rem;
+    text-align: left
+}
+
+#write h4::before {
+    content: "";
+    margin-right: 7px;
+    display: inline-block;
+    background-color: var(--head-title-color);
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    border: var(--head-title-color) 1px solid;
+    vertical-align: inherit
+}
+
+#write h4:hover::before {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 4px var(--element-color-soo-shallow)
+}
+
+#write h5 {
+    margin: 23px 0;
+    font-size: 1.1rem;
+    text-align: left
+}
+
+#write h5::before {
+    content: "";
+    margin-right: 7px;
+    display: inline-block;
+    background-color: #fff;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    border: var(--head-title-color) 2px solid;
+    vertical-align: inherit;
+    box-sizing: border-box
+}
+
+#write h5:hover::before {
+    background-color: var(--head-title-color);
+    transform: scale(1.2);
+    box-shadow: 0 0 0 3px var(--element-color-soo-shallow)
+}
+
+#write h6 {
+    margin: 23px 0;
+    font-size: 1.1rem;
+    text-align: left
+}
+
+#write h6::before {
+    content: "-";
+    color: var(--head-title-color);
+    margin-right: 7px;
+    display: inline-block;
+    vertical-align: inherit
+}
+
+#write h6:hover::before {
+    transform: scaleX(1.8) translateX(1px);
+    font-weight: 700
+}
+
+#write h4:hover,
+#write h5:hover,
+#write h6:hover {
+    color: var(--element-color-deep);
+    transform: translateX(6px)
+}
+
+#write {
+    counter-reset: h1
+}
+
+h1 {
+    counter-reset: h2
+}
+
+h2 {
+    counter-reset: h3
+}
+
+h3 {
+    counter-reset: h4
+}
+
+h4 {
+    counter-reset: h5
+}
+
+h5 {
+    counter-reset: h6
+}
+
+.sidebar-content {
+    counter-reset: h1
+}
+
+.outline-content {
+    counter-reset: h1
+}
+
+.outline-h1 {
+    counter-reset: h2
+}
+
+.outline-h2 {
+    counter-reset: h3
+}
+
+.outline-h3 {
+    counter-reset: h4
+}
+
+.outline-h4 {
+    counter-reset: h5
+}
+
+.outline-h5 {
+    counter-reset: h6
+}
+
+.md-toc-content {
+    counter-reset: h1toc
+}
+
+.md-toc-h1 {
+    counter-reset: h2toc
+}
+
+.md-toc-h2 {
+    counter-reset: h3toc
+}
+
+.md-toc-h3 {
+    counter-reset: h4toc
+}
+
+.md-toc-h4 {
+    counter-reset: h5toc
+}
+
+.md-toc-h5 {
+    counter-reset: h6toc
+}
+
+#write h1:before {
+    counter-increment: h1;
+    content: var(--autonum-h1)
+}
+
+#outline-content li.outline-h1>div>span.outline-label:before {
+    counter-increment: h1;
+    content: var(--autonum-h1)
+}
+
+.outline-content .outline-h1>.outline-item>.outline-label:before {
+    counter-increment: h1;
+    content: var(--autonum-h1)
+}
+
+#write span.md-toc-item.md-toc-h1>a:before {
+    counter-increment: h1toc;
+    content: var(--autonum-h1toc)
+}
+
+#write h2:before {
+    counter-increment: h2;
+    content: var(--autonum-h2);
+    color: var(--head-title-h2-color)
+}
+
+.outline-content .outline-h2>.outline-item>.outline-label:before {
+    counter-increment: h2;
+    content: var(--autonum-h2)
+}
+
+li.outline-h2>div>a.outline-label:before {
+    counter-increment: h2;
+    content: var(--autonum-h2)
+}
+
+#write span.md-toc-item.md-toc-h2>a:before {
+    counter-increment: h2toc;
+    content: var(--autonum-h2toc)
+}
+
+#write h3>span:first-of-type::before {
+    counter-increment: h3;
+    content: var(--autonum-h3);
+    color: var(--element-color)
+}
+
+#outline-content li.outline-h3>div>span.outline-label:before {
+    counter-increment: h3;
+    content: var(--autonum-h3)
+}
+
+.outline-content .outline-h3>.outline-item>.outline-label:before {
+    counter-increment: h3;
+    content: var(--autonum-h3)
+}
+
+#write span.md-toc-item.md-toc-h3>a:before {
+    counter-increment: h3toc;
+    content: var(--autonum-h3toc)
+}
+
+#write h4>span:first-of-type::before {
+    counter-increment: h4;
+    content: var(--autonum-h4);
+    color: var(--element-color)
+}
+
+#outline-content li.outline-h4>div>span.outline-label:before {
+    counter-increment: h4;
+    content: var(--autonum-h4)
+}
+
+.outline-content .outline-h4>.outline-item>.outline-label:before {
+    counter-increment: h4;
+    content: var(--autonum-h4)
+}
+
+#write span.md-toc-item.md-toc-h4>a:before {
+    counter-increment: h4toc;
+    content: var(--autonum-h4toc)
+}
+
+#write h5>span:first-of-type::before {
+    counter-increment: h5;
+    content: var(--autonum-h5);
+    color: var(--element-color)
+}
+
+#outline-content li.outline-h5>div>span.outline-label:before {
+    counter-increment: h5;
+    content: var(--autonum-h5)
+}
+
+.outline-content .outline-h5>.outline-item>.outline-label:before {
+    counter-increment: h5;
+    content: var(--autonum-h5)
+}
+
+#write span.md-toc-item.md-toc-h5>a:before {
+    counter-increment: h5toc;
+    content: var(--autonum-h5toc)
+}
+
+#write h6>span:first-of-type::before {
+    counter-increment: h6;
+    content: var(--autonum-h6);
+    color: var(--element-color)
+}
+
+#outline-content li.outline-h6>div>span.outline-label:before {
+    counter-increment: h6;
+    content: var(--autonum-h6)
+}
+
+.outline-content .outline-h6>.outline-item>.outline-label:before {
+    counter-increment: h6;
+    content: var(--autonum-h6)
+}
+
+#write span.md-toc-item.md-toc-h6>a:before {
+    counter-increment: h6toc;
+    content: var(--autonum-h6toc)
+}
+
+::marker {
+    color: var(--element-color-deep)
+}
+
+li.md-list-item {
+    margin: .4rem 0
+}
+
+#write ol,
+#write ul {
+    margin-top: 0;
+    margin-left: 16px;
+    margin-bottom: 8px;
+    padding-left: 13px
+}
+
+#write em {
+    padding: 0 3px 0 0
+}
+
+#write ul {
+    list-style-type: disc
+}
+
+#write ul ul {
+    list-style-type: circle
+}
+
+#write ul ul ul {
+    list-style-type: square
+}
+
+#write ol {
+    list-style-type: decimal
+}
+
+#write ol ol {
+    list-style-type: lower-alpha
+}
+
+#write ol ol ol {
+    list-style-type: lower-roman
+}
+
+#write li section {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    line-height: 1.7rem;
+    text-align: justify;
+    color: #000;
+    font-weight: 500
+}
+
+#write li:before {
+    content: "";
+    height: calc(100% - 45px);
+    top: 35px;
+    position: absolute;
+    border-left: .5px solid var(--element-color);
+    left: -12.5px
+}
+
+#write .task-list-item input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.3rem;
+    height: 1.3rem;
+    position: absolute;
+    top: 3px;
+    left: -22px;
+    outline: 0;
+    cursor: pointer;
+    z-index: 1
+}
+
+#write .task-list-item input::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -2px;
+    left: 18px;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid var(--element-color-deep, #ffa531);
+    background: #fff;
+    transition: all .4s cubic-bezier(.5, 1.6, .4, .7);
+    box-sizing: border-box
+}
+
+#write .task-list-item input::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 40%;
+    left: 138%;
+    width: .35rem;
+    height: .65rem;
+    border: solid #fff;
+    border-width: 0 2.5px 2.5px 0;
+    transform: translate(-50%, -60%) rotate(45deg) scale(1);
+    transition: all .3s cubic-bezier(.5, 1.6, .4, .7);
+    opacity: 0
+}
+
+#write .task-list-item input:checked::before {
+    background: var(--element-color, #ffc000);
+    border-color: var(--element-color, #ffc000);
+    transform: scale(1.05);
+    animation: task-pulse .4s forwards
+}
+
+@keyframes task-pulse {
+    0% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.15)
+    }
+
+    100% {
+        transform: scale(1)
+    }
+}
+
+#write .task-list-item input:checked::after {
+    opacity: 1;
+    transform: translate(-50%, -60%) rotate(45deg) scale(1)
+}
+
+#write .task-list-item input[type=checkbox]+p,
+#write .task-list-item input[type=checkbox]+span {
+    position: relative;
+    display: inline;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: color .4s ease;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 50%;
+    background-size: 0 1.5px;
+    background-repeat: no-repeat;
+    transition: background-size .4s cubic-bezier(.25, .8, .25, 1), color .4s ease
+}
+
+#write .task-list-item input[type=checkbox]:checked+p,
+#write .task-list-item input[type=checkbox]:checked+span {
+    color: #bbb;
+    background-size: 100% 1.5px
+}
+
+#write .task-list-item input[type=checkbox]:checked+p>em,
+#write .task-list-item input[type=checkbox]:checked+p>span,
+#write .task-list-item input[type=checkbox]:checked+p>strong {
+    color: inherit
+}
+
+#write blockquote {
+    position: relative;
+    margin: 20px 0;
+    padding: 18px 20px 18px 48px;
+    background-color: var(--element-color-soo-shallow);
+    border: none;
+    border-radius: 16px;
+    color: #555;
+    line-height: 1.6;
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), background-color .3s ease
+}
+
+#write blockquote::before {
+    content: "✨";
+    position: absolute;
+    left: 16px;
+    top: 18px;
+    font-size: 20px;
+    line-height: 1;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif
+}
+
+#write blockquote p {
+    color: #555;
+    margin-bottom: .5em
+}
+
+#write blockquote p:last-child {
+    margin-bottom: 0
+}
+
+#write blockquote:hover {
+    transform: scale(1.02)
+}
+
+#write a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 2px 4px;
+    margin: 0 -2px;
+    border-radius: 4px;
+    background: 0 0;
+    border-bottom: none;
+    transition: all .2s ease
+}
+
+#write p a:not(.md-toc-inner)::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 2px;
+    vertical-align: -.15em;
+    background-color: var(--element-color);
+    -webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cpath d='M477.934459 330.486594A50.844091 50.844091 0 0 1 406.752731 258.796425L512 152.532274a254.220457 254.220457 0 0 1 359.467726 359.467726L762.66137 618.772592a50.844091 50.844091 0 1 1-71.690168-71.690169l106.772591-106.772592a152.532274 152.532274 0 0 0-215.578947-215.578947z m70.164846 361.501489A50.844091 50.844091 0 1 1 619.789474 762.66137l-107.281033 107.281033A254.220457 254.220457 0 0 1 152.532274 512L259.813307 406.752731a50.844091 50.844091 0 1 1 72.19861 69.656405l-107.789474 107.281033a152.532274 152.532274 0 0 0 215.578947 215.578947z m-126.601788-16.77855a50.844091 50.844091 0 1 1-71.690168-71.690169l251.678252-251.678252a50.844091 50.844091 0 0 1 71.690169 71.690169z'/%3E%3C/svg%3E") no-repeat center/contain;
+    mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cpath d='M477.934459 330.486594A50.844091 50.844091 0 0 1 406.752731 258.796425L512 152.532274a254.220457 254.220457 0 0 1 359.467726 359.467726L762.66137 618.772592a50.844091 50.844091 0 1 1-71.690168-71.690169l106.772591-106.772592a152.532274 152.532274 0 0 0-215.578947-215.578947z m70.164846 361.501489A50.844091 50.844091 0 1 1 619.789474 762.66137l-107.281033 107.281033A254.220457 254.220457 0 0 1 152.532274 512L259.813307 406.752731a50.844091 50.844091 0 1 1 72.19861 69.656405l-107.789474 107.281033a152.532274 152.532274 0 0 0 215.578947 215.578947z m-126.601788-16.77855a50.844091 50.844091 0 1 1-71.690168-71.690169l251.678252-251.678252a50.844091 50.844091 0 0 1 71.690169 71.690169z'/%3E%3C/svg%3E") no-repeat center/contain;
+    transition: transform .4s cubic-bezier(.25, .8, .25, 1)
+}
+
+#write a:not(.md-toc-inner):hover {
+    color: var(--element-color-deep);
+    background: var(--element-color-soo-shallow)
+}
+
+#write a:hover:not(.md-toc-inner)::before {
+    transform: rotate(180deg);
+    background-color: var(--element-color-deep)
+}
+
+#write a:visited {
+    color: var(--element-color-deep)
+}
+
+#write sup a::before {
+    content: none
+}
+
+#write mark {
+    background-color: transparent;
+    color: inherit;
+    padding: 0 2px;
+    margin: 0;
+    border-radius: 4px;
+    font-weight: inherit;
+    position: relative;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    background-image: linear-gradient(to top, var(--element-color-so-shallow), var(--element-color-so-shallow));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 40%;
+    transition: background-size .3s cubic-bezier(.34, 1.56, .64, 1), color .3s ease, border-radius .3s ease
+}
+
+#write mark::after,
+#write mark::before {
+    content: none !important;
+    display: none !important
+}
+
+#write mark:hover {
+    background-size: 100% 100%;
+    border-radius: 6px
+}
+
+#write mark strong {
+    color: var(--element-color-deep)
+}
+
+#write mark:hover strong {
+    color: var(--element-color-deep);
+    text-shadow: none
+}
+
+#write strong {
+    color: var(--element-color);
+    font-weight: 700;
+    display: inline;
+    position: relative;
+    border-bottom: 2px solid transparent;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: border-color .3s ease, color .3s ease, text-shadow .3s ease
+}
+
+#write strong:hover {
+    color: var(--element-color);
+    border-bottom-color: var(--element-color-shallow);
+    text-shadow: 0 2px 8px var(--element-color-so-shallow)
+}
+
+#write mark:hover strong {
+    color: #fff;
+    text-shadow: none;
+    transform: translateY(-2px) scale(1.1)
+}
+
+@keyframes stitchFlow {
+    from {
+        background-position-x: 0
+    }
+
+    to {
+        background-position-x: 6px
+    }
+}
+
+#write em {
+    font-style: italic;
+    color: #555;
+    text-decoration: none !important;
+    padding: 0 2px 1px;
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    background-size: 6px 3px;
+    background-image: linear-gradient(-45deg, transparent 35%, var(--element-color-shallow) 35%, var(--element-color-shallow) 65%, transparent 65%);
+    transition: color .2s ease, -webkit-text-stroke .2s ease, background-image .2s ease;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    position: relative;
+    z-index: 0
+}
+
+#write em::after {
+    content: none !important;
+    display: none !important
+}
+
+#write em:hover {
+    color: var(--element-color);
+    font-weight: 400;
+    -webkit-text-stroke: .5px var(--element-color);
+    background-image: linear-gradient(-45deg, transparent 35%, var(--element-color) 35%, var(--element-color) 65%, transparent 65%);
+    animation: stitchFlow .5s linear infinite
+}
+
+#write del {
+    text-decoration: line-through;
+    text-decoration-color: var(--element-color);
+    color: #999;
+    transition: all .3s ease
+}
+
+#write del:hover {
+    opacity: .6;
+    text-decoration-color: var(--element-color-deep);
+    cursor: not-allowed
+}
+
+#write hr {
+    border: none;
+    border-top: 3px dashed var(--element-color-shallow);
+    margin: 30px 0;
+    opacity: .6;
+    transform: scaleX(.8);
+    transition: all .4s ease
+}
+
+#write hr:hover {
+    transform: scaleX(1);
+    border-color: var(--element-color);
+    opacity: 1
+}
+
+#write p:has(img) {
+    text-align: center
+}
+
+#write img {
+    border-radius: 12px;
+    display: inline-block;
+    margin: 15px 5px;
+    object-fit: contain;
+    filter: brightness(1) contrast(1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .05);
+    transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
+    max-width: 100%;
+    cursor: zoom-in
+}
+
+#write p>img:only-child {
+    display: block;
+    margin: 20px auto
+}
+
+#write img:hover {
+    filter: brightness(1.05) contrast(1.05);
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px -4px var(--element-color-soo-shallow);
+    z-index: 10
+}
+
+#write figcaption {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    line-height: 1.5;
+    transition: color .3s ease
+}
+
+#write figure:hover>figcaption,
+#write p:hover>img+figcaption {
+    color: var(--element-color-deep)
+}
+
+pre.md-meta-block {
+    padding: 30px 20px 20px;
+    margin: 20px 0;
+    font-family: var(--monospace);
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    background-color: var(--element-color-soo-shallow);
+    border: 1.5px dashed var(--element-color);
+    border-radius: 8px;
+    position: relative;
+    transition: all .3s ease
+}
+
+pre.md-meta-block::after {
+    content: "YAML";
+    position: absolute;
+    top: 0;
+    right: 20px;
+    background-color: var(--element-color);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    pointer-events: none
+}
+
+pre.md-meta-block:hover {
+    background-color: #fff;
+    border-style: solid;
+    border-color: var(--element-color-deep);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, .05);
+    transform: translateY(-2px)
+}
+
+#write code:not(.md-fencescode) {
+    font-family: CascadiaCode, "Lucida Console", Consolas, Courier, monospace;
+    font-size: .9em;
+    letter-spacing: .5px;
+    color: var(--element-color-linecode);
+    background-color: var(--element-color-linecode-background);
+    padding: 5px 5px;
+    margin: 0 2px;
+    border-radius: 6px;
+    vertical-align: middle;
+    transition: all .2s cubic-bezier(.34, 1.56, .64, 1)
+}
+
+#write code:not(.md-fencescode):hover {
+    background-color: var(--element-color);
+    color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px var(--element-color-so-shallow);
+    text-decoration: none
+}
+
+.md-diagram {
+    background: 0 0 !important;
+    margin: 20px 0
+}
+
+.node circle,
+.node ellipse,
+.node path,
+.node rect {
+    fill: var(--element-color-so-shallow) !important;
+    stroke: var(--primary-color) !important;
+    stroke-width: 1.5px !important;
+    transition: all .3s ease
+}
+
+.node polygon {
+    fill: color-mix(in srgb, var(--element-color-shallow), transparent 50%) !important;
+    stroke: var(--element-color-deep) !important;
+    stroke-width: 1.5px !important
+}
+
+.edgePath .path,
+.flowchart-link {
+    stroke: var(--element-color-deep) !important;
+    stroke-width: 1.5px !important;
+    opacity: .8 !important
+}
+
+.marker path,
+marker path {
+    fill: var(--element-color-deep) !important;
+    stroke: var(--element-color-deep) !important
+}
+
+.cluster-label text,
+.edgeLabel,
+.labelBkg,
+.node .label {
+    color: var(--appui-color-text) !important;
+    fill: var(--appui-color-text) !important;
+    font-weight: 500 !important;
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff !important;
+    background-color: transparent
+}
+
+.edgeLabel .label,
+.edgeLabel div {
+    background-color: #fff !important;
+    border-radius: 4px
+}
+
+.edgeLabel p,
+.edgeLabel span {
+    background-color: transparent !important;
+    color: var(--appui-color-text) !important
+}
+
+.edgeLabel rect {
+    fill: #fff !important;
+    opacity: 1 !important;
+    stroke: none !important
+}
+
+.labelBkg {
+    fill: #fff !important;
+    background-color: #fff !important;
+    opacity: 1 !important
+}
+
+.cluster rect {
+    fill: color-mix(in srgb, var(--element-color-soo-shallow), transparent 50%) !important;
+    stroke: var(--element-color-shallow) !important;
+    stroke-dasharray: 4px !important
+}
+
+.cluster span,
+.cluster-label text {
+    fill: var(--element-color-deep) !important;
+    color: var(--element-color-deep) !important;
+    background: 0 0 !important;
+    font-weight: 700 !important
+}
+
+.md-fences:not([lang=mermaid])::before {
+    content: attr(lang);
+    font-family: CascadiaCode, "Lucida Console", Consolas, Courier, monospace;
+    text-align: right;
+    padding-right: 15px;
+    color: #7e7e7e;
+    display: block;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNDUwcHgiIGhlaWdodD0iMTMwcHgiPgogIDxlbGxpcHNlIGN4PSI2NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgc3Ryb2tlPSJyZ2IoMjIwLDYwLDU0KSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJyZ2IoMjM3LDEwOCw5NikiLz4KICA8ZWxsaXBzZSBjeD0iMjI1IiBjeT0iNjUiIHJ4PSI1MCIgcnk9IjUyIiAgc3Ryb2tlPSJyZ2IoMjE4LDE1MSwzMykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDI0NywxOTMsODEpIi8+CiAgPGVsbGlwc2UgY3g9IjM4NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgIHN0cm9rZT0icmdiKDI3LDE2MSwzNykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDEwMCwyMDAsODYpIi8+Cjwvc3ZnPg==);
+    height: 32px;
+    width: 100%;
+    background-size: 40px;
+    background-repeat: no-repeat;
+    background-color: #f8f8f8;
+    border-radius: 5px 5px 0 0;
+    background-position: 6px 11px;
+    margin-bottom: 0
+}
+
+.CodeMirror-wrap .CodeMirror-scroll {
+    overflow-x: auto
+}
+
+.md-fences {
+    position: relative;
+    z-index: 1;
+    overflow: visible
+}
+
+.md-fences.md-focus {
+    z-index: 100
+}
+
+.md-fences .cm-s-inner.CodeMirror {
+    margin-top: 0
+}
+
+.cm-s-inner.CodeMirror {
+    padding: 20px 12px 12px 20px;
+    color: #4f5467;
+    font-family: CascadiaCode, "Lucida Console", Consolas, Courier, monospace;
+    border-radius: 10px;
+    background-color: #fa0303;
+    line-height: 1.6rem
+}
+
+.CodeMirror-gutters {
+    border-right: 1px solid #9d9d9d52;
+    background: inherit;
+    white-space: nowrap
+}
+
+pre.CodeMirror-line {
+    padding: 0 1.2rem
+}
+
+.CodeMirror-linenumber {
+    padding: 0 3px 0 5px;
+    text-align: right;
+    color: #a3a3a3
+}
+
+.cm-s-inner.CodeMirror {
+    background: #f8f8f8;
+    border-radius: 0 0 5px 5px;
+    padding: 5px 12px 12px 12px;
+    page-break-before: auto;
+    line-height: 1.8rem
+}
+
+.md-rawblock .md-rawblock-tooltip {
+    inset: auto .3rem auto auto;
+    transform: translateY(-120%)
+}
+
+.cm-keyword {
+    color: #a626a4 !important;
+    font-weight: 700 !important
+}
+
+.cm-variable {
+    color: #b92121 !important
+}
+
+.cm-tag {
+    color: var(--color-cm-keyword) !important;
+    font-weight: 700 !important
+}
+
+.cm-variable-2,
+.cm-variable-3 {
+    color: #7aadad !important;
+    font-weight: 700 !important
+}
+
+.cm-def {
+    color: #c18401 !important
+}
+
+.cm-attribute {
+    color: #8f6aa8 !important
+}
+
+.cm-comment,
+.md-comment,
+.md-meta {
+    color: #9a9a9a !important
+}
+
+.cm-string {
+    color: #50a14f !important;
+    font-variant-ligatures: common-ligatures !important
+}
+
+.cm-link {
+    color: #e46918 !important
+}
+
+.cm-type {
+    color: #626161
+}
+
+.cm-property {
+    color: #800a84 !important
+}
+
+.cm-tag:not(.cm-bracket) {
+    font-weight: 700 !important
+}
+
+.cm-operator {
+    color: #0abe00 !important
+}
+
+.cm-number {
+    color: #1694b6 !important
+}
+
+.cm-meta {
+    color: #4078f2 !important;
+    font-weight: 700 !important
+}
+
+.cm-builtin {
+    color: #fa6060 !important
+}
+
+.cm-s-inner .cm-atom,
+.cm-s-inner.cm-atom {
+    color: #a626a4 !important;
+    font-weight: 700
+}
+
+kbd {
+    display: inline-block;
+    min-width: 1.6em;
+    text-align: center;
+    padding: 3px 6px;
+    margin: 0 4px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: .9em;
+    line-height: 1.4;
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: #fff;
+    color: var(--element-color-deep);
+    border: 1px solid var(--element-color);
+    border-bottom-width: 3px;
+    box-shadow: 0 2px 0 var(--element-color-so-shallow);
+    transition: all .15s cubic-bezier(.25, .8, .25, 1);
+    transform: translateY(0)
+}
+
+kbd:hover {
+    border-bottom-width: 1px;
+    transform: translateY(2px);
+    background-color: var(--element-color-soo-shallow);
+    box-shadow: 0 0 0 transparent;
+    color: var(--element-color-deep)
+}
+
+#write table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    margin: 20px 0;
+    border: 1px solid var(--element-color-shallow);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.6
+}
+
+#write table td,
+#write table th {
+    padding: 8px 12px;
+    color: #333;
+    border-right: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all .2s ease
+}
+
+#write table td:last-child,
+#write table th:last-child {
+    border-right: none
+}
+
+#write table tr:last-child td {
+    border-bottom: none
+}
+
+#write table th {
+    background-color: var(--element-color-soo-shallow);
+    color: var(--element-color-deep);
+    font-weight: 700;
+    white-space: nowrap
+}
+
+#write table tbody tr:hover td {
+    background-color: var(--element-color-soo-shallow)
+}
+
+#write table tbody td:hover {
+    background-color: var(--element-color-soo-shallow);
+    color: var(--element-color-deep);
+    box-shadow: inset 0 0 0 1px var(--element-color-shallow);
+    cursor: default
+}
+
+#write .footnote-word {
+    font-weight: 400;
+    color: #595959
+}
+
+#write .footnote-ref {
+    font-weight: 400;
+    color: #595959
+}
+
+#write .footnote-item em {
+    font-size: 14px;
+    color: #595959;
+    display: block;
+    background: 0 0
+}
+
+#write sup.md-footnote {
+    font-size: 9px;
+    padding: 1px 5px;
+    top: -11px;
+    left: 3px;
+    background-color: rgba(238, 238, 238, .7);
+    color: #555;
+    border-radius: 50%;
+    cursor: pointer
+}
+
+.md-alert {
+    padding: 5px 10px;
+    margin-bottom: 16px;
+    color: #555;
+    border: none !important;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease, background-color .3s ease
+}
+
+.md-alert:hover {
+    transform: scale(1.01) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .08);
+    z-index: 1
+}
+
+.md-alert-text-container {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, .7);
+    backdrop-filter: blur(2px);
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .03);
+    position: relative;
+    z-index: 2
+}
+
+.md-alert-text-container::after {
+    margin-right: 0
+}
+
+.md-alert::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    bottom: -12px;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+    font-size: 64px;
+    line-height: 1;
+    opacity: .12;
+    transform: rotate(-15deg);
+    pointer-events: none;
+    z-index: 0;
+    transition: all .4s cubic-bezier(.34, 1.56, .64, 1)
+}
+
+.md-alert:hover::after {
+    transform: rotate(0) scale(1.1);
+    opacity: .2;
+    right: 0;
+    bottom: -4px
+}
+
+.md-alert-text svg {
+    fill: currentColor;
+    position: relative;
+    top: 1px;
+    margin-right: 5px;
+    width: 1em;
+    height: 1em
+}
+
+.md-alert.md-alert-note {
+    background-color: rgba(108, 92, 231, .1)
+}
+
+.md-alert-text-note {
+    color: #6c5ce7
+}
+
+.md-alert.md-alert-note:hover {
+    background-color: rgba(108, 92, 231, .15)
+}
+
+.md-alert.md-alert-note::after {
+    content: "📝"
+}
+
+.md-alert.md-alert-tip {
+    background-color: rgba(0, 184, 148, .1)
+}
+
+.md-alert-text-tip {
+    color: #00b894
+}
+
+.md-alert.md-alert-tip:hover {
+    background-color: rgba(0, 184, 148, .15)
+}
+
+.md-alert.md-alert-tip::after {
+    content: "💡"
+}
+
+.md-alert.md-alert-warning {
+    background-color: rgba(253, 203, 110, .15)
+}
+
+.md-alert-text-warning {
+    color: #e17055
+}
+
+.md-alert.md-alert-warning:hover {
+    background-color: rgba(253, 203, 110, .2)
+}
+
+.md-alert.md-alert-warning::after {
+    content: "⚠️"
+}
+
+.md-alert.md-alert-important {
+    background-color: rgba(255, 118, 117, .12)
+}
+
+.md-alert-text-important {
+    color: #ff7675
+}
+
+.md-alert.md-alert-important:hover {
+    background-color: rgba(255, 118, 117, .18)
+}
+
+.md-alert.md-alert-important::after {
+    content: "📌"
+}
+
+.md-alert.md-alert-caution {
+    background-color: rgba(214, 48, 49, .08)
+}
+
+.md-alert-text-caution {
+    color: #d63031
+}
+
+.md-alert.md-alert-caution:hover {
+    background-color: rgba(214, 48, 49, .12)
+}
+
+.md-alert.md-alert-caution::after {
+    content: "🔥"
+}
+
+.md-toc {
+    margin: 20px;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, .4);
+    background-image: radial-gradient(circle at -22% -42%, var(--element-color-so-shallow), transparent 42%), radial-gradient(circle at 100% 170%, var(--element-color-shallow), transparent 42%);
+    background-repeat: no-repeat;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, .6);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .05);
+    border-radius: 16px;
+    font-size: 15px;
+    color: #555;
+    position: relative;
+    overflow: hidden;
+    transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .3s ease
+}
+
+.md-toc:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .1)
+}
+
+.md-toc:before {
+    content: "目录";
+    display: block;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--element-color-deep);
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+    border-bottom: 1px dashed rgba(0, 0, 0, .08);
+    padding-bottom: 15px
+}
+
+.md-toc-item {
+    display: block;
+    line-height: 1.8em;
+    color: #666;
+    text-decoration: none;
+    padding: 6px 15px;
+    border-radius: 50px;
+    margin-bottom: 4px;
+    position: relative;
+    transition: all .2s cubic-bezier(.25, .8, .25, 1)
+}
+
+.md-toc-item a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%
+}
+
+.md-toc-h1 {
+    font-weight: 600;
+    color: #333;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, .4)
+}
+
+.md-toc-h2 {
+    margin-left: 1em;
+    font-size: .95rem
+}
+
+.md-toc-h3 {
+    margin-left: 2em;
+    font-size: .9rem;
+    color: #777
+}
+
+.md-toc-h4 {
+    margin-left: 3em;
+    font-size: .85em;
+    opacity: .8
+}
+
+.md-toc-h5 {
+    margin-left: 4em;
+    font-size: .85em;
+    opacity: .7
+}
+
+.md-toc-h6 {
+    margin-left: 5em;
+    font-size: .85em;
+    opacity: .6
+}
+
+.md-toc-item:hover {
+    background-color: rgba(255, 255, 255, .95);
+    color: var(--element-color-deep);
+    padding-left: 20px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .05)
+}
+
+.md-tooltip-hide>span {
+    display: none
+}
+
+#typora-sidebar {
+    height: 100%;
+    color: var(--text-color);
+    font-size: .92rem;
+    background-color: var(--bg-color)
+}
+
+#outline-content::-webkit-scrollbar {
+    width: 5px
+}
+
+#file-library::-webkit-scrollbar {
+    width: 5px
+}
+
+::-webkit-scrollbar-track {
+    border-radius: 10px
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: var(--element-color)
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--element-color-shallow)
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 8px
+}
+
+.active-tab-files #info-panel-tab-file .info-panel-tab-border,
+.active-tab-outline #info-panel-tab-outline .info-panel-tab-border,
+.ty-show-search #info-panel-tab-search .info-panel-tab-border {
+    border-radius: 10px;
+    height: 4px;
+    background-color: var(--appui-color)
+}
+
+.file-node-content {
+    line-height: 1.2rem
+}
+
+.file-tree-node.active>.file-node-content {
+    color: var(--appui-color)
+}
+
+span.file-node-title {
+    color: var(--appui-color-text)
+}
+
+.file-node-icon {
+    color: var(--appui-color-icon);
+    padding-right: .2rem
+}
+
+.file-tree-node.active>.file-node-background {
+    font-weight: bolder;
+    border-left: 4px solid var(--appui-color);
+    border-color: var(--appui-color)
+}
+
+.info-panel-tab-title {
+    font-weight: bolder;
+    color: var(--appui-color-text)
+}
+
+#file-library-search-panel {
+    background-color: #fff
+}
+
+#file-library-search-input {
+    border-radius: 3px;
+    border-color: var(--appui-color)
+}
+
+#file-library-search-input:focus {
+    border-width: 2px
+}
+
+#outline-content .outline-h2::after,
+#outline-content .outline-h2>.outline-item::before {
+    content: none !important;
+    display: none !important;
+    border: none !important;
+    background: 0 0 !important
+}
+
+#outline-content .outline-label {
+    border: none !important;
+    background: 0 0 !important;
+    padding-left: 0 !important;
+    margin: 0 !important
+}
+
+#outline-content .outline-item {
+    display: flex !important;
+    align-items: center !important;
+    width: fit-content;
+    max-width: 100%;
+    padding: 6px 12px;
+    margin-bottom: 2px;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 50px;
+    border: none;
+    outline: 0;
+    transition: background-color .2s ease, color .2s ease, padding-right .2s ease, box-shadow .2s ease;
+    position: relative;
+    line-height: 1.6
+}
+
+#outline-content .outline-expander {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+    color: inherit
+}
+
+#outline-content .outline-label {
+    flex: 1;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+#outline-content .outline-h1 {
+    margin-top: 10px;
+    margin-bottom: 4px
+}
+
+#outline-content .outline-h2,
+#outline-content .outline-h3,
+#outline-content .outline-h4,
+#outline-content .outline-h5,
+#outline-content .outline-h6 {
+    border-left: 1.5px solid rgba(0, 0, 0, .06);
+    margin-left: 22px;
+    padding-left: 8px
+}
+
+#outline-content .outline-h1>.outline-item {
+    font-size: larger;
+    font-weight: 700;
+    color: var(--element-color-deep)
+}
+
+#outline-content .outline-item:hover {
+    background-color: var(--element-color-soo-shallow);
+    color: var(--element-color-deep);
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-left: none !important;
+    border-right: none !important
+}
+
+div.outline-item-active {
+    background-color: var(--element-color) !important;
+    color: #fff !important;
+    font-weight: 600;
+    box-shadow: 0 4px 10px var(--element-color-so-shallow);
+    transform: none;
+    padding-right: 30px !important;
+    padding-left: 12px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border: none !important
+}
+
+#outline-content .outline-item-active::after {
+    content: "✦";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: rgba(255, 255, 255, .9);
+    display: block !important;
+    z-index: 10;
+    animation: outline-twinkle 1.5s infinite alternate
+}
+
+@keyframes outline-twinkle {
+    from {
+        opacity: .7;
+        transform: translateY(-50%) scale(.9)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.1)
+    }
+}
+
+.typora-export-content .outline-content::before {
+    content: "目录";
+    font-size: 20px;
+    font-weight: 700;
+    position: absolute;
+    top: 22px;
+    left: 15px;
+    z-index: -1
+}
+
+.typora-export-sidebar .outline-content {
+    padding-top: 60px !important;
+    padding-left: 10px !important;
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 30px;
+    box-sizing: border-box
+}
+
+.typora-export-sidebar .outline-content::before {
+    content: "目录";
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--element-color-deep);
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    z-index: 10;
+    letter-spacing: 2px
+}
+
+.typora-export-sidebar .outline-h1 {
+    margin-top: 10px !important;
+    margin-bottom: 4px !important;
+    margin-left: 0 !important
+}
+
+.typora-export-sidebar .outline-h1>.outline-item {
+    font-size: 1.1em !important;
+    font-weight: 700 !important;
+    color: var(--element-color-deep) !important
+}
+
+.typora-export-sidebar .outline-h2,
+.typora-export-sidebar .outline-h3,
+.typora-export-sidebar .outline-h4,
+.typora-export-sidebar .outline-h5,
+.typora-export-sidebar .outline-h6 {
+    border-left: 1.5px solid rgba(0, 0, 0, .06) !important;
+    margin-left: 15px !important;
+    padding-left: 8px !important;
+    list-style: none !important
+}
+
+.typora-export-sidebar .outline-item {
+    display: flex !important;
+    align-items: center !important;
+    width: fit-content !important;
+    max-width: 95% !important;
+    padding: 6px 12px !important;
+    margin: 2px 0 !important;
+    color: inherit !important;
+    cursor: pointer;
+    text-decoration: none !important;
+    border-radius: 50px !important;
+    border: none !important;
+    transition: all .2s ease;
+    line-height: 1.6;
+    overflow: visible !important
+}
+
+.typora-export-sidebar .outline-label {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    text-decoration: none !important;
+    color: inherit !important;
+    flex: 0 1 auto !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.typora-export-sidebar .outline-expander {
+    width: 16px !important;
+    text-align: center;
+    margin-right: 4px;
+    flex-shrink: 0
+}
+
+.typora-export .outline-expander::before {
+    content: "▸" !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+    color: #999;
+    top: 0 !important;
+    display: inline-block;
+    transition: transform .2s
+}
+
+.typora-export .outline-expander:hover::before,
+.typora-export .outline-item-open>.outline-item>.outline-expander::before {
+    content: "▾" !important;
+    color: var(--element-color-deep)
+}
+
+.typora-export .outline-item-single .outline-expander::before {
+    display: none !important
+}
+
+.typora-export-sidebar .outline-item:hover {
+    background-color: var(--element-color-soo-shallow) !important;
+    color: var(--element-color-deep) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border: none !important
+}
+
+.typora-export-sidebar .outline-item-wrapper.outline-item-active>.outline-item {
+    background-color: var(--element-color) !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 10px var(--element-color-so-shallow);
+    padding-right: 12px !important;
+    padding-left: 12px !important;
+    margin-left: 0 !important;
+    border: none !important
+}
+
+.typora-export-sidebar .outline-item-wrapper.outline-item-active>.outline-item .outline-label {
+    color: #fff !important
+}
+
+.typora-export-sidebar .outline-item-wrapper.outline-item-active>.outline-item .outline-expander::before {
+    color: rgba(255, 255, 255, .8) !important
+}
+
+.typora-export-sidebar .outline-item-wrapper.outline-item-active>.outline-item::after {
+    content: "✦";
+    position: static !important;
+    transform: none !important;
+    margin-left: 8px !important;
+    flex-shrink: 0;
+    display: inline-block !important;
+    line-height: 1;
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    color: rgba(255, 255, 255, .9);
+    z-index: 10;
+    animation: outline-twinkle 1.5s infinite alternate
+}
+
+@media screen {
+    body.typora-export {
+        background-color: transparent
+    }
+}
+
+.typora-export-sidebar {
+    position: fixed;
+    margin-top: 0 !important;
+    top: 10px;
+    bottom: 10px;
+    left: 20px;
+    width: 320px;
+    background-color: var(--glass-bg-color);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, .6);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .13);
+    z-index: 100;
+    overflow: hidden;
+    color: #555
+}
+
+.typora-export-sidebar .outline-content {
+    padding-top: 60px !important;
+    padding-left: 15px !important;
+    padding-right: 5px !important;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none
+}
+
+.typora-export #write {
+    margin: 20px auto;
+    max-width: 950px;
+    width: 90%;
+    min-height: calc(100vh - 40px);
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .1);
+    padding: 60px 80px
+}
+
+.typora-export-sidebar+#write {
+    margin-left: 350px;
+    margin-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: auto;
+    max-width: none;
+    min-height: calc(100vh - 20px)
+}
+
+@media screen and (max-width:1200px) {
+    .typora-export-sidebar {
+        display: none
+    }
+
+    .typora-export #write,
+    .typora-export-sidebar+#write {
+        margin: 0;
+        border-radius: 0;
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
+        padding: 20px;
+        min-height: 100vh
+    }
+}
+
+@media print {
+    @page {
+        margin: 10mm;
+        size: A4
+    }
+
+    body {
+        background-color: transparent !important
+    }
+
+    body {
+        margin: 0 !important;
+        width: 100% !important
+    }
+
+    .typora-export #write {
+        margin: 0 auto !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: 0 0 !important
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important
+    }
+
+    #write::before {
+        display: block !important;
+        opacity: .1 !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        -webkit-mask-image: var(--bg-style) !important;
+        mask-image: var(--bg-style) !important;
+        background-color: var(--element-color) !important;
+        pointer-events: none;
+        z-index: -1
+    }
+
+    p {
+        line-height: 1.5rem
+    }
+
+    figure,
+    pre {
+        page-break-inside: avoid
+    }
+
+    ol,
+    ul {
+        page-break-inside: auto !important;
+        break-inside: auto !important
+    }
+
+    li {
+        page-break-inside: avoid;
+        break-inside: avoid
+    }
+
+    pre {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+        white-space: pre-wrap
+    }
+
+    blockquote {
+        page-break-inside: auto !important;
+        break-inside: auto !important
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        page-break-inside: avoid !important
+    }
+
+    p {
+        orphans: 2;
+        widows: 2
+    }
+
+    .md-toc {
+        background-image: none
+    }
+
+    #write li:before {
+        border-color: transparent
+    }
+}
+
+@media print {
+    .page-break {
+        page-break-after: always;
+        break-after: always;
+        height: 0;
+        display: block;
+        visibility: hidden
+    }
+}
+
+.dropdown-menu.context-menu {
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    background-color: rgba(255, 255, 255, .85) !important;
+    border: 1px solid rgba(255, 255, 255, .8) !important;
+    border-radius: 12px !important;
+    padding: 6px 0 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .04), 0 16px 40px rgba(0, 0, 0, .08) !important
+}
+
+.btn:focus {
+    outline-color: var(--element-color-shallow)
+}
+
+body .md-table-resize-popover {
+    width: max-content !important;
+    max-width: none !important;
+    height: auto !important;
+    padding: 12px !important;
+    background-color: var(--bg-color) !important;
+    border: none;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .12) !important
+}
+
+body .md-table-resize-popover .arrow {
+    display: none !important
+}
+
+body .md-table-resize-popover .md-grid-board-wrap {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 0 !important
+}
+
+body .md-table-resize-popover .md-grid-board {
+    width: auto !important;
+    border-collapse: separate !important;
+    border-spacing: 3px !important;
+    margin: 0 auto 10px auto !important
+}
+
+body .md-table-resize-popover .md-grid-board td {
+    padding: 0 !important;
+    background: 0 0 !important;
+    border: none !important
+}
+
+body .md-table-resize-popover .md-grid-board a {
+    display: block !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    border-radius: 3px !important;
+    background-color: color-mix(in srgb, var(--text-color), transparent 90%) !important;
+    border: 1px solid transparent !important;
+    box-sizing: border-box !important;
+    transition: all .2s cubic-bezier(.34, 1.56, .64, 1) !important
+}
+
+body .md-table-resize-popover .md-grid-board td.md-grid-ext {
+    background: 0 0 !important
+}
+
+body .md-table-resize-popover .md-grid-board td.md-grid-ext a {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 2px 4px color-mix(in srgb, var(--primary-color), transparent 60%) !important;
+    opacity: .9 !important
+}
+
+body .md-table-resize-popover .md-grid-board td.md-grid-ext a:hover {
+    opacity: 1 !important;
+    transform: scale(1.15) !important;
+    border-radius: 5px !important
+}
+
+body .md-table-resize-popover .popover-title {
+    background: 0 0 !important;
+    border: none !important;
+    border-top: 1px dashed color-mix(in srgb, var(--element-color), var(--text-color) 20%) !important;
+    padding: 10px 0 0 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: var(--element-color) !important;
+    font-size: 13px !important;
+    font-family: var(--monospace, monospace) !important;
+    font-weight: 400 !important
+}
+
+body .md-table-resize-popover input {
+    width: 36px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    text-align: center !important;
+    border: 1px solid var(--element-color-so-shallow) !important;
+    border-radius: 4px !important;
+    background-color: transparent !important;
+    color: var(--text-color) !important;
+    font-family: var(--monospace, monospace) !important;
+    font-size: 14px !important;
+    outline: 0 !important;
+    transition: all .3s ease !important;
+    box-shadow: none !important
+}
+
+body .md-table-resize-popover input:focus {
+    border-color: var(--primary-color) !important;
+    background-color: color-mix(in srgb, var(--primary-color), transparent 95%) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color), transparent 80%) !important
+}@import url();
+
+:root {
+  /* 标题后小图标，借鉴自思源笔记主题——Savor */
+  --h1-icon-shape: url("data:image/svg+xml;utf8,<svg fill='rgba(255, 176, 176, 0.5)' height='24' viewBox='0 0 32 32' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M4.8 29.714v0c-1.371 0-2.514-1.143-2.514-2.514v0c0-1.371 1.143-2.514 2.514-2.514v0c1.371 0 2.514 1.143 2.514 2.514v0c0.114 1.371-1.029 2.514-2.514 2.514z'/></svg>") no-repeat center;
+  --h2-icon-shape: url("data:image/svg+xml;utf8,<svg fill='rgba(255, 176, 176, 0.5)' height='24' viewBox='0 0 32 32' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M11.429 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM4.571 18.286c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286z'/></svg>") no-repeat center;
+  --h3-icon-shape: url("data:image/svg+xml;utf8,<svg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><path d='M4.571 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM4.571 18.286c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286z'/></svg>");
+  --h4-icon-shape: url("data:image/svg+xml;utf8,<svg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><path d='M4.571 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM4.571 18.286c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 22.857c1.257 0 2.286-1.029 2.286-2.286s-1.029-2.286-2.286-2.286-2.286 1.029-2.286 2.286 1.029 2.286 2.286 2.286z'/></svg>");
+  --h5-icon-shape: url("data:image/svg+xml;utf8,<svg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><path d='M4.571 18.286c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 22.857c1.257 0 2.286-1.029 2.286-2.286s-1.029-2.286-2.286-2.286-2.286 1.029-2.286 2.286 1.029 2.286 2.286 2.286zM4.571 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM4.571 11.429c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286z'/></svg>");
+  --h6-icon-shape: url("data:image/svg+xml;utf8,<svg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'><path d='M4.571 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM4.571 18.286c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM4.571 11.429c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 18.286c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 25.143c-1.257 0-2.286 1.029-2.286 2.286s1.029 2.286 2.286 2.286 2.286-1.029 2.286-2.286-1.029-2.286-2.286-2.286zM11.429 16c1.257 0 2.286-1.029 2.286-2.286s-1.029-2.286-2.286-2.286-2.286 1.029-2.286 2.286 1.029 2.286 2.286 2.286z'/></svg>");
+
+  /* 文档背景样式 */
+  /* 1. 交叉斜线 */
+  --bg-shape-cross: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h30v30H0z' fill='none'/%3E%3Cpath d='M0 0L15 15M30 0L15 15M0 30L15 15M30 30L15 15' stroke='black' stroke-width='0.4'/%3E%3C/svg%3E");
+  /* 2. 星点图案 */
+  --bg-shape-star: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M10 10l2-6l2 6l6 2l-6 2l-2 6l-2-6l-6-2Z' fill='black'/%3E%3Cpath d='M30 15l1-3l1 3l3 1l-3 1l-1 3l-1-3l-3-1Z' fill='black'/%3E%3Cpath d='M25 30l1.5-4.5l1.5 4.5l4.5 1.5l-4.5 1.5l-1.5 4.5l-1.5-4.5l-4.5-1.5Z' fill='black'/%3E%3C/svg%3E");
+  /* 3. 六边形图案 */
+  --bg-shape-hex: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M10 5l10 0l5 8.66l-5 8.66l-10 0l-5-8.66Z' fill='none' stroke='black' stroke-width='0.4'/%3E%3Cpath d='M20 22.32l10 0l5 8.66l-5 8.66l-10 0l-5-8.66Z' fill='none' stroke='black' stroke-width='0.4'/%3E%3C/svg%3E");
+  /* 4. 十字圆点 */
+  --bg-shape-dot: url("data:image/svg+xml,%3Csvg width='15' height='15' viewBox='0 0 15 15' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='7.5' cy='7.5' r='0.5' fill='black'/%3E%3Ccircle cx='7.5' cy='2.5' r='0.5' fill='black'/%3E%3Ccircle cx='7.5' cy='12.5' r='0.5' fill='black'/%3E%3Ccircle cx='2.5' cy='7.5' r='0.5' fill='black'/%3E%3Ccircle cx='12.5' cy='7.5' r='0.5' fill='black'/%3E%3C/svg%3E");
+  /* 5. 三角形 */
+  --bg-shape-tri: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h30v30H0z' fill='none'/%3E%3Cpath d='M0 0L30 0L15 15Z' fill='black'/%3E%3Cpath d='M30 30L0 30L15 15Z' fill='black'/%3E%3C/svg%3E");
+  /* 6. 方格网 */
+  --bg-shape-grid: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20v20H0z' fill='none'/%3E%3Cpath d='M20 0v20M0 20h20' stroke='black' stroke-width='0.7'/%3E%3C/svg%3E");
+  /* 7. 无背景 (纯白背景) */
+  --bg-shape-none: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=");
+
+  /* 文档背景样式  none 无背景*/
+  --bg-style: var(--bg-shape-cross);
+
+  /* 自动编号格式设置 无需自动编号可全部注释掉或部分注释掉*/
+  /* --autonum-h1: counter(h1) ". ";
+  --autonum-h2: counter(h1) "." counter(h2) ". ";
+  --autonum-h3: counter(h1) "." counter(h2) "." counter(h3) ". ";
+  --autonum-h4: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) ". ";
+  --autonum-h5: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". ";
+  --autonum-h6: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "; */
+
+  /* 下面是文章内Toc目录自动编号，与上面一样即可 */
+  /* --autonum-h1toc: counter(h1toc) ". ";
+  --autonum-h2toc: counter(h1toc) "." counter(h2toc) ". ";
+  --autonum-h3toc: counter(h1toc) "." counter(h2toc) "." counter(h3toc) ". ";
+  --autonum-h4toc: counter(h1toc) "." counter(h2toc) "." counter(h3toc) "." counter(h4toc) ". ";
+  --autonum-h5toc: counter(h1toc) "." counter(h2toc) "." counter(h3toc) "." counter(h4toc) "." counter(h5toc) ". ";
+  --autonum-h6toc: counter(h1toc) "." counter(h2toc) "." counter(h3toc) "." counter(h4toc) "." counter(h5toc) "." counter(h6toc) ". "; */
+
+
+  
+  /* 文章区域的最大宽度，可以是多少px也可以是百分比 */
+  --max-width: 950px; 
+
+  
+  /* 标题主色：深邃的普鲁士蓝，沉稳大气 */
+  --head-title-color: #1D4E89;
+  
+  /* H2 渐变：从柔和的钢蓝过渡到深普鲁士蓝，像深海的光影 */
+  --head-title-h2-color: #fff;
+  --head-title-h2-background: linear-gradient(to right, #6BA3CC, #1D4E89, #6BA3CC);
+  
+  /* 元素颜色 */
+  --element-color: #1D4E89;             /* 主色 (Steel Blue) */
+  --element-color-deep: #003153;        /* 深色 (Classic Prussian) - 用于强调/文字 */
+  --element-color-shallow: #6BA3CC;     /* 浅色 (Air Force Blue) - 用于图标/装饰 */
+  --element-color-so-shallow: #E1EDF5;  /* 很浅色 (高亮背景) */
+  --element-color-soo-shallow: #F0F6FA; /* 极浅色 (冷调背景白) */
+  --glass-bg-color: #b7d8ff15;          /* 毛玻璃底色 (约 8% 透明度) */
+
+  /* 行内代码：深海午夜蓝 */
+  --element-color-linecode: #0F3057;
+  --element-color-linecode-background: #EBF5FA;
+
+  /* UI 颜色 */
+  --appui-color: #1D4E89;
+  --appui-color-icon: #1D4E89;
+  --appui-color-text: #003153; 
+  --primary-color: #1D4E89;
+
+  --rawblock-edit-panel-bd: var(--element-color-soo-shallow);
+}
+</style>
+<style type='text/css'  id="style-lp">ol, ul {padding-left: 40px}</style>
+
+<title>牧原股份金融工具投资策略及其在财务报表中的体现深度分析报告</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h1 id='牧原股份金融工具投资策略及其在财务报表中的体现深度分析报告'><span>牧原股份金融工具投资策略及其在财务报表中的体现深度分析报告</span></h1><h2 id='引言与宏观产业背景透视'><span>引言与宏观产业背景透视</span></h2><p><span>在现代农业与畜牧业高度规模化、工业化乃至资本化的演进历程中，农牧企业的经营边界早已突破了单纯的生物资产繁育与饲养。作为全球生猪养殖规模领先的龙头企业，牧原食品股份有限公司（以下简称“牧原股份”或“公司”）的经营业绩不仅取决于其底层的生猪育种技术、智能化猪舍以及严密的疫病防控体系，更深层次地受到全球大宗农产品价格周期、国内“猪周期”以及宏观外汇与利率波动的交织影响。在这样一个复杂多变且充满不确定性的外部宏观环境下，金融工具投资策略不再是边缘的财务补充或可有可无的资金游戏，而是平抑产业周期波动、锁定企业目标利润、保障现金流安全与可持续发展的核心战略组件。</span></p><p><span>本报告旨在深度剖析牧原股份的金融工具投资策略，涵盖其在商品期货套期保值、外汇衍生品风险管理以及结构性理财与流动性资金管理等多个维度的布局，并系统性地追溯这些战略动作在公司资产负债表、利润表及所有者权益变动表中的具体微观体现。通过结合二零二零年至二零二五年这一跨越完整生猪产业周期的财务数据与业务动作，本报告将揭示牧原股份如何利用金融衍生工具在重资产周期的剧烈波动中构建坚不可摧的财务“护城河”。同时，报告将进一步探讨在公司全面推进国际化进程以及追求极限养殖成本控制目标的背景下，其金融衍生品策略的二阶演化逻辑与三阶战略前瞻，为理解大型重资产农牧企业的现代财务风险管理提供一份详尽的专业剖析。</span></p><h2 id='牧原股份底层风险敞口及金融衍生需求演化'><span>牧原股份底层风险敞口及金融衍生需求演化</span></h2><p><span>理解牧原股份复杂的金融工具策略，必须首先透视其所处的产业环境及由此衍生出的巨大风险敞口。作为一家采用“饲料加工-种猪育种-商品猪饲养-屠宰肉食”垂直一体化模式的企业，牧原股份的价值链涵盖了从大宗商品采购到终端肉品销售的全过程 。这种全产业链模式虽然在内部协同与生物安全防范上具有显著优势，但也使得公司直接暴露在产业链两端价格波动的夹击之下。</span></p><p><span>公司的核心经营风险主要源于产业链两端的绝对价格波动。在成本端，牧原股份的主营业务成本中，小麦、玉米和豆粕等主要原材料的成本合计占比长期维持在百分之五十五至百分之六十五的极高水平 。这些原材料具备典型的大宗商品属性，其价格走势不仅受国内农业减产、增产周期的影响，更受到全球气候变化、地缘政治冲突、国际海运物流成本波动以及主要出口国农业贸易政策的深刻影响。在牧原股份庞大的饲料消耗基数下，任何微小的原材料价格上行，都会被巨大的乘数效应迅速放大为数十亿级别的成本激增，直接吞噬企业的经营利润。</span></p><p><span>在收入端，商品猪市场价格呈现出极为显著的周期性波动，即业内熟知的“猪周期”，这直接导致生猪养殖行业的毛利率呈现周期性的剧烈震荡 。当生猪销售价格出现大幅下降，或者价格上涨幅度远低于饲料成本上涨幅度时，公司将面临业绩难以保持增长甚至出现巨额亏损的严峻风险。回顾历史数据，二零二三年公司归属于上市公司股东的净利润录得亏损四十二点六三亿元，正是由于生猪价格持续低迷与饲料成本高企的双重无情挤压所致 。这种两头受压的行业常态，构成了牧原股份引入金融衍生工具进行风险对冲的根本动力。</span></p><p><span>除此之外，随着牧原股份战略版图的不断扩张，其风险敞口正从单一的国内商品价格逐渐向国际汇率、利率市场延伸。公司涉及部分核心饲料原材料的海外直接或间接进口、境内外跨市场的融资安排，以及向越南、泰国等东南亚国家进行实体养殖产能与技术的成体系输出 。二零二五年，公司不仅与越南BAF公司、泰国正大集团达成深度战略合作，更在紧锣密鼓地筹备香港联交所H股的挂牌上市事宜，这标志着公司成为国内首家“A+H”两地上市的生猪养殖企业 。频繁的跨国资金流动、庞大的外币资产与负债沉淀，使得公司直接面临由于人民币与美元、港币、越南盾、泰铢等货币之间汇率波动带来的巨大汇兑损益风险 。汇率的轻微波动如果在缺乏有效对冲的情况下，极有可能将公司在海外市场辛勤耕耘获得的微薄产业利润消耗殆尽。因此，外汇衍生品管理顺理成章地成为了公司金融工具投资策略中不可或缺的另一大支柱。</span></p><h2 id='结构性理财与流动性管理策略的精细化运作'><span>结构性理财与流动性管理策略的精细化运作</span></h2><p><span>在保障日常庞大经营现金流安全流转的同时，牧原股份对暂时闲置的资金（包括部分尚未投入项目的募集资金及阶段性充裕的自有资金）进行了极其精细化、专业化的流动性管理。这一策略的核心在于，通过投资于安全性较高、流动性较好且收益率优于传统活期存款的金融工具，在不增加本金损失风险的前提下，最大化资金的时间价值与使用效率 。</span></p><p><span>通过深度剖析公司二零二三年度及二零二四年度的委托理财与资金运作明细，可以清晰地观察到公司在流动性管理工具选择上的丰富性与专业度。公司频繁且大规模地使用了商业银行的结构性存款以及头部证券公司的定制化收益凭证 。在结构性存款方面，公司多次大额认购了中国光大银行、交通银行等大型金融机构发行的“对公结构性存款”产品，例如光大银行南阳中州路支行发行的挂钩汇率对公结构性存款月月存系列，以及交通银行的“蕴通财富”定期型结构性存款 。这些产品的资金投向通常包含基础存款与衍生品部分（如挂钩特定外汇汇率、商品价格或金融衍生品类资产），其参考年化收益率稳定在百分之二点零五至百分之二点九四之间，呈现出低风险、稳健绝对收益的显著特征，完美契合了公司对于流动资金安全性与收益性的双重苛刻要求 。</span></p><p><span>在券商收益凭证与逆回购工具的应用上，牧原股份的财务操作展现出了更高的市场敏锐度。公司积极认购了国信证券、财通证券、国泰君安等头部券商发行的定制化收益凭证，产品名称涵盖了“私享盈安每日观察看涨单鲨”、“财慧通”、“二元看涨”等具有鲜明结构化特征的金融合约，同时常态化参与国债逆回购操作 。这些复杂的金融资产在极大丰富公司现金管理工具箱的同时，由于其内部嵌入的期权结构（如单鲨期权、二元期权）往往与宏观经济指标（如中证500指数、特定汇率或市场利率）深度挂钩，客观上也起到了在微观层面分散公司单一农牧产业风险的财务效果 。这种将闲置资金转化为带有结构性收益特征的金融资产的做法，不仅体现了牧原股份财务团队卓越的资金调度能力，也反映了现代大型农业企业在资金管理理念上向成熟金融机构靠拢的趋势。</span></p><h2 id='商品期货与外汇衍生品套期保值策略的底层逻辑'><span>商品期货与外汇衍生品套期保值策略的底层逻辑</span></h2><p><span>在直面饲料原材料及生猪价格大幅波动的核心痛点时，牧原股份构建了以“套期保值为主、坚决摒弃投机”为绝对原则的商品期货及衍生品投资策略体系。该体系的顶层设计旨在利用金融衍生工具的风险对冲属性，将极度不确定的市场价格风险转化为相对确定性的财务成本与利润预期 。</span></p><p><span>在交易品种与场所的审慎选择上，公司的套期保值交易被严格限定于与日常生产经营具有直接且紧密关联的农产品期货品种，主要包括玉米、豆粕、生猪等 。在交易场所的布局上，公司采取了“场内标准化合约+场外定制化衍生品”相结合的高级模式。场内交易主要依托国内合规、流动性充裕的商品期货交易所；而在场外交易（OTC）方面，鉴于公司大宗原材料采购渠道的多样化以及采购模式的多元化，标准的场内期货合约往往面临交割地点、品质升贴水以及合约月份不完全匹配的基差风险。因此，场外期权、收益互换等衍生品凭借其高度的定制化、灵活性和精准的风险对冲优势，成为了公司不可或缺的对冲工具。公司严格甄选交易对手，仅在境内大型头部券商和具备雄厚实力的期货公司风险管理子公司处开设账户并进行场外操作，从而从源头上控制了衍生品交易的信用违约风险 。</span></p><p><span>在套期保值额度控制与资金安全管理方面，牧原股份展现出了令人瞩目的战略定力与克制。从二零二零年至二零二六年的长周期财务规划与董事会决议来看，公司授权的商品期货套期保值业务所需保证金和权利金最高占用额始终被严苛地控制在人民币八亿元以内（该额度不包含期货标的实物交割款项），且在有效期内实行循环使用机制 。这一数字背后的战略意味深远：对比公司二零二四年高达一千三百七十九点四七亿元、二零二五年一千四百四十一点四五亿元的庞大营业收入体量 ，区区八亿元的保证金上限占比甚至不足总营收的百分之一。这一极低的杠杆比例从制度设计的底层彻底封死了业务团队通过期货市场进行单边投机以博取暴利的可能，印证了公司极度审慎的财务杠杆控制逻辑。此外，公司在制度中明确规定必须使用自有资金进行交易，绝对禁止使用募集资金直接或间接参与任何形式的商品期货套期保值业务 。</span></p><p><span>从套期策略的具体执行逻辑来看，公司的操作表现出高度贴合产业实际的对冲思维。例如，在二零二五年的财务报告附注中披露，公司持有若干商品期货合约的核心目的是为了管理“预期未来生猪销售”以及“玉米、豆粕采购”所面临的不可控价格变动风险 。这种策略是教科书级别的产业对冲应用：通过买入套期保值策略提前锁定未来几个月甚至半年的饲料采购成本，防止粮价飙升吞噬养殖利润；同时，通过卖出套期保值策略在生猪期货市场上提前锁定未来的生猪销售价格，防范出栏时遭遇猪价暴跌的系统性风险。两者结合，构成了一个封闭的利润锁定环。</span></p><p><span>在外汇衍生品投资策略方面，为有效对冲日益加速的国际化进程中伴随的汇率和利率波动风险，公司开展了成规模且成体系的外汇衍生品业务 。其产品组合涵盖了远期结售汇、外汇掉期、外汇期货、外汇期权等单一标准化产品，以及基于企业特定现金流需求定制的上述各产品的组合业务 。在规模管控上，公司董事会设定的外汇衍生品交易业务在任何时点的余额上限为人民币二十亿元 。与商品期货的限额逻辑类似，这二十亿元的额度设定精准匹配了公司现阶段国际农产品贸易、高端海外育种设备进口采购以及跨境银团融资的实际资金规模。其根本目的在于锁定外币资产与负债在不同会计期间的折算风险，确保海外项目的投资回报率不因汇率的单边非理性波动而缩水，而非意图通过在国际外汇市场上充当做市商或投机者来获取金融交易利润。</span></p><h2 id='金融工具及套期会计准则在牧原股份的应用机制'><span>金融工具及套期会计准则在牧原股份的应用机制</span></h2><p><span>金融工具投资策略从业务部门的交易指令落地，最终演变为财务报表上严谨的数据，必须通过严格遵守企业会计准则（具体包括CAS 22金融工具确认和计量、CAS 23金融资产转移、CAS 24套期会计、CAS 37金融工具列报等）的重重映射 。牧原股份在金融工具分类及套期会计政策的具体选择与应用上，深刻体现了“实质重于形式”的现代财务管理核心思想 。</span></p><p><span>在金融资产与负债的分类计量层面，牧原股份根据管理层管理金融资产的特定业务模式，以及该金融资产所附带的合同现金流量特征，将所有的金融资产严密地划分为三大类别 。第一类是以摊余成本计量的金融资产，这主要涵盖了公司的货币资金、日常经营产生的应收账款以及其他应收款等。这部分资产构成了公司维持日常运转和流动性的基本盘，其管理目标纯粹是为了按期收取合同约定的现金流量，并不涉及任何交易性目的。第二类是以公允价值计量且其变动计入其他综合收益的金融资产（FVTOCI）。此类资产通常包含部分为了满足流动性管理而可能随时出售的应收款项融资，以及公司在初始确认时便不可撤销地指定为该类别的非交易性权益工具投资（财务报表中列示为“其他权益工具投资”）。公司往往出于产业链协同或长期战略绑定目的持有某些地方农信社或金融机构的股权（例如南阳市卧龙区农村信用合作联社的股权），将其指定为FVTOCI，可以有效避免这些非上市股权公允价值的短期无序波动对公司当期净利润造成不必要的干扰 。第三类则是以公允价值计量且其变动计入当期损益的金融资产（FVTPL），即报表中的交易性金融资产和衍生金融资产。公司日常购买的结构性存款、券商收益凭证等短期理财产品，以及未能满足严苛套期会计指定条件的衍生品合约，均被归入此类，其在每一个资产负债表日的公允价值波动都会被直接、即时地确认为利润表中的“公允价值变动损益” 。</span></p><p><span>在套期会计的核心应用机制上，特别是现金流量套期（Cash Flow Hedge）的运用，构成了连接牧原股份前端业务对冲与后端财务报表平滑的关键技术桥梁。必须认识到，如果没有套期会计准则的介入，公司持有的所有期货及期权合约的公允价值变动将被迫全部、即时地计入当期损益。然而，这些衍生品所对应的底层现货交易（例如预计在未来六个月后发生的生猪销售，或未来三个月后发生的玉米采购）由于在当期尚未实际发生，无法在当前的利润表中确认盈亏。这种衍生品按公允价值即刻入账、而现货按历史成本延后入账的巨大“时间错配”，会导致企业的利润表在套保期间出现极其剧烈且完全不能反映业务真实经营状况的非理性波动。</span></p><p><span>为了解决这一会计难题，牧原股份针对“极可能发生的预期生猪销售及玉米、豆粕采购”交易，全面采用了现金流量套期会计模型，并将所持有的、高度相关的商品期货合约正式指定为套期工具 。根据公司详细披露的套期会计政策 ，这一机制的运行包含三个核心步骤。首先是有效性拆分，期末套期工具（如玉米期货合约）产生的累计利得或损失中，被评估为属于有效套期的那部分金额，绝对不会被计入当期的利润表，而是作为“现金流量套期储备”（Cash Flow Hedge Reserve）这一专项科目，被暂时“停放”在资产负债表所有者权益项下的“其他综合收益”（Other Comprehensive Income, OCI）之中。其次是无效部分的即时确认，如果由于基差大幅变动导致套期工具的盈亏未能完全覆盖被套期项目的预期现金流变动，属于套期无效的那部分差额，则必须本着谨慎性原则直接计入当期损益。最后是完美的转出与匹配机制，当被套期的预期交易实际发生，并开始影响企业损益的那个会计期间（例如，生猪最终被宰杀售出确认营业收入，或者采购的玉米被加工成饲料并投喂生猪，最终随生猪销售结转入营业成本时），公司会将此前一直暂时计入其他综合收益的“现金流量套期储备”按比例转出，直接计入当期损益（对应冲减或增加相关的营业收入或营业成本）。通过这一整套严密的会计处理流程，牧原股份在业务实质真正发生的那个时点，完美实现了衍生品工具盈亏与现货业务盈亏的对冲与匹配，向投资者呈现了一份挤出价格水分、反映真实经营能力的财务报表。</span></p><h2 id='金融工具在牧原股份财务报表中的微观映射与数据剖析'><span>金融工具在牧原股份财务报表中的微观映射与数据剖析</span></h2><p><span>理论与策略的最终落脚点在于财务数据。通过系统性地梳理牧原股份二零二零年至二零二五年的多期财务报表及附注，我们可以极为清晰地观察到公司金融工具投资策略在资产负债表、利润表及所有者权益变动表中的动态演变轨迹，以及这些冰冷数字背后隐藏的产业博弈。</span></p><p><span>在资产负债表层面，金融工具的持有状态与期末估值直接体现在特定的资产与负债科目中。结合多份研究素材中提取的详实数据 ，相关科目的规模与历史变动特征得以完整呈现。</span></p><figure class='table-figure'><table><thead><tr><th><strong><span>财务报表科目</span></strong></th><th><strong><span>数据特征及历史年份提取示例</span></strong></th><th><strong><span>业务实质与报表映射解读</span></strong></th></tr></thead><tbody><tr><td><strong><span>交易性金融资产</span></strong></td><td><span>2024年期初母公司余额约为11.03亿元 ；2024年半年度合并报表列示约为2118.4万元 ；在某些历史归集口径下（包含所有理财）曾触及120.08亿元 。</span></td><td><span>此科目主要反映了公司期末持有的尚未到期的结构性存款、券商收益凭证等理财产品。高余额时期体现了公司在融资渠道充裕或主业盈利丰厚的阶段，对大额闲置资金进行的高效流动性管理；低余额时期（如2024年中期的两千万级别）则真实反映了资金被大规模抽回，用于支持主业的巨额资本开支、偿还带息债务或进行大规模现金分红。</span></td></tr><tr><td><strong><span>衍生金融资产</span></strong></td><td><span>历史各期期末余额波动极为频繁，曾分别录得288.68万元、395.59万元、731.83万元等不同规模 ；在特定报告期内基本在数百万级别窄幅波动 。</span></td><td><span>这一微小的数字反映了在特定的资产负债表日，公司持有的处于浮盈状态的商品期货合约、外汇远期或期权合约的账面公允价值。由于衍生品采取严苛的每日无负债盯市制度以及杠杆保证金交易模式，该科目的绝对值虽然不大，但其背后实际撬动和保护的底层农产品现货名义本金却极其庞大。</span></td></tr><tr><td><strong><span>衍生金融负债</span></strong></td><td><span>2024年半年度财务数据显示为312.8万元 ；其他历史时期曾分别录得548.24万元、681.57万元等数据 。</span></td><td><span>该科目反映了在资产负债表日处于浮亏状态的衍生品合约的公允价值。从历年数据均未超过千万元级别可以看出，由于公司在内部风控上设立了极其严格的止损线与保证金监控红线，衍生金融负债的规模被持续、有效地死死压制在绝对低位，完全没有对公司千亿级别的总资产及整体资产负债率产生任何实质性的财务压力。</span></td></tr><tr><td><strong><span>其他权益工具投资</span></strong></td><td><span>近年来呈现出惊人的稳定性，2023年期末、2024年期初、2024年半年度的余额均精确锁定在106,524,594.25元 。</span></td><td><span>这一逾一亿元的恒定资产代表了公司出于长期战略协同与深度绑定目的（而非短期二级市场交易获利）所持有的非上市金融机构股权（即南阳市卧龙区农村信用合作联社等）。将其指定为此科目，彻底阻断了其公允价值的潜在波动对公司核心净利润指标的任何干扰。</span></td></tr></tbody></table></figure><p><span>转移视线至所有者权益变动表，其中的“其他综合收益”科目，特别是其子科目“现金流量套期储备”，是外部投资者观察并评估公司套期保值实际运行效果的最佳数据窗口。它在财务系统中充当了利润的超级“蓄水池”，安静地吸收了因期现时间错配带来的巨额浮动盈亏。</span></p><p><span>回顾二零二三年度，当期“现金流量套期储备”的变动额录得了正向的28,998,083.18元 。二零二三年无疑是生猪养殖行业全面承压、哀鸿遍野的一年，生猪价格触底而大宗原材料价格却居高不下（公司当年净利润亏损超四十二亿元 ）。在这一极为恶劣的外部环境下，公司在此期间持有的多头套期保值合约（旨在锁定饲料原料高企的价格风险）大概率产生了顺周期的公允价值浮盈。由于公司采购的现货在期末尚未完全被消耗完毕，这笔近两千九百万元的衍生品浮盈被财务准则有效地“隔离”在权益科目中，没有被提前确认进当期利润表，从而避免了利润的虚增。</span></p><p><span>进入二零二四年度，该科目的变动方向发生了显著的逆转，当期“现金流量套期储备”变动额录得-28,859,280.00元 。这一接近两千九百万元的反向变动蕴含着两层深刻的业务实质：首先，表明前期在二零二三年累积的衍生品浮盈，随着底层对应现货（即生猪的最终高价销售或高价饲料被实际投喂消耗）在二零二四年的实现，从其他综合收益科目顺利结转至了利润表，以冲减当期畸高的营业成本或增厚营业收入；其次，这也可能暗示着公司在二零二四年当期新开仓的套保合约在期末面临一定的技术性浮亏，根据有效套期原则，这些浮亏被暂时计入了储备科目，等待未来现货周期的匹配对冲。</span></p><p><span>进一步来到二零二五年度，该科目的波动幅度趋于极致的平缓，当期“现金流量套期储备”变动额仅为-2,051,380.00元 。这一微小数字的变化反映出，随着二零二五年公司生猪养殖极限目标成本的逐步实现（如指向11.5元/kg以下的行业极低值 ），以及外部大宗商品市场价格逐步回归并保持在相对稳态，公司套保合约的敞口规模与期末盈亏均大幅缩小，套期储备池进入了一种高效运转的动态平衡状态。</span></p><p><span>在利润表层面，金融工具的综合影响被解构为三个独立又相互关联的板块。其一是套期转移的直接影响，从其他综合收益转出的现金流量套期储备，会实质性地调整利润表上半部分的“营业成本”或“营业收入”。在一份详细的专项报告中披露，某报告期内，公司商品套期保值衍生品合约的亏损和现货采购/销售的盈亏相抵之后，全年的实际综合净收益金额仅为微不足道的-330.23万元 。这一极其震撼的数据证明，衍生品端产生的账面亏损与现货端实现的低成本采购（或高价销售）实现了近乎完美的镜像对冲。区区三百三十万元的微小基差损益，在公司动辄上千亿的营业收入面前简直可以忽略不计。这无可辩驳地证明了公司“从事套期保值业务的金融衍生品和商品期货品种与公司生产经营相关的原材料、产品相挂钩，可抵消现货市场交易中存在的价格波动风险，实现了预期风险管理目标” 。其二是“公允价值变动损益”科目，专门针对那些由于种种原因未能通过严格套期有效性测试的衍生品，以及处于浮动收益期的结构性理财产品进行期末重估。这部分损益忠实反映了公司部分金融资产市场价值的即期、短期波动 。其三是“投资收益”科目，它汇总了理财产品最终到期赎回时实现的固定或浮动现金收益，以及部分未指定为套期的衍生品平仓结算时的实际交割盈亏。在微薄的养殖利润周期内，这部分稳健的理财收益构成了对公司主营业务净利润的有效、及时补充。</span></p><h2 id='极限成本控制与国际化破局下的金融战略前瞻'><span>极限成本控制与国际化破局下的金融战略前瞻</span></h2><p><span>穿透这些枯燥且繁杂的财务数据与会计分录，我们可以提取出牧原股份金融工具策略背后的深层商业逻辑，并对其在行业终局演变中的战略图谋进行前瞻性洞察。</span></p><p><span>传统观念往往将金融衍生品交易视为实体企业的“双刃剑”，中国农牧企业历史上更是不乏因越界过度投机期货而导致资金链断裂、黯然退场的惨痛案例。然而，从牧原股份连年发布的财务报表与业务公告中，可以深刻洞察到一种“非对称”的套保哲学：即以极低的资金杠杆去撬动企业整体极大的抗风险能力。公司最高决策层将保证金上限严密死锁在八亿元人民币 ，这一数字对比其千亿级别的营收底盘，意味着公司从制度设计的基因里就彻底剥离了依靠期货市场单边博弈来创造投机利润的非分之想。这种绝对克制的杠杆使用纪律，配合内部严格的现货敞口匹配度审查，使得金融工具完全褪去了投机色彩，真正回归了企业“经营保险”的纯粹本质。它虽然牺牲了部分在商品单边暴涨或暴跌行情中获取暴利的弹性空间，但换取了企业资产负债表在任何极端宏观环境下的绝对坚韧。正是在二零二三年全行业面临深度亏损泥潭的至暗时刻 ，牧原依然能够奇迹般地保持经营活动产生的现金流量净额近百亿（98.93亿元）的正向流入 ，其精细化、纪律严明的套期保值策略与卓越的现金流管理功不可没。</span></p><p><span>随着牧原股份内部精细化管理的不断下探，金融工具在公司内部的战略定位正在发生显著的代际更迭。根据权威机构与行业新闻资料的披露，牧原股份在二零二四年已经将猪只养殖成本成功压降至约14元/kg的低位，并雄心勃勃地设定了二零二五年平均目标成本12元/kg，甚至在二零二六年进一步挑战11.5元/kg以下的行业极限生存底线 。必须清醒地认识到，在当前的生物育种技术改良红利与饲料配方技术（如极限低蛋白日粮应用）红利均面临边际递减的严峻背景下，养殖成本的每一次向下微小突破都变得异常艰难。</span></p><p><span>在这一向行业成本极限冲刺的历史阶段，商品期货套期保值不再仅仅是财务部门用于平滑利润波动的被动防御工具，而是已经蜕变成为主动参与构建“极限成本控制生态”的核心前置环节。通过熟练组合使用场外期权和场内标准化期货合约，公司的采购供应链部门可以提前半年甚至整整一年锁定远期巨量豆粕和玉米采购的价格底线。这种锁定效应，为前端的饲料配方动态调整和后端庞大产能的无所畏惧释放（如二零二五年实现高达7798.1万头的商品猪出栏量 ）提供了绝对刚性、清晰可见的成本基准数据。可以毫不夸张地说，如果没有前置的金融工具在资本市场上提前锁死大宗原材料的价格波动区间，那么11.5元/kg的极限养殖成本目标就如同建立在流沙之上的虚幻堡垒，随时可能被芝加哥商品交易所（CBOT）或大连商品交易所（DCE）大豆、玉米价格的一个微小波动跳涨所彻底摧毁。</span></p><p><span>更为深远的战略变革正在国际舞台上演。二零二五年被业内普遍视为牧原股份全面实施国际化破局的真正元年。公司果断投资约三十二亿元人民币在越南重资产落地实体养殖产能（该项目达产后预计年出栏商品猪高达一百六十万头），并与泰国农牧巨头正大集团达成历史性的战略合作，同时全速推进二零二六年在香港联交所H股的挂牌上市计划 。</span></p><p><span>这一系列大开大合的国际化战略破局，将以前所未有的烈度彻底重构公司对于金融工具的深层投资与对冲需求。首先，货币错配的敞口将呈现几何级数的激增。越南巨型工厂的重资产基础设施投入及日常高频运营支出（以越南盾计价）、高端海外育种设备与繁育技术的采购（以美元或欧元计价）与中国总部的资金调拨及利润结算（以人民币计价），将产生海量且复杂的跨境双向资金流。原先设定的二十亿元人民币外汇衍生品额度 ，在面对海外百亿级别的重资产集群时，极有可能在未来一至两年内面临被重新评估与大幅扩容的迫切需求。</span></p><p><span>其次，公司在套期会计的运用上将面临复杂化的进阶挑战。随着越南、泰国等海外子公司的全面并表，公司不仅需要继续深化传统的现金流量套期，还必须大量、娴熟地运用“境外经营净投资套期”（Hedge of a Net Investment in a Foreign Operation）这一高级会计模型 。财务团队将不得不频繁使用外汇负债工具或复杂的外汇远期/掉期合约，来对冲因人民币对越南盾、泰铢汇率的剧烈波动而可能引起的合并报表外币折算巨额差额风险，以保护母公司的所有者权益不受无端侵蚀。</span></p><p><span>最后，H股的成功挂牌上市将为公司带来庞大的外币募集资金与更为多样的国际化融资渠道。在这些规模庞大的境外资金汇回境内使用，或者直接滞留境外用于国际并购与投资的过程中，结构性存款、外汇掉期、跨境货币互换（CCS）等更为高阶的流动性与外汇管理工具的运用频次及资金体量将呈指数级上升。公司必须学会在全球金融市场中，在绝对保本、汇率风险完美锁定与闲置资金收益率增强这三者之间，寻找并锁定那个最符合股东利益的数学最优解。</span></p><h2 id='结语'><span>结语</span></h2><p><span>综上所述，牧原股份的金融工具投资策略，绝非单纯的金融投机或简单的财务点缀，而是一套高度成熟、逻辑严密且深度契合实体农牧产业特征的财务防御与战略价值创造体系。在面对“猪周期”深不可测的惊涛骇浪与全球农产品供应链的剧烈震荡时，公司通过八亿元商品期货保证金与二十亿元外汇衍生品额度的审慎、克制授权，巧妙且合规地运用现金流量套期会计原则，在资产负债表的资产端与利润表的成本端之间，构筑了一条坚实、宽阔的风险隔离带。</span></p><p><span>从二零二三年的全行业深渊中的逆周期防御，到二零二四年（实现净利润一百七十八点八亿元）、二零二五年（实现净利润一百五十八点一亿元）的强劲且高效的业绩复苏 ，定制化的结构性理财产品为庞大的现金流提供了稳健且可观的流动性溢价收益；而纪律严明的套期保值操作则犹如一把精密的手术刀，干净利落地剥离了商品价格无序波动的市场噪声，使得公司最高管理层能够心无旁骛地将核心战略精力聚焦于底层的价值育种突破、智能化猪舍的全面迭代升级以及残酷的降本增效战役（向11.5元/kg的行业成本底线发起终极冲刺）。展望未来，随着越南、泰国等海外重资产产能的实质性落地与香港H股的顺利发行，牧原股份的金融工具投资策略将无可避免地向跨国多币种动态管理与全球金融资产配置的深水区演进。对于这家已经具备全球化视野与规模的现代农牧巨头而言，熟练、专业且极其克制地驾驭各类金融衍生工具，早已超越了战术层面的财务技能，成为了其长期穿越极寒周期、熨平业绩波动并实现高质量、可持续发展所不可或缺的核心基础竞争力。</span></p></div></div>
+</body>
+</html>

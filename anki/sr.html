@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Smart Recite Pro | 沉浸式背诵</title>
+    <style>
+        /* --- Design System & Variables --- */
+        :root {
+            /* Palette - Light Mode (Notion/Paper-like) */
+            --bg-body: #F7F7F5;
+            --bg-surface: rgba(255, 255, 255, 0.85);
+            --bg-elevated: #FFFFFF;
+            --text-primary: #37352F;
+            --text-secondary: #787774;
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            
+            /* Action Colors */
+            --accent-color: #007AFF; /* iOS Blue */
+            --accent-dim: rgba(0, 122, 255, 0.1);
+            
+            /* Mask System */
+            --mask-bg: #E3E3E0;
+            --mask-active: #D3D3D0;
+            --mask-text-hidden: transparent;
+            --mask-highlight-bg: rgba(255, 212, 0, 0.15); /* Subtle highlighter look */
+            
+            /* Typography */
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif;
+            --line-height: 1.9;
+            
+            /* Layout */
+            --content-width: 700px;
+            --header-height: 60px;
+            --toolbar-height: 80px;
+            --radius-lg: 16px;
+            --radius-sm: 6px;
+            
+            /* Animation */
+            --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Palette - Dark Mode (Deep Space) */
+                --bg-body: #000000;
+                --bg-surface: rgba(28, 28, 30, 0.85);
+                --bg-elevated: #1C1C1E;
+                --text-primary: #FFFFFF;
+                --text-secondary: #8E8E93;
+                --border-subtle: rgba(255, 255, 255, 0.1);
+                
+                --accent-color: #0A84FF;
+                --accent-dim: rgba(10, 132, 255, 0.15);
+                
+                --mask-bg: #3A3A3C;
+                --mask-active: #48484A;
+                --mask-highlight-bg: rgba(255, 212, 0, 0.15);
+            }
+        }
+
+        /* --- Global Reset & Base --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            height: 100dvh; /* Dynamic viewport height */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        /* --- Glassmorphic Header --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 0.5px solid var(--border-subtle);
+            display: flex;
+            justify-content: center; /* Center content for better aesthetics */
+            align-items: center;
+            z-index: 100;
+            padding: 0 16px;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .header-inner {
+            width: 100%;
+            max-width: var(--content-width);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 17px;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.4px;
+        }
+        
+        h1 span { display: none; } /* Hide "PRO" for cleaner look */
+
+        /* --- iOS Segmented Control --- */
+        .mode-switch {
+            display: flex;
+            background-color: rgba(118, 118, 128, 0.12);
+            border-radius: 9px;
+            padding: 2px;
+            position: relative;
+            height: 32px;
+        }
+
+        .mode-btn {
+            border: none;
+            background: transparent;
+            padding: 0 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 500;
+            width: 60px;
+            z-index: 2;
+            transition: color 0.2s;
+        }
+
+        /* The visual "thumb" that slides - handled by .active class here for simplicity */
+        .mode-btn.active {
+            background: var(--bg-elevated);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* --- Main Layout --- */
+        main {
+            flex: 1;
+            padding-top: calc(var(--header-height) + env(safe-area-inset-top)); /* Clear header */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Edit View (The Writer) --- */
+        #edit-view {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            max-width: var(--content-width);
+            margin: 0 auto;
+            padding: 24px 20px;
+            animation: fadeIn 0.3s var(--ease-ios);
+        }
+        
+        #edit-view.active { display: flex; }
+
+        .tips {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            background: var(--bg-surface);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            border: none;
+            padding: 0;
+            font-size: 17px;
+            line-height: 1.6;
+            font-family: var(--font-stack);
+            resize: none;
+            outline: none;
+            background: transparent;
+            color: var(--text-primary);
+            caret-color: var(--accent-color);
+        }
+        
+        textarea::placeholder { color: var(--text-secondary); opacity: 0.6; }
+
+        /* --- Recite View (The Reader) --- */
+        #recite-view {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            animation: fadeIn 0.3s var(--ease-ios);
+        }
+
+        #recite-view.active { display: flex; }
+
+        #content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 30px 24px;
+            padding-bottom: calc(var(--toolbar-height) + 40px + env(safe-area-inset-bottom)); /* Clear toolbar */
+            line-height: var(--line-height);
+            font-size: 18px;
+            max-width: var(--content-width);
+            margin: 0 auto;
+            width: 100%;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+            /* Smooth momentum scrolling */
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        /* --- Bottom Toolbar (Floating Glass) --- */
+        .toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--toolbar-height) + env(safe-area-inset-bottom));
+            background: var(--bg-surface);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 0.5px solid var(--border-subtle);
+            display: flex;
+            align-items: flex-start; /* Align top of box */
+            padding: 16px 24px 0 24px; /* Top padding + Safe area handled by height */
+            gap: 20px;
+            z-index: 100;
+            justify-content: center;
+        }
+        
+        /* Container for toolbar contents to center them */
+        .toolbar-inner {
+            width: 100%;
+            max-width: var(--content-width);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .slider-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Custom Slider Styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(120, 120, 128, 0.2);
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+            margin-top: -9px; /* center thumb */
+            transition: transform 0.1s;
+        }
+        
+        input[type="range"]:active::-webkit-slider-thumb {
+            transform: scale(1.1);
+        }
+
+        .percentage {
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            min-width: 45px;
+            text-align: right;
+            font-size: 15px;
+            color: var(--accent-color);
+        }
+
+        .action-btn {
+            background: var(--accent-dim);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-color);
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        
+        .action-btn:active { opacity: 0.7; transform: scale(0.96); }
+
+        /* --- Token & Mask Aesthetics --- */
+        .token {
+            display: inline-block;
+            margin: 0 1px;
+            border-radius: 6px;
+            transition: all 0.2s var(--ease-ios);
+            vertical-align: middle; /* Align nicely with line height */
+            position: relative;
+        }
+
+        /* The Masked State (Capsule) */
+        .token.masked {
+            background-color: var(--mask-bg);
+            color: var(--mask-text-hidden); /* Transparent text */
+            user-select: none;
+            cursor: pointer;
+            /* Subtly shift baseline to look vertically centered */
+            transform: translateY(1px); 
+            height: 1.4em; /* Fixed height for capsule feel */
+            line-height: 1.4em;
+        }
+
+        /* Hover Effect (Desktop) */
+        @media (hover: hover) {
+            .token.masked:hover {
+                transform: translateY(-1px);
+                background-color: var(--mask-active);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            }
+        }
+        
+        /* Active/Touch Press Effect */
+        .token.masked:active {
+            transform: scale(0.96);
+            background-color: var(--mask-active);
+        }
+
+        /* Peek State (Long Press) */
+        .token.masked.peeking {
+            background-color: transparent;
+            color: var(--text-primary);
+            opacity: 0.5;
+            transform: scale(1);
+        }
+
+        /* Revealed State (Animation) */
+        .token.revealed {
+            background-color: transparent;
+            color: var(--accent-color);
+            font-weight: 500;
+            animation: revealPop 0.4s var(--ease-ios);
+        }
+
+        /* Manual Group Indicator */
+        .token.manual-group {
+            border-bottom: 2px solid var(--accent-dim);
+        }
+
+        /* Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes revealPop {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <h1>Smart Recite</h1>
+        <div class="mode-switch">
+            <button class="mode-btn active" id="btn-edit" onclick="app.switchMode('edit')">编辑</button>
+            <button class="mode-btn" id="btn-recite" onclick="app.switchMode('recite')">背诵</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- Edit Mode -->
+    <div id="edit-view" class="active">
+        <div class="tips">
+            💡 提示：输入内容后点击右上角“背诵”。支持 [中括号] 强制分组。
+        </div>
+        <!-- Note: ID must match JS config -->
+        <textarea id="source-text" placeholder="在此输入或粘贴文本..."></textarea>
+    </div>
+
+    <!-- Recite Mode -->
+    <div id="recite-view">
+        <!-- Content Area -->
+        <div id="content-area"></div>
+        
+        <!-- Toolbar moved to bottom for Mobile Ergonomics -->
+        <div class="toolbar">
+            <div class="toolbar-inner">
+                <div class="slider-group">
+                    <span style="font-size:13px; color:var(--text-secondary);">难度</span>
+                    <input type="range" id="difficulty-slider" min="0" max="100" value="40">
+                    <span class="percentage" id="difficulty-val">40%</span>
+                </div>
+                <button class="action-btn" onclick="app.reshuffle()">
+                    <span>⟳</span> 洗牌
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- JS Logic Preserved Exactly As Requested -->
+<script>
+/**
+ * Smart Recite Pro - Core Logic
+ * - O(1) State Lookups using Map
+ * - Mobile Interaction Guard (Scroll vs Tap)
+ * - Enhanced NLP Regex
+ * - State Persistence
+ */
+
+const CONSTANTS = {
+    // English Stopwords (Function words)
+    STOP_WORDS_EN: new Set([
+        'a', 'an', 'the', 'and', 'but', 'or', 'nor', 'for', 'so', 'yet',
+        'at', 'by', 'in', 'of', 'on', 'to', 'up', 'with', 'as', 'is', 'are',
+        'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did',
+        'that', 'this', 'these', 'those', 'it', 'he', 'she', 'they', 'we', 'i', 'you',
+        'my', 'your', 'his', 'her', 'its', 'our', 'their'
+    ]),
+    // Chinese Stopwords (High frequency particles)
+    STOP_WORDS_CN: new Set([
+        '的', '了', '和', '是', '就', '都', '而', '及', '与', '着', 
+        '或', '一个', '没有', '我们', '你们', '他们', '之', '在'
+    ]),
+    SCROLL_TOLERANCE: 10, // px distance to consider as scroll
+    LONG_PRESS_DELAY: 250 // ms to distinguish tap vs long press (if needed visually)
+};
+
+class SmartRecite {
+    constructor() {
+        this.state = {
+            tokens: [],       // Ordered list for rendering
+            tokenMap: new Map(), // O(1) Lookup: id -> tokenObj
+            mode: 'edit',
+            difficulty: 0.4,
+            text: ''
+        };
+
+        this.dom = {
+            editView: document.getElementById('edit-view'),
+            reciteView: document.getElementById('recite-view'),
+            textarea: document.getElementById('source-text'),
+            contentArea: document.getElementById('content-area'),
+            slider: document.getElementById('difficulty-slider'),
+            sliderVal: document.getElementById('difficulty-val'),
+            btnEdit: document.getElementById('btn-edit'),
+            btnRecite: document.getElementById('btn-recite')
+        };
+
+        this.init();
+    }
+
+    init() {
+        // Restore Text
+        const savedText = localStorage.getItem('sr_text');
+        this.dom.textarea.value = savedText || "Welcome to [Smart Recite] Pro!\n\nSupports:\n- Complex formats: $100, 50%, input/output.\n- Intelligent Chinese tokenization: 这里的“的”字不会被遮挡。\n\nTry pasting your own text!";
+        this.state.text = this.dom.textarea.value;
+
+        // Restore Settings
+        const savedDiff = localStorage.getItem('sr_difficulty');
+        if (savedDiff) {
+            this.state.difficulty = parseFloat(savedDiff);
+            this.dom.slider.value = this.state.difficulty * 100;
+            this.dom.sliderVal.textContent = Math.round(this.state.difficulty * 100) + '%';
+        }
+
+        // Bind Events
+        this.dom.textarea.addEventListener('input', (e) => {
+            this.state.text = e.target.value;
+            localStorage.setItem('sr_text', this.state.text);
+            // Invalidate mask state on edit
+            localStorage.removeItem('sr_mask_state');
+        });
+
+        this.dom.slider.addEventListener('input', (e) => {
+            this.state.difficulty = e.target.value / 100;
+            this.dom.sliderVal.textContent = e.target.value + '%';
+            localStorage.setItem('sr_difficulty', this.state.difficulty);
+            this.applyMasking(true);
+        });
+
+        // Initialize state if starting text exists
+        if (savedText) {
+            // Optional: could auto-enter recite mode if desired, but default to edit is safer
+        }
+    }
+
+    switchMode(mode) {
+        this.state.mode = mode;
+        if (mode === 'edit') {
+            this.dom.editView.classList.add('active');
+            this.dom.reciteView.classList.remove('active');
+            this.dom.btnEdit.classList.add('active');
+            this.dom.btnRecite.classList.remove('active');
+        } else {
+            this.dom.editView.classList.remove('active');
+            this.dom.reciteView.classList.add('active');
+            this.dom.btnEdit.classList.remove('active');
+            this.dom.btnRecite.classList.add('active');
+            
+            this.processTextAndRender();
+        }
+    }
+
+    /**
+     * Enhanced NLP Tokenization
+     */
+    tokenize(text) {
+        const tokens = [];
+        this.state.tokenMap.clear();
+        let idCounter = 0;
+
+        // 1. Manual Groups: [Group] or 【Group】
+        const groupMap = new Map();
+        // Capture [content] or 【content】
+        const protectedText = text.replace(/\[(.*?)\]|【(.*?)】/g, (match, g1, g2) => {
+            const key = `__GRP_${idCounter++}__`;
+            groupMap.set(key, g1 || g2);
+            return key;
+        });
+
+        // 2. Complex Regex
+        // Order matters!
+        const regex = new RegExp([
+            '(__GRP_\\d+__)',                                   // 1. Manual Groups
+            '((?:\\$|¥|€|£)?\\d+(?:[.,]\\d+)*(?:%|kg|km|cm|mm|g|lb|oz|k|m|bn)?)', // 2. Numbers + Units/Currency
+            '([a-zA-Z]+(?:[\'’/\\-][a-zA-Z]+)*)',              // 3. English Words (w/ hyphens, slashes, apostrophes)
+            '([\\u4e00-\\u9fa5])',                             // 4. Chinese Characters (Single)
+            '(\\n)',                                           // 5. Newlines
+            '(\\s+)',                                          // 6. Other Whitespace
+            '(.+?)'                                            // 7. Fallback (Punctuation/Symbols)
+        ].join('|'), 'g');
+
+        let match;
+        let tokenIdx = 0;
+
+        while ((match = regex.exec(protectedText)) !== null) {
+            const [full, grpKey, numUnit, engWord, cnChar, newline, space, other] = match;
+            
+            const token = {
+                id: `t${tokenIdx++}`,
+                text: full,
+                type: 'unknown',
+                hideable: false,
+                masked: false
+            };
+
+            if (grpKey) {
+                token.text = groupMap.get(grpKey);
+                token.type = 'manual-group';
+                token.hideable = true;
+            } else if (numUnit) {
+                token.type = 'number';
+                token.hideable = true;
+            } else if (engWord) {
+                token.type = 'word-en';
+                token.hideable = !CONSTANTS.STOP_WORDS_EN.has(engWord.toLowerCase());
+                if (!token.hideable) token.type = 'stopword';
+            } else if (cnChar) {
+                token.type = 'char-cn';
+                token.hideable = !CONSTANTS.STOP_WORDS_CN.has(cnChar);
+                if (!token.hideable) token.type = 'stopword';
+            } else if (newline) {
+                token.type = 'newline';
+            } else if (space) {
+                token.type = 'whitespace';
+            } else {
+                token.type = 'punctuation';
+            }
+
+            tokens.push(token);
+            this.state.tokenMap.set(token.id, token);
+        }
+
+        return tokens;
+    }
+
+    processTextAndRender() {
+        this.state.tokens = this.tokenize(this.state.text);
+        
+        // Try restore mask state
+        const savedMaskState = localStorage.getItem('sr_mask_state');
+        if (savedMaskState) {
+            try {
+                const maskSet = new Set(JSON.parse(savedMaskState));
+                this.state.tokens.forEach(t => {
+                    if (maskSet.has(t.id) && t.hideable) t.masked = true;
+                });
+                // Note: We don't re-roll randomness if state is restored
+                this.renderDOM();
+                return;
+            } catch(e) { console.error("State restore failed", e); }
+        }
+
+        // If no saved state, apply fresh masking
+        this.applyMasking(false); 
+    }
+
+    reshuffle() {
+        this.applyMasking(true);
+    }
+
+    applyMasking(forceReshuffle) {
+        // Reset
+        this.state.tokens.forEach(t => t.masked = false);
+
+        if (this.state.difficulty > 0) {
+            const candidates = this.state.tokens.filter(t => t.hideable);
+            
+            // Random Shuffle
+            if (forceReshuffle || !localStorage.getItem('sr_mask_state')) {
+                 for (let i = candidates.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+                }
+            }
+            
+            // Apply mask to first N items based on difficulty
+            const count = Math.floor(candidates.length * this.state.difficulty);
+            for (let i = 0; i < count; i++) {
+                candidates[i].masked = true;
+            }
+        }
+
+        this.saveMaskState();
+        this.renderDOM();
+    }
+
+    saveMaskState() {
+        const maskedIds = this.state.tokens.filter(t => t.masked).map(t => t.id);
+        localStorage.setItem('sr_mask_state', JSON.stringify(maskedIds));
+    }
+
+    renderDOM() {
+        this.dom.contentArea.innerHTML = '';
+        const frag = document.createDocumentFragment();
+
+        this.state.tokens.forEach(token => {
+            // Text Node for whitespace/newline to let browser handle layout perfectly
+            if (token.type === 'newline') {
+                frag.appendChild(document.createTextNode('\n'));
+                return;
+            }
+            if (token.type === 'whitespace') {
+                frag.appendChild(document.createTextNode(token.text));
+                return;
+            }
+
+            const span = document.createElement('span');
+            span.textContent = token.text;
+            span.id = token.id; // DOM ID matches Data ID
+            span.className = `token ${token.type}`;
+            
+            if (token.masked) span.classList.add('masked');
+            if (token.hideable) {
+                span.classList.add('interactive');
+                this.attachInteraction(span, token.id);
+            }
+
+            frag.appendChild(span);
+        });
+
+        this.dom.contentArea.appendChild(frag);
+    }
+
+    /**
+     * Mobile-Optimized Interaction Logic
+     * Prevents accidental touches while scrolling
+     */
+    attachInteraction(el, tokenId) {
+        let startX = 0, startY = 0;
+        let isTouching = false;
+        let isPeeking = false;
+        let startTime = 0;
+
+        const handleStart = (e) => {
+            const point = e.type.includes('touch') ? e.touches[0] : e;
+            startX = point.clientX;
+            startY = point.clientY;
+            isTouching = true;
+            startTime = Date.now();
+            
+            // Logic: Peek immediately if masked? 
+            // Better UX: Wait slightly or handle in 'move' to confirm not scrolling?
+            // "Peek" usually implies immediate feedback. Let's try immediate but cancel if move.
+            
+            const token = this.state.tokenMap.get(tokenId);
+            if (token.masked) {
+                isPeeking = true;
+                el.classList.add('peeking');
+            }
+        };
+
+        const handleEnd = (e) => {
+            if (!isTouching) return;
+            isTouching = false;
+
+            const point = e.type.includes('touch') ? e.changedTouches[0] : e;
+            const dist = Math.hypot(point.clientX - startX, point.clientY - startY);
+            const duration = Date.now() - startTime;
+
+            // Remove Peek Effect immediately
+            if (isPeeking) {
+                el.classList.remove('peeking');
+                isPeeking = false;
+            }
+
+            // Guard: If moved significantly, it's a scroll. Ignore.
+            if (dist > CONSTANTS.SCROLL_TOLERANCE) {
+                return;
+            }
+
+            // Logic: Short tap = Toggle; Long press = Peek (already handled visual, logic done)
+            // If it was a short tap (< 250ms), we toggle state permanently
+            if (duration < CONSTANTS.LONG_PRESS_DELAY) {
+                this.toggleToken(tokenId);
+            }
+        };
+
+        const handleCancel = () => {
+            if (isPeeking) {
+                el.classList.remove('peeking');
+                isPeeking = false;
+            }
+            isTouching = false;
+        };
+
+        // Use pointer events for unified mouse/touch handling
+        el.addEventListener('pointerdown', handleStart);
+        el.addEventListener('pointerup', handleEnd);
+        el.addEventListener('pointercancel', handleCancel);
+        el.addEventListener('pointerleave', handleCancel); // Mouse moves out
+        
+        // Prevent context menu
+        el.addEventListener('contextmenu', e => e.preventDefault());
+    }
+
+    toggleToken(id) {
+        const token = this.state.tokenMap.get(id);
+        if (!token) return;
+
+        token.masked = !token.masked;
+        this.saveMaskState();
+
+        // O(1) DOM Update
+        const el = document.getElementById(id);
+        if (el) {
+            if (token.masked) {
+                el.classList.add('masked');
+                el.classList.remove('revealed');
+            } else {
+                el.classList.remove('masked');
+                el.classList.add('revealed');
+            }
+        }
+    }
+}
+
+// Initialize App
+const app = new SmartRecite();
+
+</script>
+</body>
+</html>

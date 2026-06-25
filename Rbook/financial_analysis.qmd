@@ -1,0 +1,285 @@
+---
+title: "上市公司财务数据分析"
+author: "雷应"
+date: "2025-10-15"
+format: 
+  html:
+    toc: true
+    toc-location: left
+    code-tools: true
+    number-sections: true
+    lightbox: true
+    theme: zephyr
+lang: zh
+---
+
+## 引言
+
+本文档记录了一个完整的数据处理流程，从上市公司的三大财务报表中提取数据，进行清洗、整合、计算，并通过热力图可视化各财务指标之间的相关性。
+
+**操作说明：**
+
+1.  建议创建一个主项目文件夹。
+2.  将下载的 `.qmd` 文件或 `.R` 脚本放在主文件夹中。
+3.  在主文件夹内创建一个名为 `data` 的子文件夹，并将所有数据文件（`.csv`, `.rds`）放入其中。
+
+**下载链接：**
+
+-   **数据文件**
+    -   [资产负债表 (FS_Combas.csv)](data/FS_Combas.csv)
+    -   [利润表 (FS_Comins.csv)](data/FS_Comins.csv)
+    -   [现金流量表 (FS_Comscfd.csv)](data/FS_Comscfd.csv)
+    -   [列名映射 (colname_map.rds)](data/colname_map.rds)
+-   **源代码**
+    -   [本 Quarto 文档源文件 (financial_analysis.qmd)](financial_analysis.qmd)
+    -   [原始 R 脚本 (source_code.R)](source_code.R)
+
+## 数据读取
+
+分析的第一步是加载我们的原始数据。这里我们有三个 CSV 文件，分别对应资产负债表（`FS_Combas.csv`）、利润表（`FS_Comins.csv`）和现金流量表（`FS_Comscfd.csv`）。
+
+我们使用 R 的基础函数 `read.csv()` 来将这些文件读入**数据框（data frame）**中。
+
+```{r}
+#| label: load-data
+#| echo: true
+#| message: false
+#| warning: false
+
+# 读取资产负债表
+fs_combas <- read.csv("data/FS_Combas.csv")
+# 读取利润表
+fs_comins <- read.csv("data/FS_Comins.csv")
+# 读取现金流量表
+fs_comscfd <- read.csv("data/FS_Comscfd.csv")
+```
+
+## 数据预处理
+
+原始数据通常需要经过一系列的清洗和筛选才能用于分析。
+
+### 定义过滤函数
+
+为了确保数据的标准化和可比性，我们需要筛选出特定报告期的数据。通常，上市公司会发布季报和年报。我们只保留每个季度末（3-31, 6-30, 9-30, 12-31）发布的正式合并报表（`Typrep == "A"`）。
+
+为此，我们定义一个可复用的函数 `filter_data`。
+
+-   `as.Date(df$Accper)`: 将 `Accper`（会计期间）列转换为标准的日期格式，便于后续处理。
+-   `format(df$Accper, "%m-%d")`: 从会计期间的截止日中提取“月-日”部分。
+-   `%in% c(...)`: 判断提取出的“月-日”是否为季度末和年末。
+-   `df$Typrep == "A"`: 筛选出类型为 "A" 的报表，代表合并报表。
+
+```{r}
+#| label: define-filter-function
+#| echo: true
+
+# 定义一个函数，用于筛选特定日期和报表类型的数据
+filter_data <- function(df) {
+  # 确保 Accper 列是日期格式，以便进行日期相关的操作
+  df$Accper <- as.Date(df$Accper)
+
+  # 返回满足以下两个条件的行：
+  # 1. 会计期间的月和日是季度末 (03-31, 06-30, 09-30, 12-31)
+  # 2. 报表类型 (Typrep) 为 'A' (指合并报表)
+  df[
+    (format(df$Accper, "%m-%d") %in% c("03-31", "06-30", "09-30", "12-31")) &
+      (df$Typrep == "A"),
+  ]
+}
+```
+
+### 应用过滤函数
+
+将上面定义的 `filter_data` 函数应用到我们读取的三个数据框上，完成数据筛选。
+
+```{r}
+#| label: apply-filter
+#| echo: true
+
+fs_combas <- filter_data(fs_combas)
+fs_comins <- filter_data(fs_comins)
+fs_comscfd <- filter_data(fs_comscfd)
+```
+
+## 数据整合
+
+为了进行综合分析，我们需要将三个独立的报表数据合并成一个宽表。
+
+### 识别并移除重复列
+
+三个报表中除财务指标外，还包含一些共同的描述性列（如公司简称 `Shortname`、报表类型 `Typrep` 等）。在合并前，为避免信息冗余，我们只保留关键的匹配键 `Stkcd`（股票代码）和 `Accper`（会计期间），并移除其他重复的公共列。
+
+-   `Reduce(intersect, list(...))`: 这个组合用于找出三个数据框共有的全部列名。
+-   `setdiff(common_cols, c("Stkcd", "Accper"))`: 从所有公共列中，排除掉我们要保留的合并键，剩下的就是需要移除的列。
+-   `!(names(fs_comins) %in% cols_to_remove)`: 从利润表和现金流量表中选择所有不属于 `cols_to_remove` 的列。
+
+```{r}
+#| label: remove-redundant-cols
+#| echo: true
+
+# 找出三个数据框中所有共有的列名
+common_cols <- Reduce(
+  intersect, list(names(fs_combas), names(fs_comins), names(fs_comscfd))
+)
+
+# 从公共列中确定需要移除的列（保留 Stkcd 和 Accper 作为合并的键）
+cols_to_remove <- setdiff(common_cols, c("Stkcd", "Accper"))
+
+# 从利润表和现金流量表中移除这些多余的公共列
+fs_comins_clean <- fs_comins[, !(names(fs_comins) %in% cols_to_remove)]
+fs_comscfd_clean <- fs_comscfd[, !(names(fs_comscfd) %in% cols_to_remove)]
+```
+
+### 合并数据框
+
+使用 `merge()` 函数，以 `Stkcd` 和 `Accper` 为共同键，将三个数据框逐一合并。我们使用嵌套的 `merge` 调用，先合并资产负债表和处理后的利润表，再将结果与处理后的现金流量表合并。
+
+```{r}
+#| label: merge-dataframes
+#| echo: true
+
+# 第一次合并：合并资产负债表和清洗后的利润表
+# 第二次合并：将上一步的结果与清洗后的现金流量表合并
+fs_all <- merge(
+  merge(fs_combas, fs_comins_clean, by = c("Stkcd", "Accper")),
+  fs_comscfd_clean,
+  by = c("Stkcd", "Accper")
+)
+```
+
+## 数据清洗与准备
+
+合并后的数据仍然可能存在问题，比如缺失值（NA）。
+
+### 移除含缺失值的列
+
+为了简化后续计算（特别是相关系数矩阵），我们采取一种相对直接的策略：移除整个数据框中任何包含至少一个缺失值（NA）的**列**。
+
+-   `is.na(fs_all)`: 生成一个与 `fs_all` 维度相同的逻辑矩阵，`TRUE` 表示对应位置是 NA。
+-   `colSums(is.na(fs_all))`: 对上述逻辑矩阵按列求和，得到每列中 NA 的数量。
+-   `colSums(...) == 0`: 判断哪些列的 NA 数量为 0，即完全没有缺失值。
+-   `fs_all[, ...]`: 根据上面的判断结果，选择所有不包含任何 NA 的列。
+
+```{r}
+#| label: remove-na-cols
+#| echo: true
+
+fs_all <- fs_all[, colSums(is.na(fs_all)) == 0]
+```
+
+### 数据归一化 (Min-Max Scaling)
+
+不同财务指标的量纲和数值范围差异巨大（例如，总资产可能上亿，而某个比率可能小于1）。这种差异会影响某些模型的分析效果。为了消除量纲影响，我们按**会计期间**对数值型财务指标进行归一化处理，将它们缩放到 \[0, 1\] 区间。
+
+-   `setdiff(names(fs_all), common_cols)`: 找出所有非公共列，即我们的财务指标列。
+-   `for (acc in unique(fs_all$Accper))`: 外层循环，遍历每一个独特的会计期间。
+-   `rows <- which(fs_all$Accper == acc)`: 找到当前会计期间对应的所有行。
+-   `for (col in data_cols)`: 内层循环，遍历每一个财务指标列。
+-   `(x - min(x)) / (max(x) - min(x))`: 这是标准的 Min-Max 归一化公式。
+-   `if (diff(rng) == 0 || anyNA(rng))`: 添加一个稳健性检查。如果一个时期内某列的值全部相同（导致分母为0）或存在NA，则将该组数据设为NA，避免计算出错。
+
+```{r}
+#| label: scale-data
+#| echo: true
+
+# 识别出需要进行归一化的数值数据列（即非公共信息的列）
+data_cols <- setdiff(names(fs_all), common_cols)
+
+# 创建一个新数据框用于存放归一化后的结果
+fs_all_scaled <- fs_all
+
+# 按每个会计期（Accper）进行分组归一化
+for (acc in unique(fs_all$Accper)) {
+  # 找到当前会计期的所有行索引
+  rows <- which(fs_all$Accper == acc)
+  # 遍历所有数值列
+  for (col in data_cols) {
+    x <- fs_all[rows, col]
+    rng <- range(x, na.rm = TRUE)
+    # 如果该列在该时期内所有值都相同，或者范围无效，则结果设为NA
+    if (diff(rng) == 0 || anyNA(rng)) {
+      fs_all_scaled[rows, col] <- NA
+    } else {
+      # 否则，应用Min-Max归一化公式
+      fs_all_scaled[rows, col] <- (x - rng[1]) / (rng[2] - rng[1])
+    }
+  }
+}
+
+# 查看归一化结果的前几行（部分列）
+head(fs_all_scaled)[7:11]
+```
+
+## 计算与可视化
+
+数据准备就绪后，我们开始核心的分析和可视化步骤。
+
+### 计算相关系数矩阵
+
+我们想探究不同财务指标之间的线性关系强度。使用 `cor()` 函数可以方便地计算这些指标列两两之间的皮尔逊（Pearson）相关系数。
+
+```{r}
+#| label: calculate-correlation
+#| echo: true
+
+# 仅对数值指标列计算相关系数矩阵
+cor_matrix <- cor(fs_all[, data_cols])
+```
+
+### 映射列名
+
+原始数据中的列名是缩写或代码（如 `A001101000`），可读性很差。我们从一个预先保存好的 `.rds` 文件中读取一个映射表（`colname_map`），它储存了代码与中文名称的对应关系。然后，我们用这个映射表来替换相关系数矩阵的行名和列名，使其更具可读性。
+
+```{r}
+#| label: map-colnames
+#| echo: true
+
+# 读取预存的列名映射表
+colname_map <- readRDS("data/colname_map.rds")
+
+# 替换相关系数矩阵的行名和列名
+rownames(cor_matrix) <- colname_map[rownames(cor_matrix)]
+colnames(cor_matrix) <- colname_map[colnames(cor_matrix)]
+```
+
+### 绘制热力图
+
+相关系数矩阵是一个非常适合用热力图（Heatmap）来可视化的对象。热力图通过颜色深浅来直观地展示数值大小，可以让我们快速发现哪些指标之间存在强正相关或强负相关。
+
+我们使用 `pheatmap` 包来创建这个图形，并将其保存为 PNG 文件。
+
+-   `pheatmap(cor_matrix, ...)`: 主函数。
+-   `main = "..."`: 设置图表标题。
+-   `fontsize_row`, `fontsize_col`, `fontsize_number`: 分别调整行名、列名和单元格内数字的字体大小。
+-   `angle_col = 45`: 将列标签旋转45度，防止重叠。
+-   `border_color = NA`: 去掉单元格的边框，使图形更简洁。
+-   `cellwidth`, `cellheight`: 手动指定单元格的尺寸，以获得更好的布局。
+-   `display_numbers = TRUE`: 在每个单元格中显示对应的相关系数值。
+
+```{r}
+#| label: plot-heatmap
+#| echo: true
+#| fig-width: 14
+#| fig-height: 14
+#| dpi: 300
+
+# 如果是初次使用 pheatmap 包，请先取消下面这行代码的注释并运行它
+# install.packages("pheatmap")
+
+# 加载 pheatmap 包
+library(pheatmap)
+
+# 绘制热力图
+pheatmap(cor_matrix,
+  main = "相关系数矩阵热力图",
+  fontsize_row = 8,
+  fontsize_col = 7,
+  angle_col = 45,
+  border_color = NA,
+  cellwidth = 15,
+  cellheight = 15,
+  display_numbers = TRUE,
+  number_color = "black",
+  fontsize_number = 4
+)
+```

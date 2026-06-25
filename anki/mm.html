@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Mapper Ultimate (Fixed)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* 弹窗动画 */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: all 0.2s ease-out; }
+        .modal-leave-active { opacity: 0; transform: scale(0.95); transition: all 0.15s ease-in; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-10 relative shadow-sm shrink-0">
+        <div class="flex items-center gap-2 font-bold text-slate-800 text-xl">
+            <div class="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center text-white">M</div>
+            <span>Memory Mapper</span>
+        </div>
+        
+        <div class="flex items-center gap-3">
+             <div class="bg-slate-100 p-1 rounded-lg flex shadow-inner">
+                <button id="btnEditMode" onclick="setMode('edit')" class="px-5 py-2 rounded-md text-sm font-semibold transition-all bg-white text-orange-600 shadow-sm">编辑模式</button>
+                <button id="btnReviewMode" onclick="setMode('review')" class="px-5 py-2 rounded-md text-sm font-semibold transition-all text-slate-500 hover:text-slate-700">复习模式</button>
+            </div>
+            <div class="h-6 w-px bg-slate-300 mx-2"></div>
+            <button onclick="document.getElementById('fileInput').click()" class="btn-secondary flex items-center gap-2 px-4 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                换图片
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 flex relative overflow-hidden">
+        <aside id="sidebar" class="w-80 bg-white border-r border-slate-200 flex flex-col shadow-xl z-20 transition-all duration-300 ease-in-out overflow-hidden shrink-0">
+            
+            <div class="p-5 border-b border-slate-100 w-80"> <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">编辑工具</h3>
+                 <button id="btnToggleDraw" onclick="toggleDrawMode()" class="w-full flex items-center justify-between px-4 py-3 mb-3 bg-orange-50 border-2 border-orange-400 rounded-xl text-left transition-all relative overflow-hidden group">
+                    <div class="flex items-center gap-3 z-10">
+                        <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-500 group-hover:scale-110 transition">
+                            <svg id="drawIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </div>
+                        <div>
+                            <p id="drawText" class="text-sm font-bold text-orange-800">绘制模式：已开启</p>
+                            <p class="text-xs text-orange-600 mt-0.5">在画布空白处拖拽创建</p>
+                        </div>
+                    </div>
+                    <div id="drawStatusIndicator" class="w-3 h-3 rounded-full bg-orange-500 animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
+                </button>
+                <p class="text-xs text-slate-500 px-1">提示：绘制模式下，点击已有遮罩可以直接选中并调整其大小。</p>
+            </div>
+
+            <div id="propPanel" class="p-5 border-b border-slate-100 opacity-30 pointer-events-none transition-all w-80">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        当前遮罩设置
+                    </h3>
+                    <button onclick="deleteActiveObject()" class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition" title="删除 (Delete键)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">正确答案 (用于复习比对)</label>
+                <textarea id="answerInput" rows="4" class="w-full border-2 border-slate-200 rounded-lg shadow-sm focus:border-orange-500 focus:ring-orange-500 text-sm p-3 resize-none transition" placeholder="输入被遮挡的文字内容..."></textarea>
+            </div>
+
+            <div class="p-5 bg-slate-50 flex-1 w-80 overflow-y-auto">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    配置管理
+                </h3>
+                <div class="space-y-3">
+                    <button onclick="copyConfig()" id="btnCopyConfig" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border-2 border-slate-300 hover:border-slate-400 text-slate-700 rounded-lg font-semibold text-sm transition relative overflow-hidden">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        <span id="copyText">复制当前配置文本</span>
+                    </button>
+                    <div>
+                        <textarea id="configInput" rows="3" class="w-full border-2 border-slate-200 rounded-t-lg text-xs p-3 resize-none focus:border-slate-400 focus:ring-0 font-mono text-slate-600" placeholder="在此粘贴配置文本..."></textarea>
+                        <button onclick="loadConfig()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-b-lg font-bold text-sm transition">加载配置</button>
+                    </div>
+                     <p class="text-xs text-slate-400 mt-2 leading-relaxed">提示：配置文本包含背景图和所有遮罩数据。你可以保存成文本文件分享给他人。</p>
+                </div>
+             </div>
+        </aside>
+
+        <div id="canvasArea" class="flex-1 bg-slate-100 overflow-auto flex justify-center items-center relative transition-all duration-300 p-8">
+            <div id="canvasWrapper" class="shadow-2xl rounded-lg overflow-hidden border-2 border-dashed border-slate-300 bg-white relative transition-all group hover:border-orange-400" style="min-width: 640px; min-height: 480px;">
+                <canvas id="c"></canvas>
+                <div id="emptyState" onclick="document.getElementById('fileInput').click()" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 cursor-pointer bg-slate-50/50 backdrop-blur-sm z-10 hover:bg-orange-50/10 transition-colors">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 group-hover:scale-110 group-hover:border-orange-200 transition-all duration-300">
+                        <svg class="w-12 h-12 text-slate-300 group-hover:text-orange-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <p class="text-xl font-bold text-slate-600 group-hover:text-orange-600 transition-colors">点击上传图片</p>
+                    <p class="text-sm mt-2 text-slate-400 group-hover:text-orange-400/80">或将图片拖拽至此处</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="quizModalOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-start justify-center pt-20 hidden transition-opacity duration-200 opacity-0">
+        <div id="quizModalBox" class="bg-white rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-[420px] p-6 transform transition-all duration-200 scale-95">
+            <div class="flex justify-between items-center mb-4">
+                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <span class="flex h-3 w-3 relative">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+                    </span>
+                    请回忆被遮挡的内容
+                </h3>
+                 <button onclick="closeQuiz()" class="text-slate-400 hover:text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+           
+            <textarea id="quizInput" rows="3" class="w-full border-2 border-slate-300 rounded-xl p-4 text-slate-700 text-lg focus:border-orange-500 focus:ring-0 outline-none mb-4 font-medium resize-none" placeholder="在此输入答案..."></textarea>
+            
+            <div id="quizFeedback" class="hidden mb-4 p-4 rounded-xl text-sm leading-relaxed"></div>
+
+            <div class="flex justify-end gap-3">
+                <button id="btnReveal" onclick="revealAnswer()" class="hidden px-5 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg font-bold text-sm transition">直接查看答案</button>
+                <button id="btnSubmitQuiz" onclick="submitQuiz()" class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-lg shadow-md transition w-full">提交检查 (Enter)</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" class="hidden">
+
+<script>
+    // --- 1. 全局状态与初始化 ---
+    const canvas = new fabric.Canvas('c', {
+        selection: true,
+        preserveObjectStacking: true,
+        uniScaleTransform: true
+    });
+
+    fabric.Object.prototype.transparentCorners = false;
+    fabric.Object.prototype.cornerColor = '#ffffff';      // 控制点填充白
+    fabric.Object.prototype.cornerStrokeColor = '#3b82f6';// 控制点边框蓝
+    fabric.Object.prototype.borderColor = '#3b82f6';      // 选中框颜色蓝 (对比橙色遮罩更明显)
+    fabric.Object.prototype.cornerSize = 10;
+    fabric.Object.prototype.borderScaleFactor = 2;
+    
+    // 关键修复：让控制框紧贴遮罩
+    fabric.Object.prototype.padding = 0; 
+    
+    // 新增：圆形控制点，看起来更高级
+    fabric.Object.prototype.cornerStyle = 'circle';
+
+    let currentMode = 'edit';
+    let isDrawModeActive = true; 
+    let isDraggingRect = false;
+    let origX, origY, activeRect;
+    let currentQuizObject = null;
+
+    const emptyState = document.getElementById('emptyState');
+    const propPanel = document.getElementById('propPanel');
+    const answerInput = document.getElementById('answerInput');
+    const btnToggleDraw = document.getElementById('btnToggleDraw');
+    const drawStatusIndicator = document.getElementById('drawStatusIndicator');
+    const drawText = document.getElementById('drawText');
+
+    // --- 2. 图片加载 ---
+    document.getElementById('fileInput').addEventListener('change', (e) => handleImage(e.target.files[0]));
+    document.body.addEventListener('dragover', e => e.preventDefault());
+    document.body.addEventListener('drop', e => {
+        e.preventDefault();
+        if(e.dataTransfer.files[0]) handleImage(e.dataTransfer.files[0]);
+    });
+
+    function handleImage(file) {
+        if (!file || !file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = (f) => {
+            fabric.Image.fromURL(f.target.result, (img) => {
+                canvas.clear();
+                
+                // 1. 获取容器引用
+                const container = document.getElementById('canvasArea');
+                const wrapper = document.getElementById('canvasWrapper'); // 新增引用
+
+                // 2. 计算缩放比例 (减去 padding 留出空间)
+                const maxWidth = container.clientWidth - 80;
+                const maxHeight = container.clientHeight - 80;
+                const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+
+                // 3. 设置 Canvas 大小
+                canvas.setWidth(img.width * scale);
+                canvas.setHeight(img.height * scale);
+                
+                img.set({
+                    scaleX: scale,
+                    scaleY: scale,
+                    selectable: false,
+                    evented: false,
+                    originX: 'left', originY: 'top'
+                });
+                
+                canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+                
+                // --- 视觉状态切换 (关键修改) ---
+                emptyState.style.display = 'none';
+                
+                // 图片加载后，移除最小尺寸限制，让容器紧贴图片
+                wrapper.style.minWidth = '0';
+                wrapper.style.minHeight = '0';
+                
+                // 去掉虚线框，变回实线边框，看起来更像一张“照片”
+                wrapper.classList.remove('border-dashed', 'border-2');
+                wrapper.classList.add('border'); // 细实线
+
+                setMode('edit'); 
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // --- 3. 编辑模式 ---
+    function toggleDrawMode() {
+        isDrawModeActive = !isDrawModeActive;
+        updateDrawButtonUI();
+    }
+
+    function updateDrawButtonUI() {
+        if (isDrawModeActive) {
+            btnToggleDraw.classList.add('border-orange-400', 'bg-orange-50');
+            btnToggleDraw.classList.remove('border-slate-200', 'bg-white');
+            drawStatusIndicator.classList.remove('bg-slate-300', 'shadow-none');
+            drawStatusIndicator.classList.add('bg-orange-500', 'animate-pulse', 'shadow-[0_0_10px_rgba(249,115,22,0.5)]');
+            drawText.innerText = "绘制模式：已开启";
+            canvas.defaultCursor = 'crosshair';
+            canvas.selection = false;
+        } else {
+            btnToggleDraw.classList.remove('border-orange-400', 'bg-orange-50');
+            btnToggleDraw.classList.add('border-slate-200', 'bg-white');
+            drawStatusIndicator.classList.add('bg-slate-300', 'shadow-none');
+            drawStatusIndicator.classList.remove('bg-orange-500', 'animate-pulse', 'shadow-[0_0_10px_rgba(249,115,22,0.5)]');
+            drawText.innerText = "绘制模式：已关闭";
+            canvas.defaultCursor = 'default';
+            canvas.selection = true;
+        }
+    }
+    updateDrawButtonUI();
+
+    canvas.on('mouse:down', function(o) {
+        // 1. 基本校验
+        if (currentMode !== 'edit') return;
+        
+        // 2. 关键：如果点击到了已有的对象（o.target 存在），说明用户想选中它
+        // 直接返回，把控制权交给 Fabric 的默认选择逻辑
+        if (o.target) return; 
+
+        // 3. 只有在开启绘制模式时才继续
+        if (!isDrawModeActive) return;
+
+        // 4. 开始绘制新矩形
+        isDraggingRect = true;
+        const pointer = canvas.getPointer(o.e);
+        origX = pointer.x;
+        origY = pointer.y;
+        
+        activeRect = new fabric.Rect({
+            left: origX,
+            top: origY,
+            width: 0, 
+            height: 0,
+            
+            // --- 样式升级 ---
+            fill: '#ea580c',       // 内部：深橙色 (Tailwind orange-600)
+            stroke: '#fcd34d',     // 边框：明亮的琥珀色 (amber-300)
+            strokeWidth: 2,        // 边框宽度
+            strokeUniform: true,   // 关键：缩放时边框宽度保持不变！
+            rx: 4,                 // 圆角 X
+            ry: 4,                 // 圆角 Y
+            
+            selectable: true,
+            hasControls: true,
+            _answer: '' 
+        });
+        
+        canvas.add(activeRect);
+        // 注意：此时不设置为 ActiveObject，等画完了再设，防止闪烁
+    });
+
+    canvas.on('mouse:move', function(o) {
+        if (!isDraggingRect || !activeRect) return;
+        
+        const pointer = canvas.getPointer(o.e);
+        
+        // 1. 计算新的位置和尺寸
+        // 使用 Math.min/abs 确保支持向左/向上拖拽
+        const x = Math.min(pointer.x, origX);
+        const y = Math.min(pointer.y, origY);
+        const w = Math.abs(pointer.x - origX);
+        const h = Math.abs(pointer.y - origY);
+        
+        activeRect.set({ 
+            left: x, 
+            top: y, 
+            width: w, 
+            height: h 
+        });
+
+        // 2. ★★★ 核心修复：强制更新点击热区坐标 ★★★
+        // 如果不加这行，你画的时候虽然框变大了，但 Fabric 认为它还在原地
+        activeRect.setCoords(); 
+
+        canvas.requestRenderAll();
+    });
+
+    canvas.on('mouse:up', function(o) {
+        if (isDraggingRect) {
+            isDraggingRect = false;
+            
+            // 1. 防误触逻辑：如果框太小（比如只是点击了一下），判定为无效，直接删除
+            if (!activeRect || activeRect.width < 10 || activeRect.height < 10) {
+                if (activeRect) canvas.remove(activeRect);
+                canvas.requestRenderAll();
+            } else {
+                // 2. 绘制完成，正式选中该对象
+                activeRect.setCoords(); // 再确认一次坐标
+                canvas.setActiveObject(activeRect); // 设置为当前选中项，弹出控制框
+                canvas.renderAll(); // 强制重绘，确保控制框立即显示
+                
+                // 3. 自动聚焦到输入框（可选优化）
+                // updatePropPanel(); // 如果想画完直接输文字，可以调用这个
+            }
+            
+            activeRect = null; // 重置临时变量
+        }
+    });
+
+    // --- 4. 属性编辑与删除 ---
+    canvas.on('selection:created', updatePropPanel);
+    canvas.on('selection:updated', updatePropPanel);
+    canvas.on('selection:cleared', () => {
+        propPanel.classList.add('opacity-30', 'pointer-events-none');
+        answerInput.value = '';
+    });
+
+    function updatePropPanel() {
+        const activeObj = canvas.getActiveObject();
+        if (activeObj && activeObj.type === 'rect') {
+            propPanel.classList.remove('opacity-30', 'pointer-events-none');
+            answerInput.value = activeObj._answer || '';
+            answerInput.focus();
+        }
+    }
+
+    answerInput.addEventListener('input', (e) => {
+        const activeObj = canvas.getActiveObject();
+        if (activeObj) activeObj._answer = e.target.value;
+    });
+
+    function deleteActiveObject() {
+        const activeObj = canvas.getActiveObject();
+        if (activeObj && activeObj.type === 'activeSelection') {
+            activeObj.forEachObject(obj => canvas.remove(obj));
+            canvas.discardActiveObject();
+        } else if (activeObj) {
+            canvas.remove(activeObj);
+        }
+        canvas.requestRenderAll();
+    }
+    
+    document.addEventListener('keydown', (e) => {
+        if ((e.key === 'Delete' || e.key === 'Backspace') && currentMode === 'edit') {
+            if (document.activeElement !== answerInput && document.activeElement !== document.getElementById('configInput')) {
+                deleteActiveObject();
+            }
+        }
+    });
+
+    // --- 5. 模式切换：编辑 vs 复习 (修正重点) ---
+    const btnEditMode = document.getElementById('btnEditMode');
+    const btnReviewMode = document.getElementById('btnReviewMode');
+    const sidebar = document.getElementById('sidebar');
+
+    function setMode(mode) {
+        currentMode = mode;
+        if (mode === 'edit') {
+            // UI 更新
+            btnEditMode.className = "px-5 py-2 rounded-md text-sm font-semibold transition-all bg-white text-orange-600 shadow-sm";
+            btnReviewMode.className = "px-5 py-2 rounded-md text-sm font-semibold transition-all text-slate-500 hover:text-slate-700";
+            
+            sidebar.style.width = '20rem'; // 展开 sidebar
+            
+            canvas.selection = !isDrawModeActive;
+            canvas.getObjects('rect').forEach(obj => {
+                obj.selectable = true;
+                obj.evented = true;
+                obj.hoverCursor = 'move';
+                // 恢复显示
+                if (obj.opacity === 0) {
+                     obj.animate('opacity', 1, { duration: 200, onChange: canvas.renderAll.bind(canvas) });
+                } else {
+                    obj.opacity = 1;
+                }
+            });
+        } else {
+            // 复习模式
+            btnEditMode.className = "px-5 py-2 rounded-md text-sm font-semibold transition-all text-slate-500 hover:text-slate-700";
+            btnReviewMode.className = "px-5 py-2 rounded-md text-sm font-semibold transition-all bg-orange-500 text-white shadow-md";
+            
+            sidebar.style.width = '0'; // 收起 sidebar
+
+            canvas.discardActiveObject(); 
+            canvas.selection = false; 
+            canvas.getObjects('rect').forEach(obj => {
+                obj.selectable = false; 
+                obj.evented = true; 
+                obj.hoverCursor = 'pointer'; 
+            });
+        }
+
+        // 关键修正：等待 CSS 动画结束 (300ms) 后，再刷新 Canvas 坐标
+        // 否则 Fabric 会在旧的布局位置上计算点击区域，导致错位或消失
+        setTimeout(() => {
+            canvas.calcOffset(); 
+            canvas.requestRenderAll(); 
+        }, 350); 
+    }
+
+    // --- 6. 复习功能 ---
+    const quizModalOverlay = document.getElementById('quizModalOverlay');
+    const quizModalBox = document.getElementById('quizModalBox');
+    const quizInput = document.getElementById('quizInput');
+    const quizFeedback = document.getElementById('quizFeedback');
+    const btnSubmitQuiz = document.getElementById('btnSubmitQuiz');
+    const btnReveal = document.getElementById('btnReveal');
+
+    canvas.on('mouse:down', (e) => {
+        if (currentMode === 'review' && e.target && e.target.type === 'rect' && e.target.opacity !== 0) {
+            openQuiz(e.target);
+        }
+    });
+
+    function openQuiz(targetObj) {
+        currentQuizObject = targetObj;
+        quizModalOverlay.classList.remove('hidden');
+        void quizModalOverlay.offsetWidth; 
+        quizModalOverlay.classList.add('opacity-100');
+        quizModalBox.classList.remove('scale-95');
+        quizModalBox.classList.add('scale-100');
+
+        quizInput.value = '';
+        quizInput.focus();
+        quizFeedback.classList.add('hidden');
+        btnSubmitQuiz.classList.remove('hidden', 'w-1/2');
+        btnSubmitQuiz.classList.add('w-full');
+        btnReveal.classList.add('hidden');
+    }
+
+    function closeQuiz() {
+        quizModalOverlay.classList.remove('opacity-100');
+        quizModalBox.classList.remove('scale-100');
+        quizModalBox.classList.add('scale-95');
+        setTimeout(() => {
+            quizModalOverlay.classList.add('hidden');
+            currentQuizObject = null;
+        }, 200);
+    }
+
+    function submitQuiz() {
+        if (!currentQuizObject) return;
+        const userAnswer = quizInput.value.trim();
+        const correctAnswer = (currentQuizObject._answer || '').trim();
+        const isCorrect = userAnswer === correctAnswer;
+        
+        quizFeedback.classList.remove('hidden');
+        if (isCorrect) {
+            quizFeedback.innerHTML = `<div class="flex items-center gap-2 text-green-700 font-bold text-lg mb-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>回答正确！</div>`;
+            quizFeedback.className = "mb-4 p-5 rounded-xl bg-green-50 border-2 border-green-200";
+            
+            // 答对后消失
+            currentQuizObject.animate('opacity', 0, {
+                onChange: canvas.renderAll.bind(canvas),
+                duration: 300,
+                easing: fabric.util.ease.easeOutCubic
+            });
+            setTimeout(closeQuiz, 800);
+        } else {
+             quizFeedback.innerHTML = `
+                <div class="flex items-center gap-2 text-red-700 font-bold text-lg mb-3"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>回答错误</div>
+                <div class="space-y-3">
+                    <div><div class="text-xs font-bold text-slate-400 uppercase mb-1">你的答案</div><div class="bg-white p-2 rounded border border-slate-200 text-slate-700">${userAnswer || '空'}</div></div>
+                    <div><div class="text-xs font-bold text-slate-400 uppercase mb-1">正确答案</div><div class="bg-green-50 p-2 rounded border border-green-200 text-green-800 font-medium">${correctAnswer || '未设置'}</div></div>
+                </div>`;
+            quizFeedback.className = "mb-4 p-5 rounded-xl bg-red-50 border-2 border-red-200";
+            btnSubmitQuiz.classList.add('hidden');
+        }
+    }
+    
+    quizInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            submitQuiz();
+        }
+    });
+
+    // --- 7. 配置导入导出 ---
+    const configInput = document.getElementById('configInput');
+    const btnCopyConfig = document.getElementById('btnCopyConfig');
+    const copyText = document.getElementById('copyText');
+
+    function copyConfig() {
+        const rects = canvas.getObjects('rect');
+        if (rects.length === 0) { alert("当前没有遮罩数据。"); return; }
+        
+        const simpleData = rects.map(obj => ({
+            x: Math.round(obj.left),
+            y: Math.round(obj.top),
+            w: Math.round(obj.getScaledWidth()),
+            h: Math.round(obj.getScaledHeight()),
+            a: Math.round(obj.angle), // <--- 新增：保存旋转角度
+            t: obj._answer || ""
+        }));
+
+        navigator.clipboard.writeText(JSON.stringify(simpleData)).then(() => {
+            const originalText = copyText.innerText;
+            btnCopyConfig.classList.add('bg-green-50', 'border-green-400', 'text-green-700');
+            copyText.innerText = "已复制配置！";
+            setTimeout(() => {
+                btnCopyConfig.classList.remove('bg-green-50', 'border-green-400', 'text-green-700');
+                copyText.innerText = originalText;
+            }, 2000);
+        });
+    }
+
+    function loadConfig() {
+        const configString = configInput.value.trim();
+        if (!configString) { alert("请先粘贴配置文本。"); return; }
+        
+        try {
+            const simpleData = JSON.parse(configString);
+            if (!Array.isArray(simpleData)) throw new Error("格式错误");
+            
+            // 清除现有遮罩
+            const existingRects = canvas.getObjects('rect');
+            existingRects.forEach(obj => canvas.remove(obj));
+
+            simpleData.forEach(item => {
+                const rect = new fabric.Rect({
+                    left: item.x,
+                    top: item.y,
+                    width: item.w,
+                    height: item.h,
+                    angle: item.a || 0,
+                    
+                    // --- 样式升级 ---
+                    fill: '#ea580c',
+                    stroke: '#fcd34d',
+                    strokeWidth: 2,
+                    strokeUniform: true,
+                    rx: 4,
+                    ry: 4,
+                    
+                    _answer: item.t 
+                });
+                canvas.add(rect);
+            });
+            
+            canvas.renderAll();
+            setMode('edit');
+            configInput.value = '';
+            alert(`成功加载了 ${simpleData.length} 个遮罩！`);
+        } catch (e) {
+            console.error(e);
+            alert("配置解析失败，请检查格式。");
+        }
+    }
+</script>
+</body>
+</html>
